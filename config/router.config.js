@@ -17,6 +17,13 @@ export default [
     Routes: ['src/pages/Authorized'],
     authority: ['admin', 'user'],
     routes: [
+      {
+        path: '/person',
+        name: 'person',
+        icon: 'profile',
+        authority: ['admin'],
+        component: './Person/Person',
+      },
       // dashboard
       { path: '/', redirect: '/dashboard/analysis' },
       {
