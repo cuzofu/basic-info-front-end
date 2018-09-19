@@ -392,13 +392,11 @@ class Person extends Component {
         title={
           <div>
             <span className={styles.headerTitle}>陈亮</span>
-            <Tag color="magenta" className={styles.headerTag}>
-              有社保
-            </Tag>
+            <Tag color="magenta" className={styles.headerTag}>有社保</Tag>
           </div>
         }
         logo={
-          <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png" />
+          <img style={{height: 120, width: 120}} alt="" src="https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png" />
         }
         content={description}
         extraContent={extra}
