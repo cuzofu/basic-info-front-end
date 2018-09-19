@@ -5,6 +5,7 @@ import { DataSet } from '@antv/data-set';
 import { Row, Col, Card, Tag, Timeline } from 'antd';
 import Gallery from 'react-grid-gallery';
 import { Chart, Axis, Geom, Tooltip, Legend } from 'bizcharts';
+import { Map, Marker, InfoWindow } from 'react-bmap';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
@@ -20,6 +21,11 @@ const { Description } = DescriptionList;
   certificateLoading: loading.effects['person/fetchCertificate'],
 }))
 class Person extends Component {
+
+  state = {
+    infoWindow: null,
+  };
+
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
@@ -29,6 +35,27 @@ class Person extends Component {
       type: 'person/fetchCertificate',
     });
   }
+
+  handleMarkerClick = (marker, item) => {
+    this.setState({
+      infoWindow: this.renderInfoWindow(item),
+    });
+  };
+
+  renderInfoWindow = (props) => {
+    if (props) {
+      return (
+        <InfoWindow
+          position={{lng: props.lng, lat: props.lat}}
+          title={props.sgxkName}
+          text={
+            `<div><div>${props.job}</div><div>${props.company}</div></div>`
+          }
+        />
+      );
+    }
+    return null;
+  };
 
   dateFormat = (date, format) => {
     const d = moment(date);
@@ -115,12 +142,12 @@ class Person extends Component {
 
       // 工作履历 栅格布局参数
       const resumeColsProps = {
-        timeCols: {xs: 24, sm: 12, md: 4, lg: 4, xl: 4, xxl: 2},
-        engNameCols: {xs: 24, sm: 12, md: 10, lg: 10, xl: 10, xxl: 8},
-        jobsCols: {xs: 24, sm: 12, md: 10, lg: 10, xl: 10, xxl: 2},
-        isChangedCols: {xs: 24, sm: 12, md: 4, lg: 4, xl: 4, xxl: 2},
-        statusCols: {xs: 24, sm: 12, md: 4, lg: 4, xl: 4, xxl: 2},
-        companyCols: {xs: 24, sm: 12, md: 10, lg: 10, xl: 10, xxl: 8},
+        timeCols: {xs: 24, sm: 12, md: 4, lg: 4, xl: 2, xxl: 2},
+        engNameCols: {xs: 24, sm: 12, md: 10, lg: 10, xl: 8, xxl: 8},
+        jobsCols: {xs: 24, sm: 12, md: 4, lg: 4, xl: 2, xxl: 2},
+        isChangedCols: {xs: 24, sm: 12, md: 4, lg: 4, xl: 2, xxl: 2},
+        statusCols: {xs: 24, sm: 12, md: 4, lg: 4, xl: 2, xxl: 2},
+        companyCols: {xs: 24, sm: 24, md: 24, lg: 10, xl: 8, xxl: 8},
       };
 
       return (
@@ -170,6 +197,8 @@ class Person extends Component {
   };
 
   render() {
+
+    const { infoWindow } = this.state;
 
     const {
       certificateLoading,
@@ -278,6 +307,86 @@ class Person extends Component {
       }
     ];
 
+    const workResume = [
+      {
+        id: '1',
+        createTime: '2018-09-12 15:52:12',
+        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
+        job: '项目总监',
+        isChanged: true,
+        status: '投标',
+        company: '中铁三局建设集团中铁三局建设集团中铁三局建设集团中铁三局建设集团中铁三局建设集团',
+        lng: '111.351723',
+        lat: '30.720449'
+      },
+      {
+        id: '2',
+        createTime: '2017-09-12 15:52:12',
+        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
+        job: '项目经理',
+        isChanged: true,
+        status: '中标',
+        company: '中铁三局建设集团',
+        lng: '111.336295',
+        lat: '30.721462'
+      },
+      {
+        id: '3',
+        createTime: '2015-09-12 15:52:12',
+        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
+        job: '项目经理',
+        isChanged: false,
+        status: '完工',
+        company: '中铁三局建设集团',
+        lng: '111.30737',
+        lat: '30.706746'
+      },
+      {
+        id: '4',
+        createTime: '2014-09-12 15:52:12',
+        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
+        job: '施工员',
+        isChanged: true,
+        status: '完工',
+        company: '中铁三局建设集团',
+        lng: '111.338415',
+        lat: '30.691841'
+      },
+      {
+        id: '5',
+        createTime: '2013-09-12 15:52:12',
+        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
+        job: '施工员',
+        isChanged: false,
+        status: '完工',
+        company: '中铁三局建设集团',
+        lng: '111.296159',
+        lat: '30.684511'
+      },
+      {
+        id: '6',
+        createTime: '2012-09-12 15:52:12',
+        sgxkName: 'YCJS(2011)073  宜昌市一中',
+        job: '施工员',
+        isChanged: false,
+        status: '完工',
+        company: '中铁三局建设集团',
+        lng: '111.248872',
+        lat: '30.70836'
+      },
+      {
+        id: '7',
+        createTime: '2011-09-12 15:52:12',
+        sgxkName: 'YCJS(2011)073  夷陵中学',
+        job: '施工员',
+        isChanged: true,
+        status: '完工',
+        company: '中铁三局建设集团',
+        lng: '111.325911',
+        lat: '30.702026'
+      }
+    ];
+
     return (
       <PageHeaderWrapper
         title={
@@ -379,71 +488,7 @@ class Person extends Component {
           bodyStyle={{height: '300px', padding: '12px'}}
         >
           <div style={{height: 276, overflowY: 'auto'}}>
-            {this.renderWorkResume([
-              {
-                id: '1',
-                createTime: '2018-09-12 15:52:12',
-                sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-                job: '项目总监',
-                isChanged: true,
-                status: '投标',
-                company: '中铁三局建设集团中铁三局建设集团中铁三局建设集团中铁三局建设集团中铁三局建设集团'
-              },
-              {
-                id: '2',
-                createTime: '2017-09-12 15:52:12',
-                sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-                job: '项目经理',
-                isChanged: true,
-                status: '中标',
-                company: '中铁三局建设集团'
-              },
-              {
-                id: '3',
-                createTime: '2015-09-12 15:52:12',
-                sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-                job: '项目经理',
-                isChanged: false,
-                status: '完工',
-                company: '中铁三局建设集团'
-              },
-              {
-                id: '4',
-                createTime: '2014-09-12 15:52:12',
-                sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-                job: '施工员',
-                isChanged: true,
-                status: '完工',
-                company: '中铁三局建设集团'
-              },
-              {
-                id: '5',
-                createTime: '2013-09-12 15:52:12',
-                sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-                job: '施工员',
-                isChanged: false,
-                status: '完工',
-                company: '中铁三局建设集团'
-              },
-              {
-                id: '6',
-                createTime: '2012-09-12 15:52:12',
-                sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-                job: '施工员',
-                isChanged: false,
-                status: '完工',
-                company: '中铁三局建设集团'
-              },
-              {
-                id: '7',
-                createTime: '2011-09-12 15:52:12',
-                sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-                job: '施工员',
-                isChanged: true,
-                status: '完工',
-                company: '中铁三局建设集团'
-              }
-            ])}
+            {this.renderWorkResume(workResume)}
           </div>
         </Card>
         <Row gutter={12}>
@@ -525,6 +570,33 @@ class Person extends Component {
             </Card>
           </Col>
         </Row>
+        <Card
+          loading={certificateLoading}
+          bordered={false}
+          title={<div><span>足迹分布</span><span style={{color: 'red', marginLeft: '10px', fontSize: '12px'}}>数值越小，表示时间越近，仅显示第一次进入工地的记录。</span></div>}
+          style={{ marginTop: 12 }}
+        >
+          <Map center="宜昌">
+            {
+              workResume.map((item, index) => (
+                <Marker
+                  key={item.id}
+                  icon={`red${index+1}`}
+                  position={{
+                    lng: item.lng,
+                    lat: item.lat,
+                  }}
+                  events={{
+                    click: (marker) => {
+                      this.handleMarkerClick(marker, item)
+                    },
+                  }}
+                />
+              ))
+            }
+            {infoWindow}
+          </Map>
+        </Card>
       </PageHeaderWrapper>
     );
   }
