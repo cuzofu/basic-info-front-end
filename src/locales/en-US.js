@@ -1,6 +1,7 @@
 export default {
   'navbar.lang': '中文',
-  'menu.person': 'Personal Info',
+  'menu.person': 'Personal Profile',
+  'menu.corporation': 'Corporation Profile',
   'menu.home': 'Home',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': 'Analysis',
