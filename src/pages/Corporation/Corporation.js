@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import { DataSet } from '@antv/data-set';
-import { Row, Col, Card, Tag, Timeline, Table } from 'antd';
+import { Row, Col, Card, Tag, Timeline, Table, Divider } from 'antd';
 import Gallery from 'react-grid-gallery';
 import { Chart, Axis, Geom, Tooltip, Legend } from 'bizcharts';
 import { Map, Marker, InfoWindow } from 'react-bmap';
@@ -89,15 +89,11 @@ class Corporation extends Component {
   // 个人证书数据
   renderCertificateData = (certificate) => {
     if (certificate && certificate.length > 0) {
-      return (
-        <Timeline style={{margin: '6px', width: '90%'}}>
-          {
-            certificate.map( cert => (
-              <Timeline.Item key={cert.id}>{cert.name}</Timeline.Item>
-            ))
-          }
-        </Timeline>
-      );
+      return certificate.map( cert => (
+        <DescriptionList key={cert.id} className={styles.headerList && styles.descriptionMargin} size="small" col="1">
+          <Description term={`${cert.name}专项总分`}>{cert.score}</Description>
+        </DescriptionList>
+      ));
     }
     return (<div>暂无数据</div>);
   };
@@ -250,8 +246,6 @@ class Corporation extends Component {
 
     // 左右结构布局参数
     const doubleCardColsProps = {lg: 24, xl: 12, style: { marginTop: 12 }};
-    const cardTimelineLeft = {xs: 24, sm: 5, md: 4, lg: 4, xl: 6, xxl: 5, style: { marginBottom: 12 }};
-    const cardTimelineRight = {xs: 24, sm: 19, md: 20, lg: 20, xl: 18, xxl: 19};
 
     const IMAGES = [
       {
@@ -504,35 +498,48 @@ class Corporation extends Component {
               title="企业诚信"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
             >
-              <div style={{ height: '276px', overflowY: 'auto' }}>
-                {
-                  this.renderCertificateData([
-                    {
-                      id: '1200550',
-                      name: '鄂建安B(2014)0334697  考核合格证书类_安全生产考核合格证书_B类',
-                    },
-                    {
-                      id: '56151985',
-                      name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                    },
-                    {
-                      id: '8515616',
-                      name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                    },
-                    {
-                      id: '343432',
-                      name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                    },
-                    {
-                      id: '45345345',
-                      name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                    },
-                    {
-                      id: '56455353',
-                      name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                    },
-                  ])
-                }
+              <div style={{ height: '276px', overflow: 'auto', padding: 'auto 16px' }}>
+                <DescriptionList className={styles.headerList && styles.descriptionMargin} size="small" col="2">
+                  <Description term="诚信等级"><span className={styles.heading}>A级</span></Description>
+                  <Description term="诚信总分"><span className={styles.heading}>155分</span></Description>
+                </DescriptionList>
+                <Divider />
+                <Fragment>
+                  {
+                    this.renderCertificateData([
+                      {
+                        id: '1',
+                        name: '建筑业企业资质_施工总承包_市政公用工程_壹级',
+                        score: '130',
+                      },
+                      {
+                        id: '2',
+                        name: '建筑业企业资质_施工总承包_建筑工程_壹级',
+                        score: '100',
+                      },
+                      {
+                        id: '3',
+                        name: '建筑业企业资质_施工总承包_公路工程_壹级',
+                        score: '80',
+                      },
+                      {
+                        id: '4',
+                        name: '建筑业企业资质_施工总承包_铁路工程_壹级',
+                        score: '80',
+                      },
+                      {
+                        id: '5',
+                        name: '建筑业企业资质_施工总承包_水利水电工程_壹级',
+                        score: '80',
+                      },
+                      {
+                        id: '6',
+                        name: '建筑业企业资质_施工总承包_矿山工程_壹级',
+                        score: '80',
+                      },
+                    ])
+                  }
+                </Fragment>
               </div>
             </Card>
           </Col>
