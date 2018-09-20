@@ -1,5 +1,8 @@
 export default {
   'navbar.lang': '中文',
+  'menu.analysis': 'Analysis',
+  'menu.analysis.market': 'Market Analysis',
+  'menu.analysis.credit': 'Credit Analysis',
   'menu.person': 'Personal Profile',
   'menu.corporation': 'Corporation Profile',
   'menu.home': 'Home',

@@ -17,19 +17,35 @@ export default [
     Routes: ['src/pages/Authorized'],
     authority: ['admin', 'user'],
     routes: [
-      { path: '/', redirect: '/corp' },
+      { path: '/', redirect: '/analysis/market' },
+      {
+        path: '/analysis',
+        name: 'analysis',
+        icon: 'line-chart',
+        component: './Analysis/Analysis',
+        routes: [
+          {
+            path: '/analysis/market',
+            name: 'market',
+            component: './Analysis/Market',
+          },
+          {
+            path: '/analysis/credit',
+            name: 'credit',
+            component: './Analysis/Credit',
+          },
+        ],
+      },
       {
         path: '/corp',
         name: 'corporation',
         icon: 'profile',
-        authority: ['admin'],
         component: './Corporation/Corporation',
       },
       {
         path: '/person',
         name: 'person',
         icon: 'profile',
-        authority: ['admin'],
         component: './Person/Person',
       },
       {
