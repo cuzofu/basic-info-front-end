@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
 import {
@@ -13,6 +13,7 @@ import {
   Tooltip,
   Menu,
   Dropdown,
+  Divider,
 } from 'antd';
 import {
   ChartCard,
@@ -79,47 +80,182 @@ class Market extends Component {
       md: 12,
       lg: 12,
       xl: 6,
-      style: { marginBottom: 24 },
+      style: { marginBottom: 12 },
     };
+
+    // 左右结构布局参数
+    const doubleCardColsProps = {lg: 24, xl: 12, style: { marginBottom: 12 }};
 
     return (
       <GridContent>
-        <Row gutter={24}>
+        <Row gutter={12}>
           <Col {...topColResponsiveProps}>
-            <ChartCard
-              bordered={false}
-              title={
-                <FormattedMessage id="app.analysis.total-sales" defaultMessage="Total Sales" />
-              }
-              action={
-                <Tooltip
-                  title={
-                    <FormattedMessage id="app.analysis.introduce" defaultMessage="introduce" />
-                  }
-                >
-                  <Icon type="info-circle-o" />
-                </Tooltip>
-              }
-              total={126560}
-              footer={
-                <Field
-                  label={
-                    <FormattedMessage id="app.analysis.day-sales" defaultMessage="Day Sales" />
-                  }
-                  value={`￥${numeral(12423).format('0,0')}`}
-                />
-              }
-              contentHeight={46}
+            <Card
+              title="企业入库数量"
+              bodyStyle={{paddingBottom: '8px'}}
             >
-              <Trend flag="up" style={{ marginRight: 16 }}>
-                <FormattedMessage id="app.analysis.week" defaultMessage="Weekly Changes" />
-                <span className={styles.trendText}>12%</span>
-              </Trend>
-              <Trend flag="down">
-                <FormattedMessage id="app.analysis.day" defaultMessage="Daily Changes" />
-                <span className={styles.trendText}>11%</span>
-              </Trend>
-            </ChartCard>
+              <div>
+                <Row>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <p className={styles.item}>总数量</p>
+                    <p className={styles.topNumber}>1500</p>
+                  </Col>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <p className={styles.item}>新增数量</p>
+                    <p className={styles.topNumber}>200</p>
+                  </Col>
+                </Row>
+              </div>
+              <Divider style={{margin: '12px 0'}} />
+              <div style={{textAlign: 'center'}}>
+                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                  <span>增加率</span>
+                  <span className={styles.trendText}>12%</span>
+                </Trend>
+              </div>
+            </Card>
+          </Col>
+          <Col {...topColResponsiveProps}>
+            <Card
+              title="活跃企业数量"
+              bodyStyle={{paddingBottom: '8px'}}
+            >
+              <div>
+                <Row>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <p className={styles.item}>投标企业数量</p>
+                    <p className={styles.topNumber}>300</p>
+                  </Col>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <p className={styles.item}>中标企业数量</p>
+                    <p className={styles.topNumber}>200</p>
+                  </Col>
+                </Row>
+              </div>
+              <Divider style={{margin: '12px 0'}} />
+              <div style={{textAlign: 'center'}}>
+                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                  <span>占比</span>
+                  <span className={styles.trendText}>12%</span>
+                </Trend>
+                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                  <span>占比</span>
+                  <span className={styles.trendText}>11%</span>
+                </Trend>
+              </div>
+            </Card>
+          </Col>
+          <Col {...topColResponsiveProps}>
+            <Card
+              title="人员入库数量"
+              bodyStyle={{paddingBottom: '8px'}}
+            >
+              <div>
+                <Row>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <p className={styles.item}>总数量</p>
+                    <p className={styles.topNumber}>80000</p>
+                  </Col>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <p className={styles.item}>新增数量</p>
+                    <p className={styles.topNumber}>2000</p>
+                  </Col>
+                </Row>
+              </div>
+              <Divider style={{margin: '12px 0'}} />
+              <div style={{textAlign: 'center'}}>
+                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                  <span>增加率</span>
+                  <span className={styles.trendText}>12%</span>
+                </Trend>
+              </div>
+            </Card>
+          </Col>
+          <Col {...topColResponsiveProps}>
+            <Card
+              title="活跃人员数量"
+              bodyStyle={{paddingBottom: '8px'}}
+            >
+              <div>
+                <Row>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <p className={styles.item}>投标人员数量</p>
+                    <p className={styles.topNumber}>3000</p>
+                  </Col>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <p className={styles.item}>中标人员数量</p>
+                    <p className={styles.topNumber}>800</p>
+                  </Col>
+                </Row>
+              </div>
+              <Divider style={{margin: '12px 0'}} />
+              <div style={{textAlign: 'center'}}>
+                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                  <span>占比</span>
+                  <span className={styles.trendText}>12%</span>
+                </Trend>
+                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                  <span>占比</span>
+                  <span className={styles.trendText}>11%</span>
+                </Trend>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+        <Row gutter={12}>
+          <Col {...doubleCardColsProps}>
+            <Card
+              title="建筑规模与活跃企业诚信等级分析"
+              bodyStyle={{minHeight: '300px'}}
+            />
+          </Col>
+          <Col {...doubleCardColsProps}>
+            <Card
+              title="标段与企业明细"
+              bodyStyle={{minHeight: '300px'}}
+            />
+          </Col>
+        </Row>
+        <Row gutter={12}>
+          <Col {...doubleCardColsProps}>
+            <Card
+              title="企业诚信等级占比"
+              bodyStyle={{minHeight: '300px'}}
+            />
+          </Col>
+          <Col {...doubleCardColsProps}>
+            <Card
+              title="企业活跃度排名"
+              bodyStyle={{minHeight: '300px'}}
+            />
+          </Col>
+        </Row>
+        <Row gutter={12}>
+          <Col {...doubleCardColsProps}>
+            <Card
+              title="企业资质分析"
+              bodyStyle={{minHeight: '300px'}}
+            />
+          </Col>
+          <Col {...doubleCardColsProps}>
+            <Card
+              title="企业资质明细"
+              bodyStyle={{minHeight: '300px'}}
+            />
+          </Col>
+        </Row>
+        <Row gutter={12}>
+          <Col {...doubleCardColsProps}>
+            <Card
+              title="人员资质分析"
+              bodyStyle={{minHeight: '300px'}}
+            />
+          </Col>
+          <Col {...doubleCardColsProps}>
+            <Card
+              title="人员活跃度排名"
+              bodyStyle={{minHeight: '300px'}}
+            />
           </Col>
         </Row>
       </GridContent>
