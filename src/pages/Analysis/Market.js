@@ -1,53 +1,34 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import { DataSet } from '@antv/data-set';
+import { Chart, Axis, Tooltip, Geom, Legend } from 'bizcharts';
+
 import {
   Row,
   Col,
-  Icon,
   Card,
-  Tabs,
   Table,
-  Radio,
-  DatePicker,
-  Tooltip,
-  Menu,
-  Dropdown,
   Divider,
 } from 'antd';
 import {
-  ChartCard,
-  MiniArea,
-  MiniBar,
-  MiniProgress,
-  Field,
-  Bar,
   Pie,
-  TimelineChart,
 } from '@/components/Charts';
-import StandardTable from '@/components/StandardTable';
 import Trend from '@/components/Trend';
-import NumberInfo from '@/components/NumberInfo';
-import numeral from 'numeral';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import { getTimeDistance } from '@/utils/utils';
 
 import styles from './Market.less';
-
-const { TabPane } = Tabs;
-const { RangePicker } = DatePicker;
 
 @connect(({ analysis, loading }) => ({
   analysis,
   loading: loading.effects['analysis/fetch'],
 }))
 class Market extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   state = {
     loading: false,
+    subPersonZzAnalysisData: {},
   };
 
   componentDidMount() {
@@ -73,7 +54,24 @@ class Market extends Component {
     clearTimeout(this.timeoutId);
   }
 
+  renderSubPersonZzAnalysisData = (data) => {
+    this.setState({
+      subPersonZzAnalysisData: data,
+    });
+  };
+
+  handlerPersonZzPieClick = (ev) => {
+    if (!ev || !ev.data || ev.data === undefined || !ev.data._origin) {
+      return;
+    }
+    const {_origin} = ev.data;
+    this.renderSubPersonZzAnalysisData(_origin);
+  };
+
   render() {
+    const {
+      subPersonZzAnalysisData
+    } = this.state;
     const {
       analysis: { loading },
     } = this.props;
@@ -134,7 +132,7 @@ class Market extends Component {
       {
         title: '排名',
         dataIndex: 'index',
-        width: '5%',
+        width: '10%',
       },
       {
         title: '类型',
@@ -144,7 +142,7 @@ class Market extends Component {
       {
         title: '资质类型',
         dataIndex: 'zzSubType',
-        width: '45%',
+        width: '40%',
       },
       {
         title: '企业数量',
@@ -157,6 +155,215 @@ class Market extends Component {
         width: '15%',
       },
     ];
+
+    // 企业活跃度排名列表
+    const orgActivityRankingList = [
+      {
+        title: '排名',
+        dataIndex: 'ranking',
+        width: '10%',
+      },
+      {
+        title: '企业名称',
+        dataIndex: 'orgName',
+        width: '40%',
+      },
+      {
+        title: '中标数量',
+        dataIndex: 'amountOfBidding',
+        width: '15%',
+      },
+      {
+        title: '本期投资额(万元)',
+        dataIndex: 'investment',
+        width: '25%',
+      },
+      {
+        title: '占比',
+        dataIndex: 'rate',
+        width: '10%',
+      },
+    ];
+
+    // 人员活跃度排名列表
+    const personActivityRankingList = [
+      {
+        title: '排名',
+        dataIndex: 'ranking',
+        width: '10%',
+      },
+      {
+        title: '姓名',
+        dataIndex: 'name',
+        width: '25%',
+      },
+      {
+        title: '岗位',
+        dataIndex: 'job',
+        width: '20%',
+      },
+      {
+        title: '参与项目投资额(万元)',
+        dataIndex: 'investment',
+        width: '35%',
+      },
+      {
+        title: '项目数量',
+        dataIndex: 'amountOfEng',
+        width: '10%',
+      },
+    ];
+
+    const orgZzAnalysisData = [
+      {
+        x: '施工总承包',
+        y: 1000,
+      },
+      {
+        x: '专业承包',
+        y: 500,
+      },
+      {
+        x: '劳务资质',
+        y: 300,
+      },
+      {
+        x: '园林绿化',
+        y: 480,
+      },
+      {
+        x: '监理企业',
+        y: 805,
+      },
+      {
+        x: '其他',
+        y: 1015,
+      },
+    ];
+
+    const personZzAnalysisData = [
+      {
+        x: '注册执业证书',
+        y: 189,
+        sub: [
+          {
+            x: '注册执业证书1',
+            y: 50,
+          },
+          {
+            x: '注册执业证书2',
+            y: 45,
+          },
+          {
+            x: '注册执业证书3',
+            y: 81,
+          },
+          {
+            x: '注册执业证书4',
+            y: 10,
+          },
+          {
+            x: '注册执业证书5',
+            y: 3,
+          }
+        ]
+      },
+      {
+        x: '管理人员',
+        y: 540,
+        sub: [
+          {
+            x: '管理人员1',
+            y: 120,
+          },
+          {
+            x: '管理人员2',
+            y: 130,
+          },
+          {
+            x: '管理人员3',
+            y: 140,
+          },
+          {
+            x: '管理人员4',
+            y: 100,
+          },
+          {
+            x: '管理人员5',
+            y: 50,
+          }
+        ]
+      },
+      {
+        x: '施工图审',
+        y: 15,
+        sub: [
+          {
+            x: '施工图审1',
+            y: 9,
+          },
+          {
+            x: '施工图审2',
+            y: 6,
+          },
+        ]
+      },
+      {
+        x: '见证人证书',
+        y: 605,
+        sub: [
+          {
+            x: '见证人证书',
+            y: 605,
+          }
+        ]
+      },
+      {
+        x: '劳务人员证书',
+        y: 777,
+        sub: [
+          {
+            x: '劳务人员证书1',
+            y: 502,
+          },
+          {
+            x: '劳务人员证书2',
+            y: 120,
+          },
+          {
+            x: '劳务人员证书3',
+            y: 89,
+          },
+          {
+            x: '劳务人员证书4',
+            y: 66,
+          }
+        ]
+      }
+    ];
+
+    if (personZzAnalysisData && personZzAnalysisData.length > 0) {
+      const d = personZzAnalysisData[0];
+      if (!(subPersonZzAnalysisData && subPersonZzAnalysisData.x)) {
+        subPersonZzAnalysisData.x = d.x;
+        subPersonZzAnalysisData.y = d.y;
+        subPersonZzAnalysisData.sub = d.sub;
+      }
+    }
+
+    const orgCreditLevelData = [
+      { group:'企业数量', '企业诚信A级': 2563, '企业诚信B级': 1256, '企业诚信C级' :652, '企业资质诚信A级': 3364, '企业资质诚信B级': 1452, '企业资质诚信C级': 4589 },
+      { group:'投标数量', '企业诚信A级': 5625, '企业诚信B级': 2658, '企业诚信C级' :1012, '企业资质诚信A级': 3256, '企业资质诚信B级': 1252, '企业资质诚信C级': 5235 },
+      { group:'中标数量', '企业诚信A级': 2302, '企业诚信B级': 2101, '企业诚信C级' :356, '企业资质诚信A级': 3125, '企业资质诚信B级': 1623, '企业资质诚信C级': 4123 },
+    ];
+    const ds = new DataSet();
+    const orgCreditLevelDataTrans = ds.createView().source(orgCreditLevelData);
+    orgCreditLevelDataTrans.transform({
+      type: 'fold',
+      fields: ['企业诚信A级','企业诚信B级','企业诚信C级','企业资质诚信A级','企业资质诚信B级','企业资质诚信C级'], // 展开字段集
+      key: '诚信等级', // key字段
+      value: '数量', // value字段
+    });
 
     return (
       <GridContent>
@@ -317,7 +524,7 @@ class Market extends Component {
                 columns={bdEngListColumns}
                 pagination={{
                   pageSize: 5,
-                  total: 15,
+                  total: 4,
                   current: 1,
                   pageSizeOptions: ['5', '10', '20', '50'],
                   showQuickJumper: true,
@@ -330,22 +537,93 @@ class Market extends Component {
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="企业诚信等级占比" bodyStyle={{ minHeight: '300px' }} />
+            <Card title="企业诚信等级占比" bodyStyle={{ minHeight: '300px', padding: '0 5px' }}>
+              <Chart height={300} data={orgCreditLevelDataTrans} forceFit>
+                <Axis name="诚信等级" />
+                <Axis name="数量" />
+                <Legend />
+                <Tooltip crosshairs={{type : "y"}} />
+                <Geom type='interval' position="诚信等级*数量" color="group" adjust={[{type: 'dodge',marginRatio: 1/32}]} />
+              </Chart>
+            </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="企业活跃度排名" bodyStyle={{ minHeight: '300px' }} />
+            <Card
+              title="企业活跃度排名"
+              bodyStyle={{ height: '300px', padding: '5px' }}
+            >
+              <Table
+                loading={loading}
+                size="small"
+                scroll={{ y: 180 }}
+                dataSource={[
+                  {
+                    key: '1',
+                    ranking: 1,
+                    orgName: '湖北广盛',
+                    amountOfBidding: 18,
+                    investment: 230009.837,
+                    rate: '30%',
+                  },
+                  {
+                    key: '2',
+                    ranking: 2,
+                    orgName: '湖北沛菡',
+                    amountOfBidding: 13,
+                    investment: 110009.837,
+                    rate: '20%',
+                  },
+                  {
+                    key: '3',
+                    ranking: 3,
+                    orgName: '中国建筑',
+                    amountOfBidding: 10,
+                    investment: 90009.837,
+                    rate: '10%',
+                  },
+                  {
+                    key: '4',
+                    ranking: 4,
+                    orgName: '葛洲坝建设集团',
+                    amountOfBidding: 8,
+                    investment: 30009.837,
+                    rate: '5%',
+                  },
+                ]}
+                columns={orgActivityRankingList}
+                pagination={{
+                  pageSize: 5,
+                  total: 4,
+                  current: 1,
+                  pageSizeOptions: ['5', '10', '20', '50'],
+                  showQuickJumper: true,
+                  showSizeChanger: true,
+                  showTotal: total => `Total ${total} items.`,
+                }}
+              />
+            </Card>
           </Col>
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="企业资质分析" bodyStyle={{ minHeight: '300px' }} />
+            <Card title="企业资质分析" bodyStyle={{ minHeight: '300px' }}>
+              <Pie
+                hasLegend
+                subTitle="企业总数"
+                total={() => `${orgZzAnalysisData.reduce((pre, now) => now.y + pre, 0)}家`}
+                data={orgZzAnalysisData}
+                valueFormat={value => `${value}家`}
+                height={248}
+                lineWidth={4}
+              />
+            </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="企业资质明细" bodyStyle={{ height: '400px', padding: '5px' }}>
+            <Card title="企业资质明细" bodyStyle={{ height: '300px', padding: '5px' }}>
               <Table
                 loading={loading}
                 size="small"
-                scroll={{ y: 280 }}
+                scroll={{ y: 180 }}
                 dataSource={[
                   {
                     key: '1',
@@ -399,7 +677,7 @@ class Market extends Component {
                 columns={orgZzListColumns}
                 pagination={{
                   pageSize: 5,
-                  total: 15,
+                  total: 6,
                   current: 1,
                   pageSizeOptions: ['5', '10', '20', '50'],
                   showQuickJumper: true,
@@ -412,10 +690,99 @@ class Market extends Component {
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="人员资质分析" bodyStyle={{ minHeight: '300px' }} />
+            <Card title="人员资质分析" bodyStyle={{ minHeight: '300px' }}>
+              {
+                personZzAnalysisData && personZzAnalysisData.length > 0 ?
+                  (
+                    <Row>
+                      <Col span={12}>
+                        <Pie
+                          subTitle="人员总数"
+                          total={() => `${personZzAnalysisData.reduce((pre, now) => now.y + pre, 0)}人`}
+                          data={personZzAnalysisData}
+                          valueFormat={value => `${value}人`}
+                          height={248}
+                          padding={40}
+                          lineWidth={1}
+                          onPlotClick={this.handlerPersonZzPieClick}
+                        />
+                      </Col>
+                      <Col span={12}>
+                        {
+                          subPersonZzAnalysisData && subPersonZzAnalysisData.sub && subPersonZzAnalysisData.sub.length > 0 ?
+                            (
+                              <Pie
+                                subTitle={subPersonZzAnalysisData.x}
+                                total={() => `${subPersonZzAnalysisData.sub && subPersonZzAnalysisData.sub.reduce((pre, now) => now.y + pre, 0)}人`}
+                                data={subPersonZzAnalysisData.sub}
+                                valueFormat={value => `${value}人`}
+                                height={198}
+                                lineWidth={4}
+                              />) :
+                            (
+                              <div>无数据</div>
+                            )
+                        }
+                      </Col>
+                    </Row>
+                  ) :
+                  (<div>暂无数据</div>)
+              }
+
+            </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="人员活跃度排名" bodyStyle={{ minHeight: '300px' }} />
+            <Card title="人员活跃度排名" bodyStyle={{ height: '300px', padding: '5px' }}>
+              <Table
+                loading={loading}
+                size="small"
+                scroll={{ y: 280 }}
+                dataSource={[
+                  {
+                    key: '1',
+                    ranking: 1,
+                    name: '张三',
+                    job: '项目经理',
+                    investment: 674564.837,
+                    amountOfEng: 9,
+                  },
+                  {
+                    key: '2',
+                    ranking: 2,
+                    name: '李四',
+                    job: '项目经理',
+                    investment: 53309.837,
+                    amountOfEng: 6,
+                  },
+                  {
+                    key: '3',
+                    ranking: 3,
+                    name: '王五',
+                    job: '监理员',
+                    investment: 33309.837,
+                    amountOfEng: 4,
+                  },
+                  {
+                    key: '4',
+                    ranking: 4,
+                    name: '赵六',
+                    job: '施工员',
+                    investment: 30009.837,
+                    amountOfEng: 3,
+                  },
+                ]}
+                columns={personActivityRankingList}
+                pagination={{
+                  pageSize: 5,
+                  total: 4,
+                  current: 1,
+                  pageSizeOptions: ['5', '10', '20', '50'],
+                  showQuickJumper: true,
+                  showSizeChanger: true,
+                  showTotal: total => `Total ${total} items.`,
+                }}
+              />
+            </Card>
           </Col>
         </Row>
       </GridContent>

@@ -133,6 +133,7 @@ class Pie extends Component {
       animate = true,
       colors,
       lineWidth = 1,
+      onPlotClick,
     } = this.props;
 
     const { legendData, legendBlock } = this.state;
@@ -219,6 +220,7 @@ class Pie extends Component {
               padding={padding}
               animate={animate}
               onGetG2Instance={this.getG2Instance}
+              onPlotClick={(ev) => onPlotClick && onPlotClick(ev)}
             >
               {!!tooltip && <Tooltip showTitle={false} />}
               <Coord type="theta" innerRadius={inner} />
