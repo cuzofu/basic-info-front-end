@@ -1,8 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { formatMessage, FormattedMessage } from 'umi/locale';
 import { DataSet } from '@antv/data-set';
-import { Chart, Axis, Tooltip, Geom, Legend } from 'bizcharts';
+import {
+  Chart,
+  Axis,
+  Tooltip,
+  Geom,
+  Legend,
+  G2,
+  Coord,
+  Label,
+  View,
+  Guide,
+  Shape,
+  Facet,
+  Util
+} from 'bizcharts';
 
 import {
   Row,
@@ -16,7 +29,7 @@ import {
 } from '@/components/Charts';
 import Trend from '@/components/Trend';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
-import { getTimeDistance } from '@/utils/utils';
+import MatrixBar from './MatrixBar/MatrixBar';
 
 import styles from './Market.less';
 
@@ -27,7 +40,6 @@ import styles from './Market.less';
 class Market extends Component {
 
   state = {
-    loading: false,
     subPersonZzAnalysisData: {},
   };
 
@@ -39,7 +51,6 @@ class Market extends Component {
       });
       this.timeoutId = setTimeout(() => {
         this.setState({
-          loading: false,
         });
       }, 600);
     });
@@ -471,10 +482,12 @@ class Market extends Component {
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="建筑规模与活跃企业诚信等级分析" bodyStyle={{ height: '400px' }} />
+            <Card title="建筑规模与活跃企业诚信等级分析" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
+              <MatrixBar height={390} padding={[5, 5, 100, 60]} />
+            </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="标段与企业明细" bodyStyle={{ height: '400px', padding: '5px' }}>
+            <Card title="标段与企业明细" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
               <Table
                 loading={loading}
                 size="small"
