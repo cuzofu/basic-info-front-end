@@ -190,7 +190,7 @@ class BasicLayout extends React.PureComponent {
     const { fixedHeader } = this.props;
     return {
       margin: '24px 24px 0',
-      paddingTop: fixedHeader ? 64 : 0,
+      paddingTop: 0,
     };
   };
 
@@ -217,25 +217,11 @@ class BasicLayout extends React.PureComponent {
       children,
       location: { pathname },
     } = this.props;
-    const { isMobile } = this.state;
     const routerConfig = this.matchParamsPath(pathname);
-    const centerStyle = isMobile ? {
-      position: 'absolute',
-      top: '1px',
-      left: '1px',
-      right: '1px'
-    } : {
-      width: '80%',
-      position: 'absolute',
-      top: '2%',
-      left: '10%',
-      right: '10%'
-    };
     const layout = (
       <Layout
         style={{
           ...this.getLayoutStyle(),
-          ...centerStyle,
           minHeight: '100vh',
         }}
       >
