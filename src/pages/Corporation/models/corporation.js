@@ -4,17 +4,29 @@ export default {
   namespace: 'corporation',
 
   state: {
-    basicInfo: [],
+    basicInfo: {},
     certificate: [],
   },
 
   effects: {
-    *fetchBasicInfo(_, { call, put }) {
-      const response = yield call(queryBasicInfo);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+    *fetchBasicInfo({payload}, { call, put }) {
+      try {
+        const response = yield call(queryBasicInfo, payload);
+        yield put({
+          type: 'save',
+          payload: {
+            basicInfo: response
+          },
+        });
+      } catch (e) {
+        console.log(e);
+        yield put({
+          type: 'save',
+          payload: {
+            basicInfo: {}
+          },
+        });
+      }
     },
     *fetchCertificate(_, { call, put }) {
       const response = yield call(queryCertificate);

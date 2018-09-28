@@ -9,6 +9,7 @@ import { Map, Marker, InfoWindow } from 'react-bmap';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import DescriptionList from '@/components/DescriptionList';
+import Ellipsis from '../../components/Ellipsis';
 
 import styles from './Corporation.less';
 
@@ -26,9 +27,19 @@ class Corporation extends Component {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: {
+          id
+        }
+      }
+    } = this.props;
     dispatch({
       type: 'corporation/fetchBasicInfo',
+      payload: {
+        id,
+      }
     });
     dispatch({
       type: 'corporation/fetchCertificate',
@@ -39,6 +50,71 @@ class Corporation extends Component {
     this.setState({
       infoWindow: this.renderInfoWindow(item),
     });
+  };
+
+  // 编辑企业负责人数据
+  renderFzr = (data) => (
+    data.map( (d, index) => {
+      const {
+        mx = '{}'
+      } = d;
+      const {
+        专业 = '',
+        姓名 = '',
+        学历 = '',
+        性别 = '',
+        是否在职 = '',
+        离职日期 = '',
+        移动电话 = '',
+        职务 = '',
+        责任类型 = '',
+        身份证号码 = ''
+      } = JSON.parse(mx);
+      return {
+        key: index,
+        name: 姓名,
+        duty: 责任类型,
+        job: 职务,
+        id: 身份证号码,
+        gender: 性别,
+        education: 学历,
+        title: '',
+      }
+    })
+  );
+
+  renderFj = (docs) => {
+    const rtn = [];
+    docs.forEach(d => {
+      if (d.data) {
+        rtn.push({
+          src: `data:image/${d.fileext};base64,${d.data}`,
+          thumbnail: `data:image/${d.fileext};base64,${d.data}`,
+          thumbnailWidth: 320,
+          thumbnailHeight: 320,
+          caption: d.tag,
+          customOverlay: (
+            <div
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                maxHeight: '240px',
+                overflow: 'hidden',
+                position: 'absolute',
+                bottom: '0',
+                width: '100%',
+                color: 'white',
+                padding: '2px',
+                fontSize: '90%',
+              }}
+            >
+              <div>{d.tag}</div>
+              {d.hasOwnProperty('tags') && this.setCustomTags(d)}
+            </div>
+          ),
+        })
+      }
+    });
+    return rtn;
   };
 
   renderInfoWindow = (props) => {
@@ -209,23 +285,62 @@ class Corporation extends Component {
     const { infoWindow } = this.state;
 
     const {
+      basicInfoLoading,
       certificateLoading,
+      corporation: {
+        basicInfo: {
+          jcxxMx = '{}',
+          desMap = {},
+          docs = [],
+        }
+      }
     } = this.props;
+    const {
+      座机 = '-',
+      手机 = '-',
+      传真 = '-',
+      经营范围 = '-',
+      组织机构代码 = '-',
+      企业名称 = "-",
+      企业登记注册类型 = '-',
+      企业类别 = '-',
+      企业类型 = '-',
+      企业经济性质 = '-',
+      企业隶属关系 = '-',
+      办公地址 = '-',
+      办公所在地行政区划 = '-',
+      审核时间 = "",
+      审核状态 = '-',
+      日常联系人 = '-',
+      日常联系电话 = '-',
+      日常联系手机 = '-',
+      注册地行政区划 = '-',
+      注册地详细地址 = '-',
+      注册时间 = '-',
+      注册资本 = '-',
+      注净资产 = '-',
+      登记人员 = 0,
+      登记所在地 = '-',
+      登记证编号 = '-',
+    } = JSON.parse(jcxxMx);
+    const {
+      企业负责人 = []
+    } = desMap;
 
     const description = (
       <Fragment>
-        <DescriptionList className={styles.headerList} size="small" col="4">
-          <Description term="联系人">张三</Description>
-          <Description term="座机">0717-6623595</Description>
-          <Description term="手机">13333333333</Description>
-          <Description term="传真">0717-6623595</Description>
+        <DescriptionList className={styles.headerList} size="small" col={4}>
+          <Description term="联系人">{日常联系人}</Description>
+          <Description term="座机">{日常联系电话}</Description>
+          <Description term="手机">{日常联系手机}</Description>
+          <Description term="传真">{传真}</Description>
         </DescriptionList>
         <DescriptionList className={styles.headerList} size="small" col="1">
-          <Description term="办公地址">湖北省宜昌市高新区兰台路13号1号楼</Description>
+          <Description term="办公地址">{办公地址}</Description>
         </DescriptionList>
         <DescriptionList className={styles.headerList} size="small" col="1">
           <Description term="经营范围">
-            房屋建筑工程施工总承包壹级可承担单项建安合同额不超过企业注册资本金5倍的下列房屋建筑工程的施工：（1）40层以下、各类跨度的房屋建筑工程；（2）高度240米及以下的构筑物；（3）建筑面积20万平方米及以下的住宅小区或建筑群体。建筑装修装饰工程专业总承包叁级可承担单位工程造价60万元及以下建筑室内、室外装修装饰工程（建筑幕墙工程除外）的施工。
+            <Ellipsis tooltip lines={3}>{经营范围}</Ellipsis>
           </Description>
         </DescriptionList>
       </Fragment>
@@ -247,58 +362,7 @@ class Corporation extends Component {
     // 左右结构布局参数
     const doubleCardColsProps = {lg: 24, xl: 12, style: { marginTop: 12 }};
 
-    const IMAGES = [
-      {
-        src: 'https://c7.staticflickr.com/9/8106/28941228886_86d1450016_b.jpg',
-        thumbnail: 'https://c7.staticflickr.com/9/8106/28941228886_86d1450016_n.jpg',
-        thumbnailWidth: 320,
-        thumbnailHeight: 320,
-        caption: '营业执照',
-      },
-      {
-        src: 'https://c3.staticflickr.com/9/8583/28354353794_9f2d08d8c0_b.jpg',
-        thumbnail: 'https://c3.staticflickr.com/9/8583/28354353794_9f2d08d8c0_n.jpg',
-        thumbnailWidth: 320,
-        thumbnailHeight: 320,
-        caption: '资质证书',
-      },
-      {
-        src: 'https://c7.staticflickr.com/9/8569/28941134686_d57273d933_b.jpg',
-        thumbnail: 'https://c7.staticflickr.com/9/8569/28941134686_d57273d933_n.jpg',
-        thumbnailWidth: 320,
-        thumbnailHeight: 320,
-        caption: '资质证书',
-      },
-      {
-        src: 'https://c6.staticflickr.com/9/8342/28897193381_800db6419e_b.jpg',
-        thumbnail: 'https://c6.staticflickr.com/9/8342/28897193381_800db6419e_n.jpg',
-        thumbnailWidth: 320,
-        thumbnailHeight: 320,
-        caption: '安全生产许可证',
-      },
-    ];
-
-    IMAGES.map(i => {
-      i.customOverlay = (
-        <div
-          style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            maxHeight: '240px',
-            overflow: 'hidden',
-            position: 'absolute',
-            bottom: '0',
-            width: '100%',
-            color: 'white',
-            padding: '2px',
-            fontSize: '90%',
-          }}
-        >
-          <div>{i.caption}</div>
-          {i.hasOwnProperty('tags') && this.setCustomTags(i)}
-        </div>
-      );
-      return i;
-    });
+    const IMAGES = this.renderFj(docs);
 
     const engHistoryList = [
       {
@@ -359,10 +423,10 @@ class Corporation extends Component {
       <PageHeaderWrapper
         title={
           <div>
-            <p className={styles.headerTitle}>湖北升思科技股份有限公司</p>
+            <p className={styles.headerTitle}>{企业名称}</p>
             <div>
-              <Tag color="magenta">本地企业</Tag>
-              <Tag color="volcano" className={styles.headerTag}>建筑业企业</Tag>
+              <Tag color="magenta">{企业类型}</Tag>
+              <Tag color="volcano" className={styles.headerTag}>{企业类别}</Tag>
             </div>
           </div>
         }
@@ -386,22 +450,22 @@ class Corporation extends Component {
           <table className={styles.table}>
             <tbody>
               <tr>
-                <th>营业执照注册号</th>
-                <td>420500000094891</td>
                 <th>统一信用代码</th>
-                <td>914205007371453863</td>
+                <td>{组织机构代码}</td>
+                <th>系统编号</th>
+                <td>{登记证编号}</td>
               </tr>
               <tr>
                 <th>注册时间</th>
-                <td>2002年03月14日</td>
+                <td>{注册时间}</td>
                 <th>企业登记注册类型</th>
-                <td>有限公司</td>
+                <td>{企业登记注册类型}</td>
               </tr>
               <tr>
                 <th>注册资本</th>
-                <td>957.719900万</td>
+                <td>{注册资本}</td>
                 <th>注净资产</th>
-                <td>842.251500万</td>
+                <td>{注净资产}</td>
               </tr>
               <tr>
                 <th>开户银行</th>
@@ -411,15 +475,13 @@ class Corporation extends Component {
               </tr>
               <tr>
                 <th>注册地行政区划</th>
-                <td>湖北省_宜昌市_西陵区</td>
+                <td>{注册地行政区划}</td>
                 <th>登机机关</th>
                 <td>宜昌市工商局宜昌高新技术产业开发区分局</td>
               </tr>
               <tr>
-                <th>登记人员</th>
-                <td>65</td>
-                <th>参保人员</th>
-                <td>65</td>
+                <th>信息登记人员</th>
+                <td colSpan={3}>{登记人员}人</td>
               </tr>
               <tr>
                 <th>企业资质</th>
@@ -463,24 +525,13 @@ class Corporation extends Component {
                   dataIndex: 'title',
                 }
               ]}
-              dataSource={[
-                {
-                  key: '1',
-                  name: '胡彦斌',
-                  duty: '技术负责人',
-                  job: '',
-                  id: '4205151518115156',
-                  gender: '男',
-                  education: '本科',
-                  title: '',
-                }
-              ]}
+              dataSource={this.renderFzr(企业负责人)}
               pagination={false}
             />
           </Card>
         </Card>
         <Card
-          loading={certificateLoading}
+          loading={basicInfoLoading}
           bordered={false}
           title="活跃经历"
           style={{marginTop: 12}}

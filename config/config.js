@@ -93,4 +93,10 @@ export default {
   cssnano: {
     mergeRules: false,
   },
+  proxy: {
+    "/elastic_sskj/api": {
+      target: 'http://192.168.0.208:8180/',
+      changeOrigin: true,
+    }
+  }
 };

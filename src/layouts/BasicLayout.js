@@ -9,12 +9,9 @@ import classNames from 'classnames';
 import pathToRegexp from 'path-to-regexp';
 import { enquireScreen, unenquireScreen } from 'enquire-js';
 import { formatMessage } from 'umi/locale';
-import SiderMenu from '@/components/SiderMenu';
 import Authorized from '@/utils/Authorized';
 import SettingDrawer from '@/components/SettingDrawer';
-import logo from '../assets/logo.svg';
 import Footer from './Footer';
-import Header from './Header';
 import Context from './MenuContext';
 import Exception403 from '../pages/Exception/403';
 
@@ -217,48 +214,37 @@ class BasicLayout extends React.PureComponent {
 
   render() {
     const {
-      navTheme,
-      layout: PropsLayout,
       children,
       location: { pathname },
     } = this.props;
     const { isMobile } = this.state;
-    const isTop = PropsLayout === 'topmenu';
-    const menuData = this.getMenuData();
     const routerConfig = this.matchParamsPath(pathname);
+    const centerStyle = isMobile ? {
+      position: 'absolute',
+      top: '1px',
+      left: '1px',
+      right: '1px'
+    } : {
+      width: '80%',
+      position: 'absolute',
+      top: '2%',
+      left: '10%',
+      right: '10%'
+    };
     const layout = (
-      <Layout>
-        {isTop && !isMobile ? null : (
-          <SiderMenu
-            logo={logo}
-            Authorized={Authorized}
-            theme={navTheme}
-            onCollapse={this.handleMenuCollapse}
-            menuData={menuData}
-            isMobile={isMobile}
-            {...this.props}
-          />
-        )}
-        <Layout
-          style={{
-            ...this.getLayoutStyle(),
-            minHeight: '100vh',
-          }}
-        >
-          <Header
-            menuData={menuData}
-            handleMenuCollapse={this.handleMenuCollapse}
-            logo={logo}
-            isMobile={isMobile}
-            {...this.props}
-          />
-          <Content style={this.getContentStyle()}>
-            <Authorized authority={routerConfig.authority} noMatch={<Exception403 />}>
-              {children}
-            </Authorized>
-          </Content>
-          <Footer />
-        </Layout>
+      <Layout
+        style={{
+          ...this.getLayoutStyle(),
+          ...centerStyle,
+          minHeight: '100vh',
+        }}
+      >
+        <Content style={this.getContentStyle()}>
+          <Authorized authority={routerConfig.authority} noMatch={<Exception403 />}>
+            {children}
+          </Authorized>
+        </Content>
+        <Footer />
       </Layout>
     );
     return (

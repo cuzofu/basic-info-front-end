@@ -37,13 +37,13 @@ export default [
         ],
       },
       {
-        path: '/corp',
+        path: '/corporation/:id',
         name: 'corporation',
         icon: 'profile',
         component: './Corporation/Corporation',
       },
       {
-        path: '/person',
+        path: '/person/:id',
         name: 'person',
         icon: 'profile',
         component: './Person/Person',
