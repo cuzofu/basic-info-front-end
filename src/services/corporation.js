@@ -5,6 +5,12 @@ export async function queryBasicInfo(params) {
   return request(`/elastic_sskj/api/search/jcxx/${params.id}`);
 }
 
-export async function queryCertificate(params) {
-  return request(`/api/corporation/certificate/${stringify(params)}`);
+// 获取活跃经历（中标工程）
+export async function queryHyjl(params) {
+  return request(`/elastic_sskj/api/search/jcxx/hyjl/${params.id}`);
+}
+
+// 获取在建工程（施工许可工程）
+export async function queryZjgc(params) {
+  return request(`/elastic_sskj/api/search/jcxx/zjgc/${params.id}`);
 }

@@ -18,7 +18,8 @@ const { Description } = DescriptionList;
 @connect(({ corporation, loading }) => ({
   corporation,
   basicInfoLoading: loading.effects['corporation/fetchBasicInfo'],
-  certificateLoading: loading.effects['corporation/fetchCertificate'],
+  hyjlLoading: loading.effects['corporation/fetchHyjl'],
+  zjgcLoading: loading.effects['corporation/fetchZjgc'],
 }))
 class Corporation extends Component {
 
@@ -42,7 +43,16 @@ class Corporation extends Component {
       }
     });
     dispatch({
-      type: 'corporation/fetchCertificate',
+      type: 'corporation/fetchHyjl',
+      payload: {
+        id,
+      }
+    });
+    dispatch({
+      type: 'corporation/fetchZjgc',
+      payload: {
+        id,
+      }
     });
   }
 
@@ -52,6 +62,26 @@ class Corporation extends Component {
     });
   };
 
+  // 编辑企业资质数据
+  renderZz = (data) => {
+    const rtn = [];
+    data.forEach( d => {
+      const {
+        id,
+        mx = '{}'
+      } = d;
+      const {
+        证书编号 = '',
+        资质等级 = '',
+        资质状态 = '',
+      } = JSON.parse(mx);
+      if (资质状态 !== '注销') {
+        rtn.push(<p key={id} style={{margin: 0, padding: 0}}>{`${证书编号} ${资质等级}`} </p>);
+      }
+    });
+    return rtn;
+  };
+
   // 编辑企业负责人数据
   renderFzr = (data) => (
     data.map( (d, index) => {
@@ -59,13 +89,9 @@ class Corporation extends Component {
         mx = '{}'
       } = d;
       const {
-        专业 = '',
         姓名 = '',
         学历 = '',
         性别 = '',
-        是否在职 = '',
-        离职日期 = '',
-        移动电话 = '',
         职务 = '',
         责任类型 = '',
         身份证号码 = ''
@@ -117,6 +143,74 @@ class Corporation extends Component {
     return rtn;
   };
 
+  renderHyjl = (hyjl) => {
+    const rtn = [];
+    hyjl.forEach(jl => {
+      const {
+        engMx = '{}'
+      } = jl;
+      try {
+        const engMxJson = JSON.parse(engMx);
+        const {
+          标段名称 = '',
+          工程类型 = '',
+          建设单位 = '',
+          中标金额 = '',
+          中标机构 = '',
+          公示时间 = '',
+        } = engMxJson;
+        rtn.push({
+          id: jl.id,
+          createTime: 公示时间,
+          sgxkName: 标段名称,
+          amountOfInvestment: 中标金额,
+          area: 120000,
+          engType: 工程类型,
+          zbjg: 中标机构,
+          jsdwName: 建设单位,
+        });
+      } catch (e) {
+        console.log(`解析JSON字符串【${engMx}】出错`);
+      }
+    });
+    return rtn;
+  };
+
+  renderZjgcData = (data) => {
+    const rtn = [];
+    data.forEach(d => {
+      const {
+        id,
+        engMx = '{}'
+      } = d;
+      try {
+        const {
+          工程名称,
+          经度,
+          维度,
+          建设单位名称,
+          施工总承包名称,
+          监理单位名称,
+          建设地点,
+        } = JSON.parse(engMx);
+
+        rtn.push({
+          id,
+          engName: 工程名称,
+          lng: 经度,
+          lat: 维度,
+          jsdwName: 建设单位名称,
+          sgdwName: 施工总承包名称,
+          jldwName: 监理单位名称,
+          jsdd: 建设地点,
+        });
+      } catch (e) {
+        console.log(`解析JSON字符串【${engMx}】出错`);
+      }
+    });
+    return rtn;
+  };
+
   renderInfoWindow = (props) => {
     if (props) {
       return (
@@ -124,7 +218,7 @@ class Corporation extends Component {
           position={{lng: props.lng, lat: props.lat}}
           title={props.sgxkName}
           text={
-            `<div><div>施工单位：${props.sgdwName}</div><div>建设单位：${props.jsdwName}</div></div>`
+            `<div><div>工程名称：${props.engName}</div><div>建设地点：${props.jsdd}</div><div>建设单位：${props.jsdwName}</div><div>施工单位：${props.sgdwName}</div><div>监理单位：${props.jldwName}</div></div>`
           }
         />
       );
@@ -277,7 +371,7 @@ class Corporation extends Component {
         </Timeline>
       );
     }
-    return (<div>暂无数据</div>);
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
   render() {
@@ -286,45 +380,45 @@ class Corporation extends Component {
 
     const {
       basicInfoLoading,
-      certificateLoading,
+      hyjlLoading,
+      zjgcLoading,
       corporation: {
         basicInfo: {
           jcxxMx = '{}',
           desMap = {},
           docs = [],
-        }
+        },
+        hyjl,
+        zjgc,
       }
     } = this.props;
+
     const {
-      座机 = '-',
-      手机 = '-',
-      传真 = '-',
       经营范围 = '-',
       组织机构代码 = '-',
       企业名称 = "-",
       企业登记注册类型 = '-',
-      企业类别 = '-',
-      企业类型 = '-',
-      企业经济性质 = '-',
-      企业隶属关系 = '-',
+      企业类别,
+      企业类型,
       办公地址 = '-',
-      办公所在地行政区划 = '-',
-      审核时间 = "",
-      审核状态 = '-',
       日常联系人 = '-',
       日常联系电话 = '-',
-      日常联系手机 = '-',
+      联系手机 = '-',
+      传真 = '-',
       注册地行政区划 = '-',
-      注册地详细地址 = '-',
       注册时间 = '-',
       注册资本 = '-',
       注净资产 = '-',
       登记人员 = 0,
-      登记所在地 = '-',
       登记证编号 = '-',
+      开户银行 = '-',
+      银行账号 = '-',
+      诚信等级 = '-',
+      诚信分值 = '-',
     } = JSON.parse(jcxxMx);
     const {
-      企业负责人 = []
+      企业负责人 = [],
+      企业资质明细 = [],
     } = desMap;
 
     const description = (
@@ -332,7 +426,7 @@ class Corporation extends Component {
         <DescriptionList className={styles.headerList} size="small" col={4}>
           <Description term="联系人">{日常联系人}</Description>
           <Description term="座机">{日常联系电话}</Description>
-          <Description term="手机">{日常联系手机}</Description>
+          <Description term="手机">{联系手机}</Description>
           <Description term="传真">{传真}</Description>
         </DescriptionList>
         <DescriptionList className={styles.headerList} size="small" col="1">
@@ -350,11 +444,11 @@ class Corporation extends Component {
       <Row>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信等级</div>
-          <div className={styles.heading}>A级</div>
+          <div className={styles.heading}>{诚信等级}</div>
         </Col>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信分值</div>
-          <div className={styles.heading}>188分</div>
+          <div className={styles.heading}>{诚信分值}分</div>
         </Col>
       </Row>
     );
@@ -364,69 +458,14 @@ class Corporation extends Component {
 
     const IMAGES = this.renderFj(docs);
 
-    const engHistoryList = [
-      {
-        id: '1',
-        createTime: '2018-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-        amountOfInvestment: 5689.2568,
-        area: 120000,
-        engType: '房建项目',
-        sgdwName: '中铁三局',
-        jsdwName: '升思科技',
-        lng: '111.351723',
-        lat: '30.720449',
-        zj: true
-      },
-      {
-        id: '2',
-        createTime: '2018-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-        amountOfInvestment: 5689.2568,
-        area: 120000,
-        engType: '房建项目',
-        sgdwName: '中铁三局',
-        jsdwName: '升思科技',
-        lng: '111.336295',
-        lat: '30.721462',
-        zj: true
-      },
-      {
-        id: '3',
-        createTime: '2018-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-        amountOfInvestment: 5689.2568,
-        area: 120000,
-        engType: '房建项目',
-        sgdwName: '中铁三局',
-        jsdwName: '升思科技',
-        lng: '111.30737',
-        lat: '30.706746',
-        zj: false
-      },
-      {
-        id: '4',
-        createTime: '2018-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-        amountOfInvestment: 5689.2568,
-        area: 120000,
-        engType: '房建项目',
-        sgdwName: '中铁三局',
-        jsdwName: '升思科技',
-        lng: '111.338415',
-        lat: '30.691841',
-        zj: false
-      },
-    ];
-
     return (
       <PageHeaderWrapper
         title={
           <div>
             <p className={styles.headerTitle}>{企业名称}</p>
             <div>
-              <Tag color="magenta">{企业类型}</Tag>
-              <Tag color="volcano" className={styles.headerTag}>{企业类别}</Tag>
+              {企业类型 ? (<Tag color="magenta">{企业类型}</Tag>) : null}
+              {企业类别 ? (<Tag color="volcano" className={styles.headerTag}>{企业类别}</Tag>) : null}
             </div>
           </div>
         }
@@ -469,9 +508,9 @@ class Corporation extends Component {
               </tr>
               <tr>
                 <th>开户银行</th>
-                <td>工商银行</td>
+                <td>{开户银行}</td>
                 <th>银行帐户</th>
-                <td>5465651651616516</td>
+                <td>{银行账号}</td>
               </tr>
               <tr>
                 <th>注册地行政区划</th>
@@ -486,9 +525,7 @@ class Corporation extends Component {
               <tr>
                 <th>企业资质</th>
                 <td colSpan={3}>
-                  <p style={{margin: 0, padding: 0}}>D123456789  建筑业企业资质_施工总承包_建筑工程_壹级</p>
-                  <p style={{margin: 0, padding: 0}}>D223456789  建筑业企业资质_施工总承包_市政公用工程_贰级</p>
-                  <p style={{margin: 0, padding: 0}}>D323456789  建筑业企业资质_专业承包_起重设备安装工程_贰级</p>
+                  {this.renderZz(企业资质明细)}
                 </td>
               </tr>
             </tbody>
@@ -538,13 +575,13 @@ class Corporation extends Component {
           bodyStyle={{height: '300px', padding: '12px'}}
         >
           <div style={{height: 276, overflowY: 'auto'}}>
-            {this.renderEngHistoryList(engHistoryList)}
+            {this.renderEngHistoryList(this.renderHyjl(hyjl))}
           </div>
         </Card>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={certificateLoading}
+              loading={basicInfoLoading}
               bordered={false}
               title="企业诚信"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
@@ -596,7 +633,7 @@ class Corporation extends Component {
           </Col>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={certificateLoading}
+              loading={hyjlLoading}
               bordered={false}
               title="诚信统计"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
@@ -612,14 +649,15 @@ class Corporation extends Component {
           </Col>
         </Row>
         <Card
-          loading={certificateLoading}
+          loading={zjgcLoading}
           bordered={false}
           title={<div><span>在建工程分布图</span><span style={{color: 'red', marginLeft: '10px', fontSize: '12px'}}>数值越小，表示时间越近。</span></div>}
           style={{ marginTop: 12 }}
+          bodyStyle={{padding: '5px'}}
         >
-          <Map center="宜昌">
+          <Map center="宜昌" style={{height: '500px'}}>
             {
-              engHistoryList.filter( i => i.zj).map((item, index) => (
+              this.renderZjgcData(zjgc).map((item, index) => (
                 <Marker
                   key={item.id}
                   icon={`red${index+1}`}
