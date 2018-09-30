@@ -14,3 +14,8 @@ export async function queryHyjl(params) {
 export async function queryZjgc(params) {
   return request(`/elastic_sskj/api/search/jcxx/zjgc/${params.id}`);
 }
+
+// 获取企业诚信数据
+export async function queryCredit(params) {
+  return request(`/elastic_sskj/api/search/jcxx/credit/${params.id}`);
+}

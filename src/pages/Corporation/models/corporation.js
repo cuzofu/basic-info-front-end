@@ -1,4 +1,4 @@
-import { queryBasicInfo, queryHyjl, queryZjgc } from '../../../services/corporation';
+import {queryBasicInfo, queryCredit, queryHyjl, queryZjgc} from '../../../services/corporation';
 
 export default {
   namespace: 'corporation',
@@ -7,6 +7,7 @@ export default {
     basicInfo: {},
     hyjl: [],
     zjgc: [],
+    credit: {},
   },
 
   effects: {
@@ -63,6 +64,25 @@ export default {
           type: 'save',
           payload: {
             zjgc: []
+          },
+        });
+      }
+    },
+    *fetchCredit({payload}, { call, put }) {
+      try {
+        const response = yield call(queryCredit, payload);
+        yield put({
+          type: 'save',
+          payload: {
+            credit: response.msg ? {} : response
+          },
+        });
+      } catch (e) {
+        console.log(e);
+        yield put({
+          type: 'save',
+          payload: {
+            credit: {}
           },
         });
       }

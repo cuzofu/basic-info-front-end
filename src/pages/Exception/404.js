@@ -8,6 +8,7 @@ const Exception404 = () => (
     type="404"
     desc={formatMessage({ id: 'app.exception.description.404' })}
     linkElement={Link}
+    redirect="https://www.baidu.com"
     backText={formatMessage({ id: 'app.exception.back' })}
   />
 );

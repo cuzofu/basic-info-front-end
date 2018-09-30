@@ -41,6 +41,7 @@ class Exception extends React.PureComponent {
         <div className={styles.content}>
           <h1>{title || config[pageType].title}</h1>
           <div className={styles.desc}>{desc || config[pageType].desc}</div>
+          {/*
           <div className={styles.actions}>
             {actions ||
               createElement(
@@ -52,6 +53,7 @@ class Exception extends React.PureComponent {
                 <Button type="primary">{backText}</Button>
               )}
           </div>
+          */}
         </div>
       </div>
     );

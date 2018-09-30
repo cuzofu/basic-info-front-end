@@ -20,6 +20,7 @@ const { Description } = DescriptionList;
   basicInfoLoading: loading.effects['corporation/fetchBasicInfo'],
   hyjlLoading: loading.effects['corporation/fetchHyjl'],
   zjgcLoading: loading.effects['corporation/fetchZjgc'],
+  creditLoading: loading.effects['corporation/fetchCredit'],
 }))
 class Corporation extends Component {
 
@@ -50,6 +51,12 @@ class Corporation extends Component {
     });
     dispatch({
       type: 'corporation/fetchZjgc',
+      payload: {
+        id,
+      }
+    });
+    dispatch({
+      type: 'corporation/fetchCredit',
       payload: {
         id,
       }
@@ -257,15 +264,62 @@ class Corporation extends Component {
   ));
 
   // 个人证书数据
-  renderCertificateData = (certificate) => {
-    if (certificate && certificate.length > 0) {
-      return certificate.map( cert => (
+  renderCertificateData = (credit) => {
+    const creditData = [];
+    if ('desMap' in credit) {
+      const {
+        企业专项分 = [],
+      } = credit.desMap;
+      企业专项分.forEach(d => {
+        const {mx = '{}'} = d;
+        try {
+          const mxJson = JSON.parse(mx);
+          creditData.push({
+            id: d.id,
+            ...mxJson
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      })
+    }
+
+    if (creditData && creditData.length > 0) {
+      return creditData.map( cert => (
         <DescriptionList key={cert.id} className={styles.headerList && styles.descriptionMargin} size="small" col="1">
-          <Description term={`${cert.name}专项总分`}>{cert.score}</Description>
+          <Description term={`${cert.资质等级} 专项总分`}>{cert.专项总分}</Description>
         </DescriptionList>
       ));
     }
     return (<div>暂无数据</div>);
+  };
+
+  // 诚信记录统计
+  renderCreditData = (credit) => {
+    const creditData = [];
+    if ('desMap' in credit) {
+      const {
+        企业诚信统计次数和分值 = [],
+      } = credit.desMap;
+      企业诚信统计次数和分值.forEach(d => {
+        const {mx = '{}'} = d;
+        try {
+          const mxJson = JSON.parse(mx);
+          creditData.push(mxJson);
+        } catch (e) {
+          console.log(e);
+        }
+      })
+    }
+    const ds = new DataSet();
+    const dv = ds.createView().source(creditData);
+    dv.transform({
+      type: 'fold',
+      fields: [ '诚信计分','良好加分','不良扣分' ], // 展开字段集
+      key: '诚信类型', // key字段
+      value: '次数', // value字段
+    });
+    return dv;
   };
 
   // 工作经历
@@ -282,23 +336,6 @@ class Corporation extends Component {
       );
     }
     return (<div>暂无数据</div>);
-  };
-
-  // 诚信记录统计
-  renderCreditData = () => {
-    const data = [
-      { group:'次数', '诚信计分': 7, '良好加分': 5, '不良扣分' : 2 },
-      { group:'分值', '诚信计分': 25, '良好加分': 30, '不良扣分' : -5 }
-    ];
-    const ds = new DataSet();
-    const dv = ds.createView().source(data);
-    dv.transform({
-      type: 'fold',
-      fields: [ '诚信计分','良好加分','不良扣分' ], // 展开字段集
-      key: '诚信类型', // key字段
-      value: '次数', // value字段
-    });
-    return dv;
   };
 
   // 项目经历
@@ -374,6 +411,32 @@ class Corporation extends Component {
     return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
+  renderCreditScore = (credit) => {
+    const {
+      jcxxMx = '{}',
+    } = credit;
+    try {
+      const jcxxMxJson = JSON.parse(jcxxMx);
+      const {诚信总分 = '-'} = jcxxMxJson;
+      return 诚信总分;
+    } catch (e) {
+      return '-';
+    }
+  };
+
+  renderCreditLevel = (credit) => {
+    const {
+      jcxxMx = '{}',
+    } = credit;
+    try {
+      const jcxxMxJson = JSON.parse(jcxxMx);
+      const {诚信等级 = '-'} = jcxxMxJson;
+      return 诚信等级;
+    } catch (e) {
+      return '-';
+    }
+  };
+
   render() {
 
     const { infoWindow } = this.state;
@@ -382,6 +445,7 @@ class Corporation extends Component {
       basicInfoLoading,
       hyjlLoading,
       zjgcLoading,
+      creditLoading,
       corporation: {
         basicInfo: {
           jcxxMx = '{}',
@@ -390,6 +454,7 @@ class Corporation extends Component {
         },
         hyjl,
         zjgc,
+        credit,
       }
     } = this.props;
 
@@ -444,11 +509,11 @@ class Corporation extends Component {
       <Row>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信等级</div>
-          <div className={styles.heading}>{诚信等级}</div>
+          <div className={styles.heading}>{this.renderCreditLevel(credit)}</div>
         </Col>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信分值</div>
-          <div className={styles.heading}>{诚信分值}分</div>
+          <div className={styles.heading}>{this.renderCreditScore(credit)}分</div>
         </Col>
       </Row>
     );
@@ -475,7 +540,7 @@ class Corporation extends Component {
         content={description}
         extraContent={extra}
       >
-        <Card title="企业附件" bordered={false} bodyStyle={{padding: '12px'}}>
+        <Card title="企业附件" loading={basicInfoLoading} bordered={false} bodyStyle={{padding: '12px'}}>
           <div className={styles.imgCardContainer}>
             {IMAGES.length === 0 ? (
               '无附件'
@@ -485,7 +550,7 @@ class Corporation extends Component {
           </div>
         </Card>
 
-        <Card title="基本信息" style={{marginTop: 12}} bordered={false} bodyStyle={{padding: '12px'}}>
+        <Card title="基本信息" loading={basicInfoLoading} style={{marginTop: 12}} bordered={false} bodyStyle={{padding: '12px'}}>
           <table className={styles.table}>
             <tbody>
               <tr>
@@ -530,7 +595,7 @@ class Corporation extends Component {
               </tr>
             </tbody>
           </table>
-          <Card style={{marginTop: 12}} type="inner" title="负责人">
+          <Card style={{marginTop: 12}} loading={basicInfoLoading} type="inner" title="负责人">
             <Table
               columns={[
                 {
@@ -568,7 +633,7 @@ class Corporation extends Component {
           </Card>
         </Card>
         <Card
-          loading={basicInfoLoading}
+          loading={hyjlLoading}
           bordered={false}
           title="活跃经历"
           style={{marginTop: 12}}
@@ -581,64 +646,31 @@ class Corporation extends Component {
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={basicInfoLoading}
+              loading={creditLoading}
               bordered={false}
               title="企业诚信"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
             >
               <div style={{ height: '276px', overflow: 'auto', padding: 'auto 16px' }}>
                 <DescriptionList className={styles.headerList && styles.descriptionMargin} size="small" col="2">
-                  <Description term="诚信等级"><span className={styles.heading}>A级</span></Description>
-                  <Description term="诚信总分"><span className={styles.heading}>155分</span></Description>
+                  <Description term="诚信等级"><span className={styles.heading}>{this.renderCreditLevel(credit)}</span></Description>
+                  <Description term="诚信总分"><span className={styles.heading}>{this.renderCreditScore(credit)}分</span></Description>
                 </DescriptionList>
                 <Divider />
                 <Fragment>
-                  {
-                    this.renderCertificateData([
-                      {
-                        id: '1',
-                        name: '建筑业企业资质_施工总承包_市政公用工程_壹级',
-                        score: '130',
-                      },
-                      {
-                        id: '2',
-                        name: '建筑业企业资质_施工总承包_建筑工程_壹级',
-                        score: '100',
-                      },
-                      {
-                        id: '3',
-                        name: '建筑业企业资质_施工总承包_公路工程_壹级',
-                        score: '80',
-                      },
-                      {
-                        id: '4',
-                        name: '建筑业企业资质_施工总承包_铁路工程_壹级',
-                        score: '80',
-                      },
-                      {
-                        id: '5',
-                        name: '建筑业企业资质_施工总承包_水利水电工程_壹级',
-                        score: '80',
-                      },
-                      {
-                        id: '6',
-                        name: '建筑业企业资质_施工总承包_矿山工程_壹级',
-                        score: '80',
-                      },
-                    ])
-                  }
+                  {this.renderCertificateData(credit)}
                 </Fragment>
               </div>
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={hyjlLoading}
+              loading={creditLoading}
               bordered={false}
               title="诚信统计"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
             >
-              <Chart height={276} data={this.renderCreditData()} forceFit>
+              <Chart height={276} data={this.renderCreditData(credit)} forceFit>
                 <Axis name="诚信类型" />
                 <Axis name="次数" />
                 <Legend />
