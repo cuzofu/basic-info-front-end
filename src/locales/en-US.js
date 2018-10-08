@@ -5,6 +5,7 @@ export default {
   'menu.analysis.credit': 'Credit Analysis',
   'menu.person': 'Personal Profile',
   'menu.corporation': 'Corporation Profile',
+  'menu.bidding': 'Bidding',
   'menu.home': 'Home',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': 'Analysis',

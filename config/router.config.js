@@ -37,6 +37,12 @@ export default [
         ],
       },
       {
+        path: '/bidding',
+        name: 'bidding',
+        icon: 'profile',
+        component: './Bidding/Bidding',
+      },
+      {
         path: '/corporation/:id',
         name: 'corporation',
         icon: 'profile',

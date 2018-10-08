@@ -8,6 +8,7 @@ export default {
   'menu.analysis.credit': '诚信分析',
   'menu.person': '人员信息',
   'menu.corporation': '企业信息',
+  'menu.bidding': '招标',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
