@@ -12,6 +12,9 @@ class Analysis extends Component {
       case 'market':
         router.push(`${match.url}/market`);
         break;
+      case 'construction':
+        router.push(`${match.url}/construction`);
+        break;
       case 'credit':
         router.push(`${match.url}/credit`);
         break;
@@ -28,6 +31,10 @@ class Analysis extends Component {
       {
         key: 'market',
         tab: '市场分析',
+      },
+      {
+        key: 'construction',
+        tab: '建筑业分析',
       },
       {
         key: 'credit',

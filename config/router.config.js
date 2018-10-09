@@ -30,6 +30,11 @@ export default [
             component: './Analysis/Market',
           },
           {
+            path: '/analysis/construction',
+            name: 'construction',
+            component: './Analysis/Construction',
+          },
+          {
             path: '/analysis/credit',
             name: 'credit',
             component: './Analysis/Credit',

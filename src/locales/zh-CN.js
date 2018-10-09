@@ -5,6 +5,7 @@ export default {
   'menu.home': '首页',
   'menu.analysis': '统计分析',
   'menu.analysis.market': '市场分析',
+  'menu.analysis.construction': '建筑业分析',
   'menu.analysis.credit': '诚信分析',
   'menu.person': '人员信息',
   'menu.corporation': '企业信息',
