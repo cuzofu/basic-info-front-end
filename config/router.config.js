@@ -25,6 +25,10 @@ export default [
         component: './Analysis/Analysis',
         routes: [
           {
+            path: '/analysis',
+            redirect: '/analysis/market',
+          },
+          {
             path: '/analysis/market',
             name: 'market',
             component: './Analysis/Market',
@@ -40,6 +44,16 @@ export default [
             component: './Analysis/Credit',
           },
         ],
+      },
+      {
+        path: '/eng/analysis/:id',
+        name: 'engAnalysis',
+        component: './Analysis/EngAnalysis',
+      },
+      {
+        path: '/corp/analysis/:id',
+        name: 'corpAnalysis',
+        component: './Analysis/CorpAnalysis',
       },
       {
         path: '/bidding',

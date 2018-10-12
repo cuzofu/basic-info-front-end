@@ -4,6 +4,8 @@ export default {
   'menu.analysis.market': 'Market Analysis',
   'menu.analysis.construction': 'Construction Business Analysis',
   'menu.analysis.credit': 'Credit Analysis',
+  'menu.engAnalysis': 'Eng Analysis',
+  'menu.corpAnalysis': 'Corporation Analysis',
   'menu.person': 'Personal Profile',
   'menu.corporation': 'Corporation Profile',
   'menu.bidding': 'Bidding',

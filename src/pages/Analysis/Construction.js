@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import { Table, Card, Tag, Icon } from 'antd';
 
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
@@ -141,9 +142,7 @@ class Construction extends Component {
         title: '详情',
         key: 'more',
         render: (_, record) => (
-          <span>
-            <a onClick={() => console.log(record)}>详情</a>
-          </span>
+          <div><Link to={{pathname: `/eng/analysis/${record.id}`}}>详情</Link></div>
         ),
       },
     ];
@@ -250,9 +249,7 @@ class Construction extends Component {
         title: '详情',
         key: 'more',
         render: (_, record) => (
-          <span>
-            <a onClick={() => console.log(record)}>详情</a>
-          </span>
+          <div><Link to={{pathname: `/corp/analysis/${record.id}`}}>详情</Link></div>
         ),
       },
     ];

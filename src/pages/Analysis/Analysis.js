@@ -19,6 +19,7 @@ class Analysis extends Component {
         router.push(`${match.url}/credit`);
         break;
       default:
+        router.push(`${match.url}/market`);
         break;
     }
   };

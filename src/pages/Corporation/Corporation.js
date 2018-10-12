@@ -499,7 +499,7 @@ class Corporation extends Component {
         </DescriptionList>
         <DescriptionList className={styles.headerList} size="small" col="1">
           <Description term="经营范围">
-            <Ellipsis tooltip lines={3}>{经营范围}</Ellipsis>
+            <Ellipsis lines={3}>{经营范围}</Ellipsis>
           </Description>
         </DescriptionList>
       </Fragment>

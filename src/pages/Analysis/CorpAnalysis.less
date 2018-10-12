@@ -1,0 +1,139 @@
+@import '~antd/lib/style/themes/default.less';
+@import '~@/utils/utils.less';
+
+.headerTitle {
+  font-size: 40px;
+  margin: 0 5px;
+}
+
+.headerTag {
+  margin-left: 10px;
+}
+
+.headerList {
+  margin-bottom: 4px;
+}
+
+.messageList {
+  .cardTitle {
+    line-height: 24px;
+    height: 24px;
+    vertical-align: middle;
+  }
+}
+
+.messageGrid {
+  width: 50%;
+}
+
+.issueCard {
+  .issuePie {
+    padding: 0 0 12px 0;
+  }
+  .issueRank {
+    padding: 0 32px 32px 32px;
+  }
+  :global {
+    .ant-tabs-bar {
+      padding-left: 16px;
+      .ant-tabs-nav .ant-tabs-tab {
+        padding-top: 16px;
+        padding-bottom: 14px;
+        line-height: 24px;
+      }
+    }
+    .ant-tabs-extra-content {
+      padding-right: 24px;
+      line-height: 55px;
+    }
+    .ant-card-head {
+      position: relative;
+    }
+  }
+}
+
+.rankingList {
+  margin: 25px 0 0;
+  padding: 0;
+  list-style: none;
+  li {
+    .clearfix();
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    span {
+      color: @text-color;
+      font-size: 14px;
+      line-height: 22px;
+    }
+    .rankingItemNumber {
+      background-color: @background-color-base;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 16px;
+      height: 20px;
+      line-height: 20px;
+      width: 20px;
+      text-align: center;
+      margin-top: 1.5px;
+      &.active {
+        background-color: #314659;
+        color: #fff;
+      }
+    }
+    .rankingItemIssue {
+      flex: 5;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      margin-right: 8px;
+    }
+    .rankingItemType {
+      flex: 3;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      margin-right: 8px;
+    }
+  }
+}
+
+@media screen and (max-width: @screen-lg) {
+  .messageList {
+    .messageGrid {
+      width: 50%;
+    }
+  }
+
+  .rankingList {
+    li {
+      span:first-child {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: @screen-md) {
+  .messageList {
+    .messageGrid {
+      width: 100%;
+    }
+  }
+
+  .issueCard .issuePie {
+    padding: 16px;
+  }
+}
+
+@media screen and (max-width: @screen-sm) {
+  .issueCard {
+    :global {
+      .ant-tabs-content {
+        padding-top: 30px;
+      }
+    }
+  }
+}

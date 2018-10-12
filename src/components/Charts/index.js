@@ -3,6 +3,7 @@ import './g2';
 import ChartCard from './ChartCard';
 import Bar from './Bar';
 import Pie from './Pie';
+import CustomPie from './CustomPie';
 import Radar from './Radar';
 import Gauge from './Gauge';
 import MiniArea from './MiniArea';
@@ -19,6 +20,7 @@ const Charts = {
   yuan,
   Bar,
   Pie,
+  CustomPie,
   Gauge,
   Radar,
   MiniBar,
@@ -36,6 +38,7 @@ export {
   yuan,
   Bar,
   Pie,
+  CustomPie,
   Gauge,
   Radar,
   MiniBar,
