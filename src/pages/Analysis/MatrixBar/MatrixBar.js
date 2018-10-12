@@ -14,34 +14,8 @@ class MatrixBar extends React.Component {
       height = 50,
       padding = [0],
       scale,
+      data = [],
     } = this.props;
-    // 模拟各个系统的单元测试覆盖率数据
-    const data = [
-      {name: "2万平米或投资额5千万以上", value: 0.65, creditLevel: "企业诚信A级"},
-      {name: "2万平米或投资额5千万以上", value: 0.35, creditLevel: "企业诚信B级"},
-      {name: "2万平米或投资额5千万以上", value: 0.0, creditLevel: "企业诚信C级"},
-      {name: "2万平米或投资额5千万以上", value: 0.90, creditLevel: "企业资质诚信A级"},
-      {name: "2万平米或投资额5千万以上", value: 0.10, creditLevel: "企业资质诚信B级"},
-      {name: "2万平米或投资额5千万以上", value: 0.0, creditLevel: "企业资质诚信C级"},
-      {name: "1万平米或投资额3千万以上", value: 0.50, creditLevel: "企业诚信A级"},
-      {name: "1万平米或投资额3千万以上", value: 0.50, creditLevel: "企业诚信B级"},
-      {name: "1万平米或投资额3千万以上", value: 0.0, creditLevel: "企业诚信C级"},
-      {name: "1万平米或投资额3千万以上", value: 0.60, creditLevel: "企业资质诚信A级"},
-      {name: "1万平米或投资额3千万以上", value: 0.40, creditLevel: "企业资质诚信B级"},
-      {name: "1万平米或投资额3千万以上", value: 0.0, creditLevel: "企业资质诚信C级"},
-      {name: "3000平米或投资额1千万以上", value: 0.30, creditLevel: "企业诚信A级"},
-      {name: "3000平米或投资额1千万以上", value: 0.55, creditLevel: "企业诚信B级"},
-      {name: "3000平米或投资额1千万以上", value: 0.15, creditLevel: "企业诚信C级"},
-      {name: "3000平米或投资额1千万以上", value: 0.30, creditLevel: "企业资质诚信A级"},
-      {name: "3000平米或投资额1千万以上", value: 0.50, creditLevel: "企业资质诚信B级"},
-      {name: "3000平米或投资额1千万以上", value: 1, creditLevel: "企业资质诚信C级"},
-      {name: "3000平米或投资额1千万以下", value: 0.20, creditLevel: "企业诚信A级"},
-      {name: "3000平米或投资额1千万以下", value: 0.60, creditLevel: "企业诚信B级"},
-      {name: "3000平米或投资额1千万以下", value: 0.20, creditLevel: "企业诚信C级"},
-      {name: "3000平米或投资额1千万以下", value: 0.35, creditLevel: "企业资质诚信A级"},
-      {name: "3000平米或投资额1千万以下", value: 0.55, creditLevel: "企业资质诚信B级"},
-      {name: "3000平米或投资额1千万以下", value: 0.10, creditLevel: "企业资质诚信C级"}
-    ];
 
     // 自定义带有宽度的色块
     Shape.registerShape('polygon', 'custom', {
@@ -90,13 +64,13 @@ class MatrixBar extends React.Component {
     };
 
     const cols = {
-      creditLevel: {
+      groupX: {
         type: "cat"
       },
       value: {
         alias: "占比",
         type: "linear",
-        formatter: (value) => (value * 100).toFixed(2) + "%",
+        formatter: (value) => `${(value * 100).toFixed(2)}%`,
         min: 0,
         max: 1
       }
@@ -110,17 +84,17 @@ class MatrixBar extends React.Component {
           padding={padding}
           forceFit
         >
-          <Axis name="name" label={label} />
-          <Axis name="creditLevel" />
+          <Axis name="groupY" label={label} />
+          <Axis name="groupX" />
           <Tooltip />
           <Legend
             slidable={false}
             width={165}
-            itemFormatter={val => val.slice(0, val.indexOf(".")) + "%"}
+            itemFormatter={val => `${val.slice(0, val.indexOf("."))}%`}
           />
           <Geom
             type="polygon"
-            position="creditLevel*name"
+            position="groupX*groupY"
             color={[
               "value",
               "rgb(44, 123, 182)-rgb(0, 166, 202)-rgb(0, 204, 188)-rgb(144, 235, 157)-rgb(255, 255, 140)-rgb(249, 208, 87)-rgb(242, 158, 46)-rgb(231, 104, 24)-rgb(215, 25, 28)"

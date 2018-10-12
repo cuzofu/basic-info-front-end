@@ -483,7 +483,36 @@ class Market extends Component {
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card title="建筑规模与活跃企业诚信等级分析" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
-              <MatrixBar height={390} padding={[5, 5, 100, 60]} />
+              <MatrixBar
+                height={390}
+                padding={[5, 5, 100, 60]}
+                data={[
+                  {groupY: "2万平米或投资额5千万以上", value: 0.65, groupX: "企业诚信A级"},
+                  {groupY: "2万平米或投资额5千万以上", value: 0.35, groupX: "企业诚信B级"},
+                  {groupY: "2万平米或投资额5千万以上", value: 0.0, groupX: "企业诚信C级"},
+                  {groupY: "2万平米或投资额5千万以上", value: 0.90, groupX: "企业资质诚信A级"},
+                  {groupY: "2万平米或投资额5千万以上", value: 0.10, groupX: "企业资质诚信B级"},
+                  {groupY: "2万平米或投资额5千万以上", value: 0.0, groupX: "企业资质诚信C级"},
+                  {groupY: "1万平米或投资额3千万以上", value: 0.50, groupX: "企业诚信A级"},
+                  {groupY: "1万平米或投资额3千万以上", value: 0.50, groupX: "企业诚信B级"},
+                  {groupY: "1万平米或投资额3千万以上", value: 0.0, groupX: "企业诚信C级"},
+                  {groupY: "1万平米或投资额3千万以上", value: 0.60, groupX: "企业资质诚信A级"},
+                  {groupY: "1万平米或投资额3千万以上", value: 0.40, groupX: "企业资质诚信B级"},
+                  {groupY: "1万平米或投资额3千万以上", value: 0.0, groupX: "企业资质诚信C级"},
+                  {groupY: "3000平米或投资额1千万以上", value: 0.30, groupX: "企业诚信A级"},
+                  {groupY: "3000平米或投资额1千万以上", value: 0.55, groupX: "企业诚信B级"},
+                  {groupY: "3000平米或投资额1千万以上", value: 0.15, groupX: "企业诚信C级"},
+                  {groupY: "3000平米或投资额1千万以上", value: 0.30, groupX: "企业资质诚信A级"},
+                  {groupY: "3000平米或投资额1千万以上", value: 0.50, groupX: "企业资质诚信B级"},
+                  {groupY: "3000平米或投资额1千万以上", value: 1, groupX: "企业资质诚信C级"},
+                  {groupY: "3000平米或投资额1千万以下", value: 0.20, groupX: "企业诚信A级"},
+                  {groupY: "3000平米或投资额1千万以下", value: 0.60, groupX: "企业诚信B级"},
+                  {groupY: "3000平米或投资额1千万以下", value: 0.20, groupX: "企业诚信C级"},
+                  {groupY: "3000平米或投资额1千万以下", value: 0.35, groupX: "企业资质诚信A级"},
+                  {groupY: "3000平米或投资额1千万以下", value: 0.55, groupX: "企业资质诚信B级"},
+                  {groupY: "3000平米或投资额1千万以下", value: 0.10, groupX: "企业资质诚信C级"}
+                ]}
+              />
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>

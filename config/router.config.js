@@ -43,6 +43,11 @@ export default [
             name: 'credit',
             component: './Analysis/Credit',
           },
+          {
+            path: '/analysis/badBehavior',
+            name: 'badBehavior',
+            component: './Analysis/BadBehavior',
+          },
         ],
       },
       {

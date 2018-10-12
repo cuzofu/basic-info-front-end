@@ -7,6 +7,7 @@ export default {
   'menu.analysis.market': '市场分析',
   'menu.analysis.construction': '建筑业分析',
   'menu.analysis.credit': '诚信分析',
+  'menu.analysis.badBehavior': '不良行为分析',
   'menu.person': '人员信息',
   'menu.corporation': '企业信息',
   'menu.engAnalysis': '工程分析',

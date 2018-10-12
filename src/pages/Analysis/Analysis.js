@@ -18,6 +18,9 @@ class Analysis extends Component {
       case 'credit':
         router.push(`${match.url}/credit`);
         break;
+      case 'badBehavior':
+        router.push(`${match.url}/badBehavior`);
+        break;
       default:
         router.push(`${match.url}/market`);
         break;
@@ -40,6 +43,10 @@ class Analysis extends Component {
       {
         key: 'credit',
         tab: '诚信分析',
+      },
+      {
+        key: 'badBehavior',
+        tab: '不良行为分析',
       },
     ];
 
