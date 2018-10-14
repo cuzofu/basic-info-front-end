@@ -1,29 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { DataSet } from '@antv/data-set';
-import {
-  Chart,
-  Axis,
-  Tooltip,
-  Geom,
-  Legend,
-  G2,
-  Coord,
-  Label,
-  View,
-  Guide,
-  Shape,
-  Facet,
-  Util,
-} from 'bizcharts';
 
-import { Row, Col, Card, Table, Divider } from 'antd';
+import { Row, Col, Card, Table } from 'antd';
 import { Pie } from '@/components/Charts';
-import Trend from '@/components/Trend';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import MatrixBar from './MatrixBar/MatrixBar';
 
-import styles from './Market.less';
+import styles from './BadBehavior.less';
 
 @connect(({ analysis, loading }) => ({
   analysis,
@@ -31,7 +14,6 @@ import styles from './Market.less';
 }))
 class BadBehavior extends Component {
   state = {
-    subPersonZzAnalysisData: {},
   };
 
   componentDidMount() {
@@ -51,38 +33,12 @@ class BadBehavior extends Component {
     dispatch({
       type: 'badBehavior/clear',
     });
-    cancelAnimationFrame(this.reqRef);
-    clearTimeout(this.timeoutId);
   }
 
-  renderSubPersonZzAnalysisData = data => {
-    this.setState({
-      subPersonZzAnalysisData: data,
-    });
-  };
-
-  handlerPersonZzPieClick = ev => {
-    if (!ev || !ev.data || ev.data === undefined || !ev.data._origin) {
-      return;
-    }
-    const { _origin } = ev.data;
-    this.renderSubPersonZzAnalysisData(_origin);
-  };
-
   render() {
-    const { subPersonZzAnalysisData } = this.state;
     const {
       analysis: { loading },
     } = this.props;
-
-    const topColResponsiveProps = {
-      xs: 24,
-      sm: 12,
-      md: 12,
-      lg: 12,
-      xl: 6,
-      style: { marginBottom: 12 },
-    };
 
     // 左右结构布局参数
     const doubleCardColsProps = { lg: 24, xl: 12, style: { marginBottom: 12 } };
@@ -226,7 +182,8 @@ class BadBehavior extends Component {
       },
     ];
 
-    const orgZzAnalysisData = [
+    // 机构部门占比
+    const orgAnalysisData = [
       {
         x: '城建管理科',
         y: 1000,
@@ -249,161 +206,6 @@ class BadBehavior extends Component {
       },
     ];
 
-    const personZzAnalysisData = [
-      {
-        x: '注册执业证书',
-        y: 189,
-        sub: [
-          {
-            x: '注册执业证书1',
-            y: 50,
-          },
-          {
-            x: '注册执业证书2',
-            y: 45,
-          },
-          {
-            x: '注册执业证书3',
-            y: 81,
-          },
-          {
-            x: '注册执业证书4',
-            y: 10,
-          },
-          {
-            x: '注册执业证书5',
-            y: 3,
-          },
-        ],
-      },
-      {
-        x: '管理人员',
-        y: 540,
-        sub: [
-          {
-            x: '管理人员1',
-            y: 120,
-          },
-          {
-            x: '管理人员2',
-            y: 130,
-          },
-          {
-            x: '管理人员3',
-            y: 140,
-          },
-          {
-            x: '管理人员4',
-            y: 100,
-          },
-          {
-            x: '管理人员5',
-            y: 50,
-          },
-        ],
-      },
-      {
-        x: '施工图审',
-        y: 15,
-        sub: [
-          {
-            x: '施工图审1',
-            y: 9,
-          },
-          {
-            x: '施工图审2',
-            y: 6,
-          },
-        ],
-      },
-      {
-        x: '见证人证书',
-        y: 605,
-        sub: [
-          {
-            x: '见证人证书',
-            y: 605,
-          },
-        ],
-      },
-      {
-        x: '劳务人员证书',
-        y: 777,
-        sub: [
-          {
-            x: '劳务人员证书1',
-            y: 502,
-          },
-          {
-            x: '劳务人员证书2',
-            y: 120,
-          },
-          {
-            x: '劳务人员证书3',
-            y: 89,
-          },
-          {
-            x: '劳务人员证书4',
-            y: 66,
-          },
-        ],
-      },
-    ];
-
-    if (personZzAnalysisData && personZzAnalysisData.length > 0) {
-      const d = personZzAnalysisData[0];
-      if (!(subPersonZzAnalysisData && subPersonZzAnalysisData.x)) {
-        subPersonZzAnalysisData.x = d.x;
-        subPersonZzAnalysisData.y = d.y;
-        subPersonZzAnalysisData.sub = d.sub;
-      }
-    }
-
-    const orgCreditLevelData = [
-      {
-        group: '企业数量',
-        企业诚信A级: 2563,
-        企业诚信B级: 1256,
-        企业诚信C级: 652,
-        企业资质诚信A级: 3364,
-        企业资质诚信B级: 1452,
-        企业资质诚信C级: 4589,
-      },
-      {
-        group: '投标数量',
-        企业诚信A级: 5625,
-        企业诚信B级: 2658,
-        企业诚信C级: 1012,
-        企业资质诚信A级: 3256,
-        企业资质诚信B级: 1252,
-        企业资质诚信C级: 5235,
-      },
-      {
-        group: '中标数量',
-        企业诚信A级: 2302,
-        企业诚信B级: 2101,
-        企业诚信C级: 356,
-        企业资质诚信A级: 3125,
-        企业资质诚信B级: 1623,
-        企业资质诚信C级: 4123,
-      },
-    ];
-    const ds = new DataSet();
-    const orgCreditLevelDataTrans = ds.createView().source(orgCreditLevelData);
-    orgCreditLevelDataTrans.transform({
-      type: 'fold',
-      fields: [
-        '企业诚信A级',
-        '企业诚信B级',
-        '企业诚信C级',
-        '企业资质诚信A级',
-        '企业资质诚信B级',
-        '企业资质诚信C级',
-      ], // 展开字段集
-      key: '诚信等级', // key字段
-      value: '数量', // value字段
-    });
-
     return (
       <GridContent>
         <Row gutter={12}>
@@ -412,8 +214,8 @@ class BadBehavior extends Component {
               <Pie
                 hasLegend
                 subTitle="总数"
-                total={() => orgZzAnalysisData.reduce((pre, now) => now.y + pre, 0)}
-                data={orgZzAnalysisData}
+                total={() => orgAnalysisData.reduce((pre, now) => now.y + pre, 0)}
+                data={orgAnalysisData}
                 valueFormat={value => `${value}`}
                 height={248}
                 lineWidth={4}

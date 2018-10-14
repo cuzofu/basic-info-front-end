@@ -3,6 +3,7 @@ export { default as ChartCard } from './ChartCard';
 export { default as Bar } from './Bar';
 export { default as Pie } from './Pie';
 export { default as CustomPie } from './CustomPie';
+export { default as TrendPie } from './TrendPie';
 export { default as Radar } from './Radar';
 export { default as Gauge } from './Gauge';
 export { default as MiniArea } from './MiniArea';

@@ -4,6 +4,7 @@ import ChartCard from './ChartCard';
 import Bar from './Bar';
 import Pie from './Pie';
 import CustomPie from './CustomPie';
+import TrendPie from './TrendPie';
 import Radar from './Radar';
 import Gauge from './Gauge';
 import MiniArea from './MiniArea';
@@ -21,6 +22,7 @@ const Charts = {
   Bar,
   Pie,
   CustomPie,
+  TrendPie,
   Gauge,
   Radar,
   MiniBar,
@@ -39,6 +41,7 @@ export {
   Bar,
   Pie,
   CustomPie,
+  TrendPie,
   Gauge,
   Radar,
   MiniBar,
