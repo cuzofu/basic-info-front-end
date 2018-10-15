@@ -8,6 +8,8 @@ import Debounce from 'lodash-decorators/debounce';
 import Bind from 'lodash-decorators/bind';
 import autoHeight from '../autoHeight';
 
+import Trend from '../../Trend';
+
 import styles from './index.less';
 
 /* eslint react/no-danger:0 */
@@ -66,6 +68,8 @@ class Pie extends Component {
       origin.checked = true;
       return origin;
     });
+
+    console.log(legendData);
 
     this.setState({
       legendData,
@@ -262,6 +266,14 @@ class Pie extends Component {
                   {`${(Number.isNaN(item.percent) ? 0 : item.percent * 100).toFixed(2)}%`}
                 </span>
                 <span className={styles.value}>{valueFormat ? valueFormat(item.y) : item.y}</span>
+                <Trend flag={item.tb >= 0 ? "up" : "down"} reverseColor className={styles.trendTb}>
+                  <span>月同比</span>
+                  <span className={styles.trendText}>{(item.tb * 100).toFixed(2)}%</span>
+                </Trend>
+                <Trend flag={item.hb >= 0 ? "up" : "down"} reverseColor className={styles.trendHb}>
+                  <span>月环比</span>
+                  <span className={styles.trendText}>{(item.hb * 100).toFixed(2)}%</span>
+                </Trend>
               </li>
             ))}
           </ul>

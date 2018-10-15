@@ -46,30 +46,44 @@ class Bidding extends Component {
       {
         x: '住宅工程',
         y: 1000,
+        tb: 0.11,
+        hb: 0.05,
       },
       {
         x: '公共建筑',
         y: 500,
+        tb: 0.12,
+        hb: 0.06,
       },
       {
         x: '工业厂房',
         y: 300,
+        tb: 0.31,
+        hb: 0.23,
       },
       {
         x: '构筑物',
         y: 480,
+        tb: 0.09,
+        hb: -0.05,
       },
       {
         x: '市政工程',
         y: 805,
+        tb: 0.56,
+        hb: 0.47,
       },
       {
         x: '绿化工程',
         y: 1015,
+        tb: 1.11,
+        hb: 1.05,
       },
       {
         x: '其它',
         y: 1015,
+        tb: -0.22,
+        hb: -0.30,
       },
     ];
 
@@ -198,7 +212,7 @@ class Bidding extends Component {
 
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="工程类型" bodyStyle={{ minHeight: '300px' }}>
+            <Card title="工程类型" bodyStyle={{ minHeight: '300px', padding: '24px 5px' }}>
               <TrendPie
                 hasLegend
                 subTitle="数量"
