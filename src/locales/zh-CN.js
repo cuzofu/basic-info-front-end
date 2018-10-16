@@ -13,6 +13,7 @@ export default {
   'menu.engAnalysis': '工程分析',
   'menu.corpAnalysis': '企业分析',
   'menu.bidding': '招标',
+  'menu.contract': '合同',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',

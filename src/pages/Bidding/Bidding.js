@@ -46,8 +46,8 @@ class Bidding extends Component {
       {
         x: '住宅工程',
         y: 1000,
-        tb: 0.11,
-        hb: 0.05,
+        tb: 0.11, // 月同比
+        hb: 0.05, // 月环比
       },
       {
         x: '公共建筑',
@@ -216,7 +216,7 @@ class Bidding extends Component {
               <TrendPie
                 hasLegend
                 subTitle="数量"
-                total={() => `${engTypeData.reduce((pre, now) => now.y + pre, 0)}家`}
+                total={() => `${engTypeData.reduce((pre, now) => now.y + pre, 0)}个`}
                 data={engTypeData}
                 valueFormat={value => `${value}个`}
                 height={248}

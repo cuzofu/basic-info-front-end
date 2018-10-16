@@ -67,6 +67,12 @@ export default [
         component: './Bidding/Bidding',
       },
       {
+        path: '/contract',
+        name: 'contract',
+        icon: 'profile',
+        component: './Contract/Contract',
+      },
+      {
         path: '/corporation/:id',
         name: 'corporation',
         icon: 'profile',

@@ -10,6 +10,7 @@ export default {
   'menu.person': 'Personal Profile',
   'menu.corporation': 'Corporation Profile',
   'menu.bidding': 'Bidding',
+  'menu.contract': 'Contract',
   'menu.home': 'Home',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': 'Analysis',
