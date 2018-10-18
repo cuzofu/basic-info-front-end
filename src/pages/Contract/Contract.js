@@ -174,6 +174,7 @@ class Contract extends Component {
                     <h3>计价方式</h3>
                     <SimplyLegendPie
                       hasLegend
+                      colors={['rgb(24, 144, 255)', 'rgb(235,235,235)']}
                       data={[
                         {
                           x: '清单计价',
@@ -193,6 +194,7 @@ class Contract extends Component {
                     <h3>调价方式</h3>
                     <SimplyLegendPie
                       hasLegend
+                      colors={['rgb(60,179,113)', 'rgb(255,0,0,0.7)', 'rgb(235,235,235)']}
                       data={[
                         {
                           x: '固定',
@@ -216,14 +218,15 @@ class Contract extends Component {
                     <h3>争议处理方式</h3>
                     <SimplyLegendPie
                       hasLegend
+                      colors={['rgb(255,215,0)', 'rgb(235,235,235)']}
                       data={[
                         {
                           x: '仲裁',
-                          y: 5000
+                          y: 15000
                         },
                         {
                           x: '诉讼',
-                          y: 15000
+                          y: 5000
                         },
                       ]}
                       height={170}
