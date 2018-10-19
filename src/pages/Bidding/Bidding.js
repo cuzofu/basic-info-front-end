@@ -23,6 +23,7 @@ import MatrixBar from '../Analysis/MatrixBar/MatrixBar';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 
 import styles from './Bidding.less';
+import InvestmentChart from "./InvestmentScatterChart";
 
 @connect(({bidding, loading}) => ({
   bidding,
@@ -279,6 +280,18 @@ class Bidding extends Component {
                   { groupY: '猇亭区', value: 0.05, groupX: '其他' },
                 ]}
               />
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={12}>
+          <Col {...doubleCardColsProps}>
+            <Card title="投资额分布" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
+            </Card>
+          </Col>
+          <Col {...doubleCardColsProps}>
+            <Card title="规模分布" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
+              <InvestmentChart height={390} />
             </Card>
           </Col>
         </Row>
