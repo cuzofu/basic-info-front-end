@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 
-import numeral from 'numeral';
-
 import {
   Row,
   Col,
@@ -10,14 +8,13 @@ import {
 } from 'antd';
 
 import {
-  Pie,
   TrendPie,
   SimplyLegendPie,
 } from '@/components/Charts';
-import MatrixBar from '../Analysis/MatrixBar/MatrixBar';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 
 import styles from './Contract.less';
+import PlusMinusBar from "@/components/ECharts/PlusMinusBar";
 
 @connect(({contract, loading}) => ({
   contract,
@@ -254,57 +251,40 @@ class Contract extends Component {
           </Col>
           <Col {...doubleCardColsProps}>
             <Card loading={basicInfoLoading} title="预算与决算差异统计" bodyStyle={{ minHeight: '300px', padding: '5px' }}>
-              <MatrixBar
+              <PlusMinusBar
                 height={290}
-                padding={[10, 10, 100, 50]}
+                dimensions={['合同编号', '差额', '合同额', '决算额']}
                 data={[
-                  { groupY: '西陵区', value: 0.5, groupX: '市政工程' },
-                  { groupY: '西陵区', value: 0.5, groupX: '住宅工程' },
-                  { groupY: '西陵区', value: 0.2, groupX: '公共建筑' },
-                  { groupY: '西陵区', value: 0.33, groupX: '工业厂房' },
-                  { groupY: '西陵区', value: 0.22, groupX: '绿化工程' },
-                  { groupY: '西陵区', value: 0.11, groupX: '构筑物' },
-                  { groupY: '西陵区', value: 0.65, groupX: '其他' },
-
-                  { groupY: '伍家区', value: 0.09, groupX: '市政工程' },
-                  { groupY: '伍家区', value: 0.99, groupX: '住宅工程' },
-                  { groupY: '伍家区', value: 0.05, groupX: '公共建筑' },
-                  { groupY: '伍家区', value: 0.15, groupX: '工业厂房' },
-                  { groupY: '伍家区', value: 0.25, groupX: '绿化工程' },
-                  { groupY: '伍家区', value: 0.11, groupX: '构筑物' },
-                  { groupY: '伍家区', value: 0.65, groupX: '其他' },
-
-                  { groupY: '夷陵区', value: 0.22, groupX: '市政工程' },
-                  { groupY: '夷陵区', value: 0.33, groupX: '住宅工程' },
-                  { groupY: '夷陵区', value: 0.44, groupX: '公共建筑' },
-                  { groupY: '夷陵区', value: 0.55, groupX: '工业厂房' },
-                  { groupY: '夷陵区', value: 0.77, groupX: '绿化工程' },
-                  { groupY: '夷陵区', value: 0.88, groupX: '构筑物' },
-                  { groupY: '夷陵区', value: 0.66, groupX: '其他' },
-
-                  { groupY: '点军区', value: 0.44, groupX: '市政工程' },
-                  { groupY: '点军区', value: 0.22, groupX: '住宅工程' },
-                  { groupY: '点军区', value: 0.11, groupX: '公共建筑' },
-                  { groupY: '点军区', value: 0.09, groupX: '工业厂房' },
-                  { groupY: '点军区', value: 0.89, groupX: '绿化工程' },
-                  { groupY: '点军区', value: 0.05, groupX: '构筑物' },
-                  { groupY: '点军区', value: 0.15, groupX: '其他' },
-
-                  { groupY: '高新区', value: 0.25, groupX: '市政工程' },
-                  { groupY: '高新区', value: 0.09, groupX: '住宅工程' },
-                  { groupY: '高新区', value: 0.89, groupX: '公共建筑' },
-                  { groupY: '高新区', value: 0.05, groupX: '工业厂房' },
-                  { groupY: '高新区', value: 0.15, groupX: '绿化工程' },
-                  { groupY: '高新区', value: 0.25, groupX: '构筑物' },
-                  { groupY: '高新区', value: 0.09, groupX: '其他' },
-
-                  { groupY: '猇亭区', value: 0.89, groupX: '市政工程' },
-                  { groupY: '猇亭区', value: 0.05, groupX: '住宅工程' },
-                  { groupY: '猇亭区', value: 0.15, groupX: '公共建筑' },
-                  { groupY: '猇亭区', value: 0.25, groupX: '工业厂房' },
-                  { groupY: '猇亭区', value: 0.09, groupX: '绿化工程' },
-                  { groupY: '猇亭区', value: 0.89, groupX: '构筑物' },
-                  { groupY: '猇亭区', value: 0.05, groupX: '其他' },
+                  {
+                    '合同编号': 'HT001',
+                    '合同额': 1200,
+                    '决算额': -1300,
+                    '差额': 100,
+                  },
+                  {
+                    '合同编号': 'HT002',
+                    '合同额': 4400,
+                    '决算额': -4650,
+                    '差额': 250,
+                  },
+                  {
+                    '合同编号': 'HT003',
+                    '合同额': 2200,
+                    '决算额': -2100,
+                    '差额': -100,
+                  },
+                  {
+                    '合同编号': 'HT004',
+                    '合同额': 5200,
+                    '决算额': -5900,
+                    '差额': 700,
+                  },
+                  {
+                    '合同编号': 'HT005',
+                    '合同额': 3200,
+                    '决算额': -3000,
+                    '差额': -200,
+                  },
                 ]}
               />
             </Card>

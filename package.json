@@ -30,6 +30,7 @@
     "bizcharts-plugin-slider": "^2.0.3",
     "classnames": "^2.2.6",
     "dva": "^2.4.0",
+    "echarts": "^4.2.0-rc.2",
     "enquire-js": "^0.2.1",
     "hash.js": "^1.1.5",
     "lodash": "^4.17.10",
