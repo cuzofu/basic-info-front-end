@@ -69,8 +69,6 @@ class Pie extends Component {
       return origin;
     });
 
-    console.log(legendData);
-
     this.setState({
       legendData,
     });

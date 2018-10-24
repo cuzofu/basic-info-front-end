@@ -1,9 +1,10 @@
 import * as React from 'react';
-export interface IScatterChartProps {
+export interface IInvestmentScatterChartProps {
+  id: string;
   color?: string;
   data?: Array<{}>;
   dimensions?: Array<String>;
   height?: number;
 }
 
-export default class InvestmentChart extends React.Component<IScatterChartProps, any> {}
+export default class InvestmentScatterChart extends React.Component<IInvestmentScatterChartProps, any> {}
