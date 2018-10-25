@@ -33,9 +33,9 @@ import MatrixBar from './MatrixBar/MatrixBar';
 
 import styles from './Market.less';
 
-@connect(({ analysis, loading }) => ({
-  analysis,
-  loading: loading.effects['analysis/fetch'],
+@connect(({ market, loading }) => ({
+  market,
+  loading: loading.effects['market/fetch'],
 }))
 class Market extends Component {
 
@@ -47,7 +47,7 @@ class Market extends Component {
     const { dispatch } = this.props;
     this.reqRef = requestAnimationFrame(() => {
       dispatch({
-        type: 'analysis/fetch',
+        type: 'market/fetch',
       });
       this.timeoutId = setTimeout(() => {
         this.setState({
@@ -59,7 +59,7 @@ class Market extends Component {
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'analysis/clear',
+      type: 'market/clear',
     });
     cancelAnimationFrame(this.reqRef);
     clearTimeout(this.timeoutId);
@@ -84,7 +84,7 @@ class Market extends Component {
       subPersonZzAnalysisData
     } = this.state;
     const {
-      analysis: { loading },
+      market: { loading },
     } = this.props;
 
     const topColResponsiveProps = {

@@ -300,6 +300,7 @@ class EngAnalysis extends Component {
               <Col xl={12} lg={12} md={24} sm={24} xs={24}>
                 <div className={styles.issuePie}>
                   <SunburstPie
+                    height={300}
                     data={[
                       {
                         value: 251,

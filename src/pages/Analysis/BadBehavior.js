@@ -8,8 +8,8 @@ import MatrixBar from './MatrixBar/MatrixBar';
 
 import styles from './BadBehavior.less';
 
-@connect(({ analysis, loading }) => ({
-  analysis,
+@connect(({ badBehavior, loading }) => ({
+  badBehavior,
   loading: loading.effects['badBehavior/fetch'],
 }))
 class BadBehavior extends Component {
@@ -37,7 +37,7 @@ class BadBehavior extends Component {
 
   render() {
     const {
-      analysis: { loading },
+      badBehavior: { loading },
     } = this.props;
 
     // 左右结构布局参数

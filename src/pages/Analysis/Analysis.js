@@ -21,6 +21,9 @@ class Analysis extends Component {
       case 'badBehavior':
         router.push(`${match.url}/badBehavior`);
         break;
+      case 'intendance':
+        router.push(`${match.url}/intendance`);
+        break;
       default:
         router.push(`${match.url}/market`);
         break;
@@ -47,6 +50,10 @@ class Analysis extends Component {
       {
         key: 'badBehavior',
         tab: '不良行为分析',
+      },
+      {
+        key: 'intendance',
+        tab: '质量安全监督',
       },
     ];
 

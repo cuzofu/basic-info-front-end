@@ -48,6 +48,11 @@ export default [
             name: 'badBehavior',
             component: './Analysis/BadBehavior',
           },
+          {
+            path: '/analysis/intendance',
+            name: 'intendance',
+            component: './Analysis/Intendance',
+          },
         ],
       },
       {
