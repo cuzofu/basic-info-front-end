@@ -10,7 +10,12 @@ export async function queryData1(params) {
 }
 
 export async function queryEngList(params) {
-  return request(`/api/analysis/construction?${stringify(params)}`);
+  return request(`/elastic_sskj/api/search/engAnalysis`, {
+    method: 'POST',
+    body: {
+      ...params
+    }
+  });
 }
 
 export async function queryCorpList(params) {

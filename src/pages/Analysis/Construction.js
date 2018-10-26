@@ -21,11 +21,21 @@ class Construction extends Component {
     } = this.props;
     dispatch({
       type: 'construction/fetchEngList',
-      payload: {}
+      payload: {
+        pageSize: 10,
+        currentPage: 0,
+        sort: 'gjTime',
+        direction: 'descend',
+      }
     });
     dispatch({
       type: 'construction/fetchCorpList',
-      payload: {}
+      payload: {
+        pageSize: 10,
+        currentPage: 0,
+        sort: 'gjTime',
+        direction: 'descend',
+      }
     });
   }
 
@@ -59,16 +69,16 @@ class Construction extends Component {
               <Ellipsis length={20} tooltip>{engName}</Ellipsis>
             </div>
             <div className={styles.divMt5}>
-              <Tag color="magenta">{eng.engType}</Tag>
-              <Tag color="volcano" className={styles.headerTag}>{eng.zbType}</Tag>
+              {eng.gclx ? (<Tag color="magenta">{eng.gclx}</Tag>) : null}
+              {eng.zbfs ? (<Tag color="volcano" className={styles.headerTag}>{eng.zbfs}</Tag>) : null}
             </div>
           </div>
         ),
       },
       {
         title: '投资额',
-        dataIndex: 'investment',
-        key: 'investment',
+        dataIndex: 'tzje',
+        key: 'tzje',
         render: (investment) => (
           <div>
             <span style={{ backgroundColor: '#FFB90F', padding: '0 5px', borderRadius: '10px', color: 'white' }}>投资额</span>
@@ -78,8 +88,8 @@ class Construction extends Component {
       },
       {
         title: '规模',
-        dataIndex: 'dimensions',
-        key: 'dimensions',
+        dataIndex: 'gcmj',
+        key: 'gcmj',
         render: (dimensions) => (
           <div>
             <span style={{ backgroundColor: '#52c41a', padding: '0 5px', borderRadius: '10px', color: 'white' }}>工程规模</span>
@@ -89,7 +99,7 @@ class Construction extends Component {
       },
       {
         title: '预警类型图标',
-        dataIndex: 'alertType',
+        dataIndex: 'wglx',
         key: 'alertTypeIcon',
         render: (alertType) => {
           switch (alertType) {
@@ -112,7 +122,7 @@ class Construction extends Component {
       },
       {
         title: '预警类型',
-        dataIndex: 'alertType',
+        dataIndex: 'wglx',
         key: 'alertType',
         render: (alertType) => {
           switch (alertType) {
@@ -261,7 +271,7 @@ class Construction extends Component {
             rowKey="id"
             showHeader={false}
             loading={engListLoading}
-            dataSource={engList.data}
+            dataSource={engList.list}
             pagination={engList.pagination}
             columns={columnsEngList}
             scroll={{ y: 420 }}

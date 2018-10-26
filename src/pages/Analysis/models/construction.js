@@ -7,13 +7,13 @@ export default {
     engList: {
       data: [],
       pagination: {
-        pageSize: 5,
+        pageSize: 10,
       }
     },
     corpList: {
       data: [],
       pagination: {
-        pageSize: 5,
+        pageSize: 10,
       }
     },
   },
@@ -25,73 +25,7 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            engList: {
-              data: [
-                {
-                  id: 1,
-                  engName: '伍家岗长江大桥伍家岗长江大桥伍家岗长江大桥伍家岗长江大桥伍家岗长江大桥1',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 2,
-                  engName: '伍家岗长江大桥2',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '停工通知',
-                  alertContext: '质量停工整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 3,
-                  engName: '伍家岗长江大桥3',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 4,
-                  engName: '伍家岗长江大桥4',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 5,
-                  engName: '伍家岗长江大桥5',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 6,
-                  engName: '伍家岗长江大桥6',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                }
-              ],
-              pagination: {
-                pageSize: 5,
-              }
-            }
+            engList: response
           },
         });
       } catch (e) {
@@ -100,70 +34,9 @@ export default {
           type: 'save',
           payload: {
             engList: {
-              data: [
-                {
-                  id: 1,
-                  engName: '伍家岗长江大桥伍家岗长江大桥伍家岗长江大桥伍家岗长江大桥伍家岗长江大桥1',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 2,
-                  engName: '伍家岗长江大桥2',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '停工通知',
-                  alertContext: '质量停工整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 3,
-                  engName: '伍家岗长江大桥3',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 4,
-                  engName: '伍家岗长江大桥4',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 5,
-                  engName: '伍家岗长江大桥5',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                },
-                {
-                  id: 6,
-                  engName: '伍家岗长江大桥6',
-                  investment: 4500,
-                  dimensions: 12399,
-                  alertType: '整改通知',
-                  alertContext: '安全隐患整改通知',
-                  engType: '市政工程',
-                  zbType: '公开招标',
-                }
-              ],
+              list: [],
               pagination: {
-                pageSize: 5,
+                pageSize: 10,
               }
             }
           },
