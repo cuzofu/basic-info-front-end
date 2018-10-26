@@ -36,9 +36,7 @@ class Intendance extends Component {
   render() {
 
     const {
-      intendance: {
-        loading
-      }
+      loading
     } = this.props;
     const {
       zgType1,

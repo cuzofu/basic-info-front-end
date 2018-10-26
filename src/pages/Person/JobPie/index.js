@@ -8,6 +8,8 @@ import Debounce from 'lodash-decorators/debounce';
 import Bind from 'lodash-decorators/bind';
 import autoHeight from '@/components/Charts/autoHeight';
 
+import Ellipsis from '../../../components/Ellipsis';
+
 import styles from './index.less';
 
 /* eslint react/no-danger:0 */
@@ -190,10 +192,10 @@ class JobPie extends Component {
     }
 
     const tooltipFormat = [
-      'job*countOfEng*percent',
-      (job, countOfEng, p) => ({
+      'job*count*percent',
+      (job, count, p) => ({
         name: job,
-        value: `${countOfEng}个工程，占比${(p * 100).toFixed(2)}%`,
+        value: `${count}个工程，占比${(p * 100).toFixed(2)}%`,
       }),
     ];
 
@@ -202,7 +204,7 @@ class JobPie extends Component {
     const dv = new DataView();
     dv.source(data).transform({
       type: 'percent',
-      field: 'countOfEng',
+      field: 'count',
       dimension: 'job',
       as: 'percent',
     });
@@ -252,7 +254,7 @@ class JobPie extends Component {
                   <span>岗位</span>
                 </Col>
                 <Col span="10">
-                  <span>投资额</span>
+                  <span>投资额(万)</span>
                 </Col>
                 <Col span="4">
                   <span>数量</span>
@@ -263,21 +265,19 @@ class JobPie extends Component {
               <li key={item.job} onClick={() => this.handleLegendClick(item, i)}>
                 <Row>
                   <Col span="10">
-                    <span
-                      className={styles.dot}
-                      style={{
-                        backgroundColor: !item.checked ? '#aaa' : item.color,
-                      }}
-                    />
-                    <span className={styles.legendTitle}>{item.job}</span>
+                    <Ellipsis tooltip length={4} className={styles.legendTitle}>
+                      {item.job}
+                    </Ellipsis>
                   </Col>
                   <Col span="10">
-                    <span className={styles.investment}>
-                      {item.amountOfInvestment ? `${item.amountOfInvestment}元` : '-'}
-                    </span>
+                    <Ellipsis tooltip length={7} className={styles.investment}>
+                      {item.tzje ? `${item.tzje}` : '-'}
+                    </Ellipsis>
                   </Col>
                   <Col span="4">
-                    <span className={styles.value}>{valueFormat ? valueFormat(item.countOfEng) : item.countOfEng}</span>
+                    <Ellipsis tooltip length={4} className={styles.value}>
+                      {`${item.count}`}
+                    </Ellipsis>
                   </Col>
                 </Row>
               </li>

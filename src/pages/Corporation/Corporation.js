@@ -263,7 +263,7 @@ class Corporation extends Component {
     </div>
   ));
 
-  // 个人证书数据
+  // 企业诚信（资质诚信分值）
   renderCertificateData = (credit) => {
     const creditData = [];
     if ('desMap' in credit) {
@@ -291,7 +291,7 @@ class Corporation extends Component {
         </DescriptionList>
       ));
     }
-    return (<div>暂无数据</div>);
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
   // 诚信记录统计
@@ -311,31 +311,26 @@ class Corporation extends Component {
         }
       })
     }
-    const ds = new DataSet();
-    const dv = ds.createView().source(creditData);
-    dv.transform({
-      type: 'fold',
-      fields: [ '诚信计分','良好加分','不良扣分' ], // 展开字段集
-      key: '诚信类型', // key字段
-      value: '次数', // value字段
-    });
-    return dv;
-  };
-
-  // 工作经历
-  renderCompanyData = (companys) => {
-    if (companys && companys.length > 0) {
+    if (creditData && creditData.length > 0) {
+      const ds = new DataSet();
+      const dv = ds.createView().source(creditData);
+      dv.transform({
+        type: 'fold',
+        fields: [ '诚信计分','良好加分','不良扣分' ], // 展开字段集
+        key: '诚信类型', // key字段
+        value: '次数', // value字段
+      });
       return (
-        <Timeline style={{margin: '6px', width: '90%'}}>
-          {
-            companys.map( com => (
-              <Timeline.Item key={com.id}>{`${this.dateFormat(com.date, 'YYYY-MM-DD')} ${com.name}(${com.year})`}</Timeline.Item>
-            ))
-          }
-        </Timeline>
-      );
+        <Chart height={276} data={dv} forceFit>
+          <Axis name="诚信类型" />
+          <Axis name="次数" />
+          <Legend />
+          <Tooltip crosshairs={{type : "y"}} />
+          <Geom type='interval' position="诚信类型*次数" color="group" adjust={[{type: 'dodge',marginRatio: 1/32}]} />
+        </Chart>
+      )
     }
-    return (<div>暂无数据</div>);
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
   // 项目经历
@@ -418,7 +413,7 @@ class Corporation extends Component {
     try {
       const jcxxMxJson = JSON.parse(jcxxMx);
       const {诚信总分 = '-'} = jcxxMxJson;
-      return 诚信总分;
+      return 诚信总分 === '-' ? 诚信总分 : `${诚信总分}分`;
     } catch (e) {
       return '-';
     }
@@ -513,7 +508,7 @@ class Corporation extends Component {
         </Col>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信分值</div>
-          <div className={styles.heading}>{this.renderCreditScore(credit)}分</div>
+          <div className={styles.heading}>{this.renderCreditScore(credit)}</div>
         </Col>
       </Row>
     );
@@ -654,7 +649,7 @@ class Corporation extends Component {
               <div style={{ height: '276px', overflow: 'auto', padding: 'auto 16px' }}>
                 <DescriptionList className={styles.headerList && styles.descriptionMargin} size="small" col="2">
                   <Description term="诚信等级"><span className={styles.heading}>{this.renderCreditLevel(credit)}</span></Description>
-                  <Description term="诚信总分"><span className={styles.heading}>{this.renderCreditScore(credit)}分</span></Description>
+                  <Description term="诚信总分"><span className={styles.heading}>{this.renderCreditScore(credit)}</span></Description>
                 </DescriptionList>
                 <Divider />
                 <Fragment>
@@ -670,13 +665,7 @@ class Corporation extends Component {
               title="诚信统计"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
             >
-              <Chart height={276} data={this.renderCreditData(credit)} forceFit>
-                <Axis name="诚信类型" />
-                <Axis name="次数" />
-                <Legend />
-                <Tooltip crosshairs={{type : "y"}} />
-                <Geom type='interval' position="诚信类型*次数" color="group" adjust={[{type: 'dodge',marginRatio: 1/32}]} />
-              </Chart>
+              {this.renderCreditData(credit)}
             </Card>
           </Col>
         </Row>

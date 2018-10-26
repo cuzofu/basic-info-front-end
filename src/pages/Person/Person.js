@@ -18,7 +18,11 @@ const { Description } = DescriptionList;
 @connect(({ person, loading }) => ({
   person,
   basicInfoLoading: loading.effects['person/fetchBasicInfo'],
-  certificateLoading: loading.effects['person/fetchCertificate'],
+  creditLoading: loading.effects['person/fetchCredit'],
+  engListLoading: loading.effects['person/fetchEngList'],
+  workListLoading: loading.effects['person/fetchWorkList'],
+  jobListLoading: loading.effects['person/fetchJobList'],
+  ryzjListLoading: loading.effects['person/fetchRyzjList'],
 }))
 class Person extends Component {
 
@@ -27,12 +31,49 @@ class Person extends Component {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: {
+          id
+        }
+      }
+    } = this.props;
     dispatch({
       type: 'person/fetchBasicInfo',
+      payload: {
+        id,
+      }
     });
     dispatch({
-      type: 'person/fetchCertificate',
+      type: 'person/fetchCredit',
+      payload: {
+        id,
+      }
+    });
+    dispatch({
+      type: 'person/fetchEngList',
+      payload: {
+        id,
+      }
+    });
+    dispatch({
+      type: 'person/fetchWorkList',
+      payload: {
+        id,
+      }
+    });
+    dispatch({
+      type: 'person/fetchJobList',
+      payload: {
+        id,
+      }
+    });
+    dispatch({
+      type: 'person/fetchRyzjList',
+      payload: {
+        id,
+      }
     });
   }
 
@@ -57,12 +98,12 @@ class Person extends Component {
     return null;
   };
 
-  dateFormat = (date, format) => {
+  dateFormat = (date, format, defaultRtn = '未知') => {
     const d = moment(date);
     if (d.isValid()) {
       return d.format(format);
     }
-    return '未知';
+    return defaultRtn;
   };
 
   setCustomTags = i => i.tags.map(t => (
@@ -93,47 +134,176 @@ class Person extends Component {
       return (
         <Timeline style={{margin: '6px', width: '90%'}}>
           {
-            certificate.map( cert => (
-              <Timeline.Item key={cert.id}>{cert.name}</Timeline.Item>
-            ))
+            certificate.filter( c => {
+              const {
+                mx = '{}'
+              } = c;
+              try {
+                const {
+                  证书状态 = '',
+                } = JSON.parse(mx);
+                return 证书状态 !== '注销';
+              } catch (e) {
+                return false;
+              }
+            }).map( cert => {
+              const {
+                id,
+                mx = '{}'
+              } = cert;
+              const {
+                证书类型 = '',
+              } = JSON.parse(mx);
+              return <Timeline.Item key={id}>{证书类型}</Timeline.Item>;
+            })
           }
         </Timeline>
       );
     }
-    return (<div>暂无数据</div>);
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
+  };
+
+  // 个人证书数量
+  renderCertificateCount = (certificate) => {
+    if (certificate && certificate.length > 0) {
+      return certificate.filter( c => {
+        const {
+          mx = '{}'
+        } = c;
+        try {
+          const {
+            证书状态 = '',
+          } = JSON.parse(mx);
+          return 证书状态 !== '注销';
+        } catch (e) {
+          return false;
+        }
+      }).length;
+    }
+    return 0;
+  };
+
+  renderCreditLevel = (credit) => {
+    const {
+      jcxxMx = "{}"
+    } = credit;
+    try {
+      const {
+        诚信等级 = '未知',
+      } = JSON.parse(jcxxMx);
+      return 诚信等级;
+    } catch (e) {
+      return '未知';
+    }
+  };
+
+  renderCreditScore = (credit) => {
+    const {
+      jcxxMx = "{}"
+    } = credit;
+    try {
+      const {
+        诚信分 = '-',
+      } = JSON.parse(jcxxMx);
+      return 诚信分;
+    } catch (e) {
+      return '-';
+    }
   };
 
   // 工作经历
-  renderCompanyData = (companys) => {
-    if (companys && companys.length > 0) {
+  renderWorkList = (workList) => {
+
+    const works = [];
+    if (workList && workList.length > 0) {
+      workList.forEach(w => {
+        const {
+          id,
+          gjTime,
+          jcxxMx = "{}",
+        } = w;
+        try {
+          works.push({
+            id,
+            "入职日期": gjTime,
+            ...JSON.parse(jcxxMx)
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      })
+    }
+
+    if (works && works.length > 0) {
+
+      const cardTimelineLeft = {xs: 24, sm: 5, md: 4, lg: 4, xl: 6, xxl: 5, style: { marginBottom: 12 }};
+      const cardTimelineRight = {xs: 24, sm: 19, md: 20, lg: 20, xl: 18, xxl: 19};
+
       return (
-        <Timeline style={{margin: '6px', width: '90%'}}>
-          {
-            companys.map( com => (
-              <Timeline.Item key={com.id}>{`${this.dateFormat(com.date, 'YYYY-MM-DD')} ${com.name}(${com.year})`}</Timeline.Item>
-            ))
-          }
-        </Timeline>
+        <Row>
+          <Col {...cardTimelineLeft}>
+            <div style={{textAlign: 'center'}}>
+              <span style={{fontSize: '32px', fontWeight: 'bold', padding: '0'}}>{works.length}</span>
+              <span style={{fontSize: '16px', fontWeight: 'bold', padding: '0'}}>家公司</span>
+            </div>
+          </Col>
+          <Col {...cardTimelineRight}>
+            <div style={{ height: '276px', overflowY: 'auto' }}>
+              <Timeline style={{margin: '6px', width: '90%'}}>
+                {
+                  works.map( work => (
+                    <Timeline.Item key={work.id}>{`${this.dateFormat(work.入职日期, 'YYYY-MM-DD')} ~ ${this.dateFormat(work.离职日期, 'YYYY-MM-DD', '至今')}，${work.所属企业}`}</Timeline.Item>
+                  ))
+                }
+              </Timeline>
+            </div>
+          </Col>
+        </Row>
       );
     }
-    return (<div>暂无数据</div>);
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
   // 个人诚信记录统计
-  renderCreditData = () => {
-    const data = [
-      { group:'次数', '诚信计分': 7, '良好加分': 5, '不良扣分' : 2 },
-      { group:'分值', '诚信计分': 25, '良好加分': 30, '不良扣分' : -5 }
-    ];
-    const ds = new DataSet();
-    const dv = ds.createView().source(data);
-    dv.transform({
-      type: 'fold',
-      fields: [ '诚信计分','良好加分','不良扣分' ], // 展开字段集
-      key: '诚信类型', // key字段
-      value: '次数', // value字段
+  renderCreditData = (credit) => {
+    const {
+      desMap = {}
+    } = credit;
+    const {
+      个人诚信统计次数和分值 = []
+    } = desMap;
+    const data = [];
+    个人诚信统计次数和分值.forEach(d => {
+      const {
+        mx = '{}',
+      } = d;
+      try {
+        data.push(JSON.parse(mx));
+      } catch (e) {
+      }
     });
-    return dv;
+    if (data && data.length > 0) {
+
+      const ds = new DataSet();
+      const dv = ds.createView().source(data);
+      dv.transform({
+        type: 'fold',
+        fields: [ '诚信计分','良好加分','不良扣分' ], // 展开字段集
+        key: '诚信类型', // key字段
+        value: '次数', // value字段
+      });
+
+      return (
+        <Chart height={276} data={dv} forceFit>
+          <Axis name="诚信类型" />
+          <Axis name="次数" />
+          <Legend />
+          <Tooltip crosshairs={{type : "y"}} />
+          <Geom type='interval' position="诚信类型*次数" color="group" adjust={[{type: 'dodge',marginRatio: 1/32}]} />
+        </Chart>
+      );
+    }
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
   // 个人项目经历
@@ -153,47 +323,77 @@ class Person extends Component {
       return (
         <Timeline style={{margin: '10px', width: '95%'}}>
           {
-            resume.map( data => (
-              <Timeline.Item key={data.id} color="green" className={styles.workResume}>
-                <Row gutter={12}>
-                  <Col {...resumeColsProps.timeCols}>
-                    <div className={styles.time}>{this.dateFormat(data.createTime, 'YYYY-MM-DD')}</div>
-                  </Col>
-                  <Col {...resumeColsProps.engNameCols}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{backgroundColor: '#4D4D4D', padding: '0 5px', borderRadius: '10px', color: 'white'}}>工程</span>
-                      <span style={{ marginLeft: '5px' }}>{data.sgxkName}</span>
-                    </div>
-                  </Col>
-                  <Col {...resumeColsProps.jobsCols}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ marginLeft: '5px' }}>{data.job}</span>
-                    </div>
-                  </Col>
-                  <Col {...resumeColsProps.isChangedCols}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ backgroundColor: '#FFB90F', padding: '0 5px', borderRadius: '10px', color: 'white' }}>{data.isChanged ? '有变更' : '未变更'}</span>
-                    </div>
-                  </Col>
-                  <Col {...resumeColsProps.statusCols}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ backgroundColor: '#52c41a', padding: '0 5px', borderRadius: '10px', color: 'white' }}>{data.status}</span>
-                    </div>
-                  </Col>
-                  <Col {...resumeColsProps.companyCols}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ backgroundColor: '#c48000', padding: '0 5px', borderRadius: '10px', color: 'white' }}>隶属</span>
-                      <span style={{ marginLeft: '5px' }}>{data.company}</span>
-                    </div>
-                  </Col>
-                </Row>
-              </Timeline.Item>
-            ))
+            resume.map( data => {
+              const {
+                id,
+                time,
+                engName,
+                job,
+                isChanged = false,
+                status = '未知状态',
+                orgName,
+              } = data;
+              return (
+                <Timeline.Item key={id} color="green" className={styles.workResume}>
+                  <Row gutter={12}>
+                    <Col {...resumeColsProps.timeCols}>
+                      <div className={styles.time}>{this.dateFormat(time, 'YYYY-MM-DD')}</div>
+                    </Col>
+                    <Col {...resumeColsProps.engNameCols}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span style={{backgroundColor: '#4D4D4D', padding: '0 5px', borderRadius: '10px', color: 'white'}}>工程</span>
+                        <span style={{ marginLeft: '5px' }}>{engName}</span>
+                      </div>
+                    </Col>
+                    <Col {...resumeColsProps.jobsCols}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span style={{ marginLeft: '5px' }}>{job}</span>
+                      </div>
+                    </Col>
+                    <Col {...resumeColsProps.isChangedCols}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span style={{ backgroundColor: '#FFB90F', padding: '0 5px', borderRadius: '10px', color: 'white' }}>{isChanged ? '有变更' : '未变更'}</span>
+                      </div>
+                    </Col>
+                    <Col {...resumeColsProps.statusCols}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span style={{ backgroundColor: '#52c41a', padding: '0 5px', borderRadius: '10px', color: 'white' }}>{status}</span>
+                      </div>
+                    </Col>
+                    <Col {...resumeColsProps.companyCols}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span style={{ backgroundColor: '#c48000', padding: '0 5px', borderRadius: '10px', color: 'white' }}>隶属</span>
+                        <span style={{ marginLeft: '5px' }}>{orgName}</span>
+                      </div>
+                    </Col>
+                  </Row>
+                </Timeline.Item>
+              );
+            })
           }
         </Timeline>
       );
     }
-    return (<div>暂无数据</div>);
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
+  };
+
+  // 岗位分析
+  renderJobList = (jobList) => {
+    const {
+      jobMx = []
+    } = jobList;
+    if (jobMx && jobMx.length > 0) {
+      return (
+        <JobPie
+          hasLegend
+          total={() => `参与${jobList.engCount}个工程`}
+          data={jobMx}
+          height={276}
+          lineWidth={4}
+        />
+      );
+    }
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
   render() {
@@ -201,15 +401,45 @@ class Person extends Component {
     const { infoWindow } = this.state;
 
     const {
-      certificateLoading,
+      basicInfoLoading,
+      person: {
+        basicInfo: {
+          jcxxMx = '{}',
+          desMap = {},
+        },
+        credit,
+        engList, // 项目经历
+        workList, // 工作经历
+        jobList, // 岗位分析
+      }
     } = this.props;
+
+    let jcxxMxJson;
+    try {
+      jcxxMxJson = JSON.parse(jcxxMx)
+    } catch (e) {
+      jcxxMxJson = {};
+    }
+    const {
+      姓名,
+      性别 = '-',
+      学历 = '-',
+      民族 = '-',
+      入册工龄 = '-',
+      身份证号 = '-',
+      移动电话 = '-',
+      社保状态 = '社保状态未知',
+    } = jcxxMxJson;
+    const {
+      个人证书 = [],
+    } = desMap;
 
     const description = (
       <DescriptionList className={styles.headerList} size="small" col="2">
-        <Description>男 | 专科 | 汉族 | 33岁</Description>
-        <Description term="入册工龄">5年</Description>
-        <Description term="身份证">420581198501180039</Description>
-        <Description term="手机号码">13886665321</Description>
+        <Description>{性别} | {学历} | {民族} | 33岁</Description>
+        <Description term="入册工龄">{入册工龄}年</Description>
+        <Description term="身份证">{身份证号}</Description>
+        <Description term="手机号码">{移动电话}</Description>
       </DescriptionList>
     );
 
@@ -217,11 +447,11 @@ class Person extends Component {
       <Row>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信等级</div>
-          <div className={styles.heading}>B级</div>
+          <div className={styles.heading}>{this.renderCreditLevel(credit)}</div>
         </Col>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信分值</div>
-          <div className={styles.heading}>88分</div>
+          <div className={styles.heading}>{this.renderCreditScore(credit)}分</div>
         </Col>
       </Row>
     );
@@ -391,8 +621,8 @@ class Person extends Component {
       <PageHeaderWrapper
         title={
           <div>
-            <span className={styles.headerTitle}>陈亮</span>
-            <Tag color="magenta" className={styles.headerTag}>有社保</Tag>
+            <span className={styles.headerTitle}>{姓名}</span>
+            <Tag color="magenta" className={styles.headerTag}>{社保状态}</Tag>
           </div>
         }
         logo={
@@ -414,162 +644,76 @@ class Person extends Component {
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={certificateLoading}
+              loading={basicInfoLoading}
               bordered={false}
               title="个人证书"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
             >
-              <Row>
-                <Col {...cardTimelineLeft}>
-                  <div style={{textAlign: 'center'}}>
-                    <span style={{fontSize: '32px', fontWeight: 'bold', padding: '0'}}>4</span>
-                    <span style={{fontSize: '16px', fontWeight: 'bold', padding: '0'}}>项证书</span>
-                  </div>
-                </Col>
-                <Col {...cardTimelineRight}>
-                  <div style={{ height: '276px', overflowY: 'auto' }}>
-                    {
-                      this.renderCertificateData([
-                        {
-                          id: '1200550',
-                          name: '鄂建安B(2014)0334697  考核合格证书类_安全生产考核合格证书_B类',
-                        },
-                        {
-                          id: '56151985',
-                          name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                        },
-                        {
-                          id: '8515616',
-                          name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                        },
-                        {
-                          id: '343432',
-                          name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                        },
-                        {
-                          id: '45345345',
-                          name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                        },
-                        {
-                          id: '56455353',
-                          name: '鄂142101008198  注册执业证书_注册建造师_一级',
-                        },
-                      ])
-                    }
-                  </div>
-                </Col>
-              </Row>
+              {
+                个人证书.length > 0 ? (
+                  <Row>
+                    <Col {...cardTimelineLeft}>
+                      <div style={{textAlign: 'center'}}>
+                        <span style={{fontSize: '32px', fontWeight: 'bold', padding: '0'}}>{this.renderCertificateCount(个人证书)}</span>
+                        <span style={{fontSize: '16px', fontWeight: 'bold', padding: '0'}}>项证书</span>
+                      </div>
+                    </Col>
+                    <Col {...cardTimelineRight}>
+                      <div style={{ height: '276px', overflowY: 'auto' }}>
+                        {this.renderCertificateData(个人证书)}
+                      </div>
+                    </Col>
+                  </Row>
+                ) : (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>)
+              }
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={certificateLoading}
+              loading={basicInfoLoading}
               bordered={false}
               title="个人诚信"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
             >
-              <Chart height={276} data={this.renderCreditData()} forceFit>
-                <Axis name="诚信类型" />
-                <Axis name="次数" />
-                <Legend />
-                <Tooltip crosshairs={{type : "y"}} />
-                <Geom type='interval' position="诚信类型*次数" color="group" adjust={[{type: 'dodge',marginRatio: 1/32}]} />
-              </Chart>
+              {this.renderCreditData(credit)}
             </Card>
           </Col>
         </Row>
         <Card
-          loading={certificateLoading}
+          loading={basicInfoLoading}
           bordered={false}
           title="项目经历"
           style={{marginTop: 12}}
           bodyStyle={{height: '300px', padding: '12px'}}
         >
           <div style={{height: 276, overflowY: 'auto'}}>
-            {this.renderWorkResume(workResume)}
+            {this.renderWorkResume(engList)}
           </div>
         </Card>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={certificateLoading}
+              loading={basicInfoLoading}
               bordered={false}
               title="工作经历"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
             >
-              <Row>
-                <Col {...cardTimelineLeft}>
-                  <div style={{textAlign: 'center'}}>
-                    <span style={{fontSize: '32px', fontWeight: 'bold', padding: '0'}}>5</span>
-                    <span style={{fontSize: '16px', fontWeight: 'bold', padding: '0'}}>家公司</span>
-                  </div>
-                </Col>
-                <Col {...cardTimelineRight}>
-                  <div style={{ height: '276px', overflowY: 'auto' }}>
-                    {
-                      this.renderCompanyData([
-                        {
-                          id: '1',
-                          date: '2018-07-01',
-                          name: '升思公司',
-                          year: '1年'
-                        },
-                        {
-                          id: '2',
-                          date: '2017-07-01',
-                          name: '唐氏公司',
-                          year: '2年'
-                        },
-                        {
-                          id: '3',
-                          date: '2013-07-01',
-                          name: '杨氏公司',
-                          year: '3年'
-                        },
-                        {
-                          id: '4',
-                          date: '2010-07-01',
-                          name: '刘氏公司',
-                          year: '3年'
-                        },
-                        {
-                          id: '5',
-                          date: '2008-07-01',
-                          name: '张氏公司',
-                          year: '2年'
-                        },
-                        {
-                          id: '6',
-                          date: '2006-07-01',
-                          name: '唐氏公司',
-                          year: '2年'
-                        },
-                      ])
-                    }
-                  </div>
-                </Col>
-              </Row>
+              {this.renderWorkList(workList)}
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={certificateLoading}
+              loading={basicInfoLoading}
               bordered={false}
               title="岗位分析"
               bodyStyle={{minHeight: '300px', padding: '12px'}}
             >
-              <JobPie
-                hasLegend
-                total={() => `参与${jobData.reduce((pre, now) => now.countOfEng + pre, 0)}个工程`}
-                data={jobData}
-                height={276}
-                lineWidth={4}
-              />
+              {this.renderJobList(jobList)}
             </Card>
           </Col>
         </Row>
         <Card
-          loading={certificateLoading}
+          loading={basicInfoLoading}
           bordered={false}
           title={<div><span>足迹分布</span><span style={{color: 'red', marginLeft: '10px', fontSize: '12px'}}>数值越小，表示时间越近，仅显示第一次进入工地的记录。</span></div>}
           style={{ marginTop: 12 }}
