@@ -227,7 +227,7 @@ class Bidding extends Component {
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="机构部门类型占比" bodyStyle={{ minHeight: '300px', padding: '5px' }}>
+            <Card title="区域分布" bodyStyle={{ minHeight: '300px', padding: '5px' }}>
               <MatrixBar
                 height={290}
                 padding={[10, 10, 100, 50]}

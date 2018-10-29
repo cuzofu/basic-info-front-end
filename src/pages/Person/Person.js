@@ -90,7 +90,7 @@ class Person extends Component {
           position={{lng: props.lng, lat: props.lat}}
           title={props.sgxkName}
           text={
-            `<div><div>${props.job}</div><div>${props.company}</div></div>`
+            `<div><div>${props.job}</div><div>${props.jsdw}</div></div>`
           }
         />
       );
@@ -396,6 +396,61 @@ class Person extends Component {
     return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
+  // 人员足迹分布
+  renderRyzjList = (ryzjList) => {
+    const ryzj = [];
+    ryzjList.forEach(r => {
+      const {
+        engId,
+        engMx,
+      } = r;
+      try {
+        const eng = JSON.parse(engMx);
+        const {
+          经度,
+          维度,
+          报建日期,
+          工程名称,
+          工程地址,
+          建设单位名称 = '',
+          施工单位名称 = '',
+          监理单位名称 = '',
+        } = eng;
+        if (经度 && 维度) {
+          ryzj.push({
+            id: engId,
+            createTime: 报建日期,
+            sgxkName: 工程名称,
+            address: 工程地址,
+            job: '项目总监',
+            jsdw: 建设单位名称,
+            sgdw: 施工单位名称,
+            jldw: 监理单位名称,
+            lng: 经度,
+            lat: 维度
+          });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    });
+    return ryzj.map((item, index) => (
+      <Marker
+        key={item.id}
+        icon={`red${index+1}`}
+        position={{
+          lng: item.lng,
+          lat: item.lat,
+        }}
+        events={{
+          click: (marker) => {
+            this.handleMarkerClick(marker, item)
+          },
+        }}
+      />
+    ))
+  };
+
   render() {
 
     const { infoWindow } = this.state;
@@ -411,6 +466,7 @@ class Person extends Component {
         engList, // 项目经历
         workList, // 工作经历
         jobList, // 岗位分析
+        ryzjList, // 人员足迹分布
       }
     } = this.props;
 
@@ -719,23 +775,7 @@ class Person extends Component {
           style={{ marginTop: 12 }}
         >
           <Map center="宜昌">
-            {
-              workResume.map((item, index) => (
-                <Marker
-                  key={item.id}
-                  icon={`red${index+1}`}
-                  position={{
-                    lng: item.lng,
-                    lat: item.lat,
-                  }}
-                  events={{
-                    click: (marker) => {
-                      this.handleMarkerClick(marker, item)
-                    },
-                  }}
-                />
-              ))
-            }
+            {this.renderRyzjList(ryzjList)}
             {infoWindow}
           </Map>
         </Card>
