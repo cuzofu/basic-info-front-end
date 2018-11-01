@@ -7,14 +7,6 @@ import {
   Tooltip,
   Geom,
   Legend,
-  G2,
-  Coord,
-  Label,
-  View,
-  Guide,
-  Shape,
-  Facet,
-  Util
 } from 'bizcharts';
 
 import {
@@ -33,9 +25,18 @@ import MatrixBar from './MatrixBar/MatrixBar';
 
 import styles from './Market.less';
 
+const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
+
 @connect(({ market, loading }) => ({
   market,
-  loading: loading.effects['market/fetch'],
+  loading: loading.effects['market/fetchQyAndRyCount'],
+  qyzzfxLoading: loading.effects['market/fetchQyzzfxData'],
+  bdqymxLoading: loading.effects['market/fetchBdqymxData'],
+  qyhydpmLoading: loading.effects['market/fetchQyhydpmData'],
+  ryzzfxLoading: loading.effects['market/fetchRyzzfxData'],
+  ryhydpmLoading: loading.effects['market/fetchRyhydpmData'],
+  jzgmHyqycxfxLoading: loading.effects['market/fetchJzgmHyqycxfxData'],
+  qycxdjzbLoading: loading.effects['market/fetchQycxdjzbData'],
 }))
 class Market extends Component {
 
@@ -47,12 +48,64 @@ class Market extends Component {
     const { dispatch } = this.props;
     this.reqRef = requestAnimationFrame(() => {
       dispatch({
-        type: 'market/fetch',
+        type: 'market/fetchQyAndRyCount',
+        payload: {
+          time: '2018-10-29'
+        }
       });
-      this.timeoutId = setTimeout(() => {
-        this.setState({
-        });
-      }, 600);
+      dispatch({
+        type: 'market/fetchQycxdjzbData',
+        payload: {
+          time: '2018-10-29'
+        }
+      });
+      dispatch({
+        type: 'market/fetchJzgmHyqycxfxData',
+        payload: {
+          time: '2018-10-29'
+        }
+      });
+      dispatch({
+        type: 'market/fetchQyzzfxData',
+        payload: {
+          time: '2018-10-29'
+        }
+      });
+      dispatch({
+        type: 'market/fetchRyzzfxData',
+        payload: {
+          time: '2018-10-29'
+        }
+      });
+      dispatch({
+        type: 'market/fetchBdqymxData',
+        payload: {
+          pageSize: 10,
+          currentPage: 0,
+          sort: 'gjTime',
+          direction: 'descend',
+        }
+      });
+      dispatch({
+        type: 'market/fetchQyhydpmData',
+        payload: {
+          time: '2018-01-01',
+          pageSize: 10,
+          currentPage: 0,
+          sort: 'gjTime',
+          direction: 'descend',
+        }
+      });
+      dispatch({
+        type: 'market/fetchRyhydpmData',
+        payload: {
+          time: '2018-01-01',
+          pageSize: 50,
+          currentPage: 0,
+          sort: 'gjTime',
+          direction: 'descend',
+        }
+      });
     });
   }
 
@@ -79,12 +132,120 @@ class Market extends Component {
     this.renderSubPersonZzAnalysisData(_origin);
   };
 
+  renderQyzzfx = (qyzzfx) => {
+    const orgZzAnalysisData = [];
+    if (qyzzfx && qyzzfx.length > 0) {
+      qyzzfx.forEach( r => {
+        orgZzAnalysisData.push({
+          x: r.nameZZ,
+          y: r.numZZ,
+        });
+      })
+    }
+    return (
+      <Pie
+        hasLegend
+        subTitle="企业总数"
+        total={() => `${orgZzAnalysisData.reduce((pre, now) => now.y + pre, 0)}家`}
+        data={orgZzAnalysisData}
+        valueFormat={value => `${value}家`}
+        height={248}
+        lineWidth={4}
+      />
+    );
+
+  };
+
+  // 标段与企业明细翻页
+  handleBdqymxTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch } = this.props;
+
+    const filters = Object.keys(filtersArg).reduce((obj, key) => {
+      const newObj = { ...obj };
+      newObj[key] = getValue(filtersArg[key]);
+      return newObj;
+    }, {});
+
+    const params = {
+      currentPage: pagination.current - 1,
+      pageSize: pagination.pageSize,
+      ...filters,
+    };
+    if (sorter.field) {
+      params.sort = sorter.field;
+      params.direction = sorter.order;
+    } else {
+      params.sort = 'gjTime';
+      params.direction = 'descend';
+    }
+
+    dispatch({
+      type: 'market/fetchBdqymxData',
+      payload: params,
+    });
+  };
+
+  // 人员活跃度排名翻页
+  handleRyhydpmTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch } = this.props;
+
+    const filters = Object.keys(filtersArg).reduce((obj, key) => {
+      const newObj = { ...obj };
+      newObj[key] = getValue(filtersArg[key]);
+      return newObj;
+    }, {});
+
+    const params = {
+      currentPage: pagination.current - 1,
+      pageSize: pagination.pageSize,
+      ...filters,
+    };
+    if (sorter.field) {
+      params.sort = sorter.field;
+      params.direction = sorter.order;
+    } else {
+      params.sort = 'gjTime';
+      params.direction = 'descend';
+    }
+
+    dispatch({
+      type: 'market/fetchRyhydpmData',
+      payload: params,
+    });
+  };
+
   render() {
     const {
       subPersonZzAnalysisData
     } = this.state;
     const {
-      market: { loading },
+      loading,
+      qyzzfxLoading,
+      ryhydpmLoading,
+      jzgmHyqycxfxLoading,
+      market: {
+        qyAndRyCount: {
+          addQYRK = 0,
+          addRKRY = 0,
+          countTBS = 0,
+          countZBS = 0,
+          ratioQYRK = 0.00,
+          ratioTBS = 0.00,
+          ratioZBS = 0.00,
+          ratioUser = 0.00,
+          sumQYRK = 0,
+          sumRKRY = 0,
+          ratioRKRY = 0.00,
+          userBiLi = 0.00,
+          userTBS = 0,
+          userZBS = 0,
+        },
+        qyzzfx,
+        bdqymx,
+        ryhydpm,
+        jzgmHyqycxfx,
+        ryzzfx, // 人员资质分析
+      },
     } = this.props;
 
     const topColResponsiveProps = {
@@ -105,10 +266,11 @@ class Market extends Component {
         title: '序号',
         dataIndex: 'index',
         width: '5%',
+        render: (val, r, index) => ((bdqymx.pagination.current - 1) === 0 ? (1 + index) : ((bdqymx.pagination.current - 1) * (bdqymx.pagination.pageSize) + 1 + index)),
       },
       {
         title: '标段编号',
-        dataIndex: 'bdNo',
+        dataIndex: 'bdCode',
         width: '15%',
       },
       {
@@ -118,23 +280,27 @@ class Market extends Component {
       },
       {
         title: '投资额（万元）',
-        dataIndex: 'investment',
+        dataIndex: 'bdTZE',
         width: '15%',
+        render: (val) => val || '未知'
       },
       {
-        title: '面积/公里',
-        dataIndex: 'guimo',
+        title: '面积(㎡)/公里(km)',
+        dataIndex: 'bdMJ',
         width: '15%',
+        render: (val) => val || '-'
       },
       {
         title: '中标企业',
-        dataIndex: 'orgName',
+        dataIndex: 'zbqyName',
         width: '20%',
+        render: (val) => val || '未知'
       },
       {
         title: '诚信等级',
-        dataIndex: 'creditLevel',
+        dataIndex: 'qyzxdj',
         width: '10%',
+        render: (val) => val || '未知'
       },
     ];
 
@@ -200,161 +366,39 @@ class Market extends Component {
     const personActivityRankingList = [
       {
         title: '排名',
-        dataIndex: 'ranking',
+        dataIndex: 'index',
         width: '10%',
+        align: 'center',
+        render: (val, r, index) => ((ryhydpm.pagination.current - 1) === 0 ? (1 + index) : ((ryhydpm.pagination.current - 1) * (ryhydpm.pagination.pageSize) + 1 + index)),
       },
       {
         title: '姓名',
-        dataIndex: 'name',
+        dataIndex: 'userName',
         width: '25%',
+        align: 'center',
       },
       {
-        title: '岗位',
-        dataIndex: 'job',
+        title: '证件号码',
+        dataIndex: 'userId',
         width: '20%',
+        align: 'center',
       },
       {
         title: '参与项目投资额(万元)',
-        dataIndex: 'investment',
+        dataIndex: 'tze',
         width: '35%',
+        align: 'center',
       },
       {
         title: '项目数量',
-        dataIndex: 'amountOfEng',
+        dataIndex: 'jobNum',
         width: '10%',
+        align: 'center',
       },
     ];
 
-    const orgZzAnalysisData = [
-      {
-        x: '施工总承包',
-        y: 1000,
-      },
-      {
-        x: '专业承包',
-        y: 500,
-      },
-      {
-        x: '劳务资质',
-        y: 300,
-      },
-      {
-        x: '园林绿化',
-        y: 480,
-      },
-      {
-        x: '监理企业',
-        y: 805,
-      },
-      {
-        x: '其他',
-        y: 1015,
-      },
-    ];
-
-    const personZzAnalysisData = [
-      {
-        x: '注册执业证书',
-        y: 189,
-        sub: [
-          {
-            x: '注册执业证书1',
-            y: 50,
-          },
-          {
-            x: '注册执业证书2',
-            y: 45,
-          },
-          {
-            x: '注册执业证书3',
-            y: 81,
-          },
-          {
-            x: '注册执业证书4',
-            y: 10,
-          },
-          {
-            x: '注册执业证书5',
-            y: 3,
-          }
-        ]
-      },
-      {
-        x: '管理人员',
-        y: 540,
-        sub: [
-          {
-            x: '管理人员1',
-            y: 120,
-          },
-          {
-            x: '管理人员2',
-            y: 130,
-          },
-          {
-            x: '管理人员3',
-            y: 140,
-          },
-          {
-            x: '管理人员4',
-            y: 100,
-          },
-          {
-            x: '管理人员5',
-            y: 50,
-          }
-        ]
-      },
-      {
-        x: '施工图审',
-        y: 15,
-        sub: [
-          {
-            x: '施工图审1',
-            y: 9,
-          },
-          {
-            x: '施工图审2',
-            y: 6,
-          },
-        ]
-      },
-      {
-        x: '见证人证书',
-        y: 605,
-        sub: [
-          {
-            x: '见证人证书',
-            y: 605,
-          }
-        ]
-      },
-      {
-        x: '劳务人员证书',
-        y: 777,
-        sub: [
-          {
-            x: '劳务人员证书1',
-            y: 502,
-          },
-          {
-            x: '劳务人员证书2',
-            y: 120,
-          },
-          {
-            x: '劳务人员证书3',
-            y: 89,
-          },
-          {
-            x: '劳务人员证书4',
-            y: 66,
-          }
-        ]
-      }
-    ];
-
-    if (personZzAnalysisData && personZzAnalysisData.length > 0) {
-      const d = personZzAnalysisData[0];
+    if (ryzzfx && ryzzfx.length > 0) {
+      const d = ryzzfx[0];
       if (!(subPersonZzAnalysisData && subPersonZzAnalysisData.x)) {
         subPersonZzAnalysisData.x = d.x;
         subPersonZzAnalysisData.y = d.y;
@@ -380,16 +424,16 @@ class Market extends Component {
       <GridContent>
         <Row gutter={12}>
           <Col {...topColResponsiveProps}>
-            <Card title="企业入库数量" bodyStyle={{ paddingBottom: '8px' }}>
+            <Card title="企业入库数量" bodyStyle={{ paddingBottom: '8px' }} loading={loading}>
               <div>
                 <Row>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <p className={styles.item}>总数量</p>
-                    <p className={styles.topNumber}>1500</p>
+                    <p className={styles.topNumber}>{sumQYRK}</p>
                   </Col>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <p className={styles.item}>新增数量</p>
-                    <p className={styles.topNumber}>200</p>
+                    <p className={styles.topNumber}>{addQYRK}</p>
                   </Col>
                 </Row>
               </div>
@@ -397,22 +441,22 @@ class Market extends Component {
               <div style={{ textAlign: 'center' }}>
                 <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
                   <span>增加率</span>
-                  <span className={styles.trendText}>12%</span>
+                  <span className={styles.trendText}>{`${(ratioQYRK * 100).toFixed(2)}%`}</span>
                 </Trend>
               </div>
             </Card>
           </Col>
           <Col {...topColResponsiveProps}>
-            <Card title="活跃企业数量" bodyStyle={{ paddingBottom: '8px' }}>
+            <Card title="活跃企业数量" bodyStyle={{ paddingBottom: '8px' }} loading={loading}>
               <div>
                 <Row>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <p className={styles.item}>投标企业数量</p>
-                    <p className={styles.topNumber}>300</p>
+                    <p className={styles.topNumber}>{countTBS}</p>
                   </Col>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <p className={styles.item}>中标企业数量</p>
-                    <p className={styles.topNumber}>200</p>
+                    <p className={styles.topNumber}>{countZBS}</p>
                   </Col>
                 </Row>
               </div>
@@ -420,26 +464,26 @@ class Market extends Component {
               <div style={{ textAlign: 'center' }}>
                 <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
                   <span>占比</span>
-                  <span className={styles.trendText}>12%</span>
+                  <span className={styles.trendText}>{`${(ratioTBS * 100).toFixed(2)}%`}</span>
                 </Trend>
                 <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
                   <span>占比</span>
-                  <span className={styles.trendText}>11%</span>
+                  <span className={styles.trendText}>{`${(ratioZBS * 100).toFixed(2)}%`}</span>
                 </Trend>
               </div>
             </Card>
           </Col>
           <Col {...topColResponsiveProps}>
-            <Card title="人员入库数量" bodyStyle={{ paddingBottom: '8px' }}>
+            <Card title="人员入库数量" bodyStyle={{ paddingBottom: '8px' }} loading={loading}>
               <div>
                 <Row>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <p className={styles.item}>总数量</p>
-                    <p className={styles.topNumber}>80000</p>
+                    <p className={styles.topNumber}>{sumRKRY}</p>
                   </Col>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <p className={styles.item}>新增数量</p>
-                    <p className={styles.topNumber}>2000</p>
+                    <p className={styles.topNumber}>{addRKRY}</p>
                   </Col>
                 </Row>
               </div>
@@ -447,22 +491,22 @@ class Market extends Component {
               <div style={{ textAlign: 'center' }}>
                 <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
                   <span>增加率</span>
-                  <span className={styles.trendText}>12%</span>
+                  <span className={styles.trendText}>{`${(ratioRKRY * 100).toFixed(2)}%`}</span>
                 </Trend>
               </div>
             </Card>
           </Col>
           <Col {...topColResponsiveProps}>
-            <Card title="活跃人员数量" bodyStyle={{ paddingBottom: '8px' }}>
+            <Card title="活跃人员数量" bodyStyle={{ paddingBottom: '8px' }} loading={loading}>
               <div>
                 <Row>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <p className={styles.item}>投标人员数量</p>
-                    <p className={styles.topNumber}>3000</p>
+                    <p className={styles.topNumber}>{userTBS}</p>
                   </Col>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <p className={styles.item}>中标人员数量</p>
-                    <p className={styles.topNumber}>800</p>
+                    <p className={styles.topNumber}>{userZBS}</p>
                   </Col>
                 </Row>
               </div>
@@ -470,113 +514,53 @@ class Market extends Component {
               <div style={{ textAlign: 'center' }}>
                 <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
                   <span>占比</span>
-                  <span className={styles.trendText}>12%</span>
+                  <span className={styles.trendText}>{`${(ratioUser * 100).toFixed(2)}%`}</span>
                 </Trend>
                 <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
                   <span>占比</span>
-                  <span className={styles.trendText}>11%</span>
+                  <span className={styles.trendText}>{`${(userBiLi * 100).toFixed(2)}%`}</span>
                 </Trend>
               </div>
             </Card>
           </Col>
         </Row>
-        <Row gutter={12}>
-          <Col {...doubleCardColsProps}>
-            <Card title="建筑规模与活跃企业诚信等级分析" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
-              <MatrixBar
-                height={390}
-                padding={[5, 5, 100, 60]}
-                data={[
-                  {groupY: "2万平米或投资额5千万以上", value: 0.65, groupX: "企业诚信A级"},
-                  {groupY: "2万平米或投资额5千万以上", value: 0.35, groupX: "企业诚信B级"},
-                  {groupY: "2万平米或投资额5千万以上", value: 0.0, groupX: "企业诚信C级"},
-                  {groupY: "2万平米或投资额5千万以上", value: 0.90, groupX: "企业资质诚信A级"},
-                  {groupY: "2万平米或投资额5千万以上", value: 0.10, groupX: "企业资质诚信B级"},
-                  {groupY: "2万平米或投资额5千万以上", value: 0.0, groupX: "企业资质诚信C级"},
-                  {groupY: "1万平米或投资额3千万以上", value: 0.50, groupX: "企业诚信A级"},
-                  {groupY: "1万平米或投资额3千万以上", value: 0.50, groupX: "企业诚信B级"},
-                  {groupY: "1万平米或投资额3千万以上", value: 0.0, groupX: "企业诚信C级"},
-                  {groupY: "1万平米或投资额3千万以上", value: 0.60, groupX: "企业资质诚信A级"},
-                  {groupY: "1万平米或投资额3千万以上", value: 0.40, groupX: "企业资质诚信B级"},
-                  {groupY: "1万平米或投资额3千万以上", value: 0.0, groupX: "企业资质诚信C级"},
-                  {groupY: "3000平米或投资额1千万以上", value: 0.30, groupX: "企业诚信A级"},
-                  {groupY: "3000平米或投资额1千万以上", value: 0.55, groupX: "企业诚信B级"},
-                  {groupY: "3000平米或投资额1千万以上", value: 0.15, groupX: "企业诚信C级"},
-                  {groupY: "3000平米或投资额1千万以上", value: 0.30, groupX: "企业资质诚信A级"},
-                  {groupY: "3000平米或投资额1千万以上", value: 0.50, groupX: "企业资质诚信B级"},
-                  {groupY: "3000平米或投资额1千万以上", value: 1, groupX: "企业资质诚信C级"},
-                  {groupY: "3000平米或投资额1千万以下", value: 0.20, groupX: "企业诚信A级"},
-                  {groupY: "3000平米或投资额1千万以下", value: 0.60, groupX: "企业诚信B级"},
-                  {groupY: "3000平米或投资额1千万以下", value: 0.20, groupX: "企业诚信C级"},
-                  {groupY: "3000平米或投资额1千万以下", value: 0.35, groupX: "企业资质诚信A级"},
-                  {groupY: "3000平米或投资额1千万以下", value: 0.55, groupX: "企业资质诚信B级"},
-                  {groupY: "3000平米或投资额1千万以下", value: 0.10, groupX: "企业资质诚信C级"}
-                ]}
-              />
-            </Card>
-          </Col>
-          <Col {...doubleCardColsProps}>
-            <Card title="标段与企业明细" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
-              <Table
-                loading={loading}
-                size="small"
-                scroll={{ y: 280 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    index: 1,
-                    bdNo: 'YCJS(2011)072',
-                    bdName: '宜昌市明珠小学科技综合楼新建工程',
-                    investment: 10009.837,
-                    guimo: 20930,
-                    orgName: '宜昌市XXXXXXX企业',
-                    creditLevel: 'A级',
-                  },
-                  {
-                    key: '2',
-                    index: 2,
-                    bdNo: 'YCJS(2011)073',
-                    bdName: '宜昌市明珠小学科技综合楼新建工程',
-                    investment: 10009.837,
-                    guimo: 20930,
-                    orgName: '宜昌市XXXXXXX企业',
-                    creditLevel: 'A级',
-                  },
-                  {
-                    key: '3',
-                    index: 3,
-                    bdNo: 'YCJS(2011)073',
-                    bdName: '宜昌市明珠小学科技综合楼新建工程',
-                    investment: 10009.837,
-                    guimo: 20930,
-                    orgName: '宜昌市XXXXXXX企业',
-                    creditLevel: 'A级',
-                  },
-                  {
-                    key: '4',
-                    index: 4,
-                    bdNo: 'YCJS(2011)073',
-                    bdName: '宜昌市明珠小学科技综合楼新建工程',
-                    investment: 10009.837,
-                    guimo: 20930,
-                    orgName: '宜昌市XXXXXXX企业',
-                    creditLevel: 'A级',
-                  },
-                ]}
-                columns={bdEngListColumns}
-                pagination={{
-                  pageSize: 5,
-                  total: 4,
-                  current: 1,
-                  pageSizeOptions: ['5', '10', '20', '50'],
-                  showQuickJumper: true,
-                  showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
-                }}
-              />
-            </Card>
-          </Col>
-        </Row>
+        <Card
+          loading={jzgmHyqycxfxLoading}
+          style={{ marginBottom: '12px' }}
+          title="建筑规模与活跃企业诚信等级分析"
+          bodyStyle={{ minHeight: '400px', padding: '5px' }}
+        >
+          <MatrixBar
+            height={390}
+            padding={[10, 10, 100, 90]}
+            data={jzgmHyqycxfx}
+          />
+        </Card>
+        <Card
+          style={{ marginBottom: '12px' }}
+          title="标段与企业明细"
+          bodyStyle={{
+            minHeight: '200px',
+            maxHeight: '400px',
+            padding: '5px',
+          }}
+        >
+          <Table
+            rowKey="bdCode"
+            loading={loading}
+            size="small"
+            scroll={{ y: 300 }}
+            dataSource={bdqymx.list}
+            columns={bdEngListColumns}
+            pagination={{
+              ...bdqymx.pagination,
+              pageSizeOptions: ['10', '20', '50'],
+              showSizeChanger: true,
+              showTotal: total => `总计 ${total} 条记录.`,
+            }}
+            onChange={this.handleBdqymxTableChange}
+          />
+        </Card>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card title="企业诚信等级占比" bodyStyle={{ minHeight: '300px', padding: '0 5px' }}>
@@ -648,16 +632,8 @@ class Market extends Component {
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="企业资质分析" bodyStyle={{ minHeight: '300px' }}>
-              <Pie
-                hasLegend
-                subTitle="企业总数"
-                total={() => `${orgZzAnalysisData.reduce((pre, now) => now.y + pre, 0)}家`}
-                data={orgZzAnalysisData}
-                valueFormat={value => `${value}家`}
-                height={248}
-                lineWidth={4}
-              />
+            <Card title="企业资质分析" bodyStyle={{ minHeight: '300px' }} loading={qyzzfxLoading}>
+              {this.renderQyzzfx(qyzzfx)}
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
@@ -734,14 +710,14 @@ class Market extends Component {
           <Col {...doubleCardColsProps}>
             <Card title="人员资质分析" bodyStyle={{ minHeight: '300px' }}>
               {
-                personZzAnalysisData && personZzAnalysisData.length > 0 ?
+                ryzzfx && ryzzfx.length > 0 ?
                   (
                     <Row>
                       <Col span={12}>
                         <Pie
                           subTitle="人员总数"
-                          total={() => `${personZzAnalysisData.reduce((pre, now) => now.y + pre, 0)}人`}
-                          data={personZzAnalysisData}
+                          total={() => `${ryzzfx.reduce((pre, now) => now.y + pre, 0)}人`}
+                          data={ryzzfx}
                           valueFormat={value => `${value}人`}
                           height={248}
                           padding={40}
@@ -776,53 +752,17 @@ class Market extends Component {
           <Col {...doubleCardColsProps}>
             <Card title="人员活跃度排名" bodyStyle={{ height: '300px', padding: '5px' }}>
               <Table
-                loading={loading}
+                loading={ryhydpmLoading}
                 size="small"
-                scroll={{ y: 280 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    ranking: 1,
-                    name: '张三',
-                    job: '项目经理',
-                    investment: 674564.837,
-                    amountOfEng: 9,
-                  },
-                  {
-                    key: '2',
-                    ranking: 2,
-                    name: '李四',
-                    job: '项目经理',
-                    investment: 53309.837,
-                    amountOfEng: 6,
-                  },
-                  {
-                    key: '3',
-                    ranking: 3,
-                    name: '王五',
-                    job: '监理员',
-                    investment: 33309.837,
-                    amountOfEng: 4,
-                  },
-                  {
-                    key: '4',
-                    ranking: 4,
-                    name: '赵六',
-                    job: '施工员',
-                    investment: 30009.837,
-                    amountOfEng: 3,
-                  },
-                ]}
+                rowKey="userId"
+                scroll={{ y: 180 }}
+                dataSource={ryhydpm.list}
                 columns={personActivityRankingList}
                 pagination={{
-                  pageSize: 5,
-                  total: 4,
-                  current: 1,
-                  pageSizeOptions: ['5', '10', '20', '50'],
-                  showQuickJumper: true,
-                  showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  ...ryhydpm.pagination,
+                  showTotal: total => `总计 ${total} 人.`,
                 }}
+                onChange={this.handleRyhydpmTableChange}
               />
             </Card>
           </Col>

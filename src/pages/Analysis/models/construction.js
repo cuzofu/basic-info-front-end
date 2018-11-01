@@ -5,13 +5,13 @@ export default {
 
   state: {
     engList: {
-      data: [],
+      list: [],
       pagination: {
         pageSize: 10,
       }
     },
     corpList: {
-      data: [],
+      list: [],
       pagination: {
         pageSize: 10,
       }
@@ -25,7 +25,12 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            engList: response
+            engList: response || {
+              list: [],
+              pagination: {
+                pageSize: 10,
+              }
+            }
           },
         });
       } catch (e) {

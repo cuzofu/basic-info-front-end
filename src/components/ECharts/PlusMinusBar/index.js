@@ -13,16 +13,22 @@ import 'echarts/lib/component/axis';
 class PlusMinusBar extends Component {
 
   componentDidMount() {
+    this.init();
+  }
 
+  componentDidUpdate() {
+    this.init()
+  }
+
+  init = () => {
     const {
+      id,
       data = [],
       dimensions = [],
       color = ['#8C8C8C', '#2fc25b', '#1890ff'],
     } = this.props;
-
-    // 基于准备好的dom，初始化echarts实例
-    const myChart = echarts.init(document.getElementById('main'));
-    // 绘制图表
+    console.log(data);
+    const myChart = echarts.init(document.getElementById(id));
     myChart.setOption({
       color,
       tooltip : {
@@ -32,7 +38,7 @@ class PlusMinusBar extends Component {
         },
       },
       legend: {
-        // data:['差额', '合同额', '决算额']
+        data: ['差额', '合同额', '决算额']
       },
       grid: {
         left: '3%',
@@ -52,7 +58,6 @@ class PlusMinusBar extends Component {
         {
           type : 'category',
           axisTick : {show: false},
-          // data : ['HT0001','HT0002','HT0003','HT0004','HT0005']
         }
       ],
       series : [
@@ -93,13 +98,12 @@ class PlusMinusBar extends Component {
     });
 
     window.addEventListener('resize', () => {myChart.resize()});
-
-  }
+  };
 
   render() {
-    const {height} = this.props;
+    const {id, height} = this.props;
     return (
-      <div id="main" style={{ width: '100%', height: height || '100%' }} />
+      <div id={id} style={{ width: '100%', height: height || '100%' }} />
     );
   }
 }

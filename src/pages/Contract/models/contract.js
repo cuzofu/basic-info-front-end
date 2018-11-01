@@ -1,41 +1,94 @@
-import {queryBiddingBasicInfo, queryContractAmountDataByRegion, queryFinalAccountsDataByRegion} from '@/services/contract';
+import {
+  queryContractBasicInfo,
+  queryContractAmountDataByRegion,
+  queryFinalAccountsDataByRegion,
+  queryYsjscytj,
+} from '@/services/contract';
 
 export default {
   namespace: 'contract',
 
   state: {
     basicInfo: {},
-    contractAmountDataByRegion: {},
-    finalAccountsDataByRegion: {},
+    contractAmountDataByRegion: [],
+    finalAccountsDataByRegion: [],
+    ysjscytj: [],
   },
 
   effects: {
     * fetchBasicInfo({payload}, {call, put}) {
-      const response = yield call(queryBiddingBasicInfo, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          basicInfo: response,
-        },
-      });
+      try {
+        const response = yield call(queryContractBasicInfo, payload);
+        console.log(response);
+        yield put({
+          type: 'save',
+          payload: {
+            basicInfo: response || {},
+          },
+        });
+      } catch (e) {
+        yield put({
+          type: 'save',
+          payload: {
+            basicInfo: {},
+          },
+        });
+      }
     },
     * fetchContractAmountDataByRegion({payload}, {call, put}) {
-      const response = yield call(queryContractAmountDataByRegion, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          contractAmountDataByRegion: response,
-        },
-      });
+      try {
+        const response = yield call(queryContractAmountDataByRegion, payload);
+        console.log(response);
+        yield put({
+          type: 'save',
+          payload: {
+            contractAmountDataByRegion: response || [],
+          },
+        });
+      } catch (e) {
+        yield put({
+          type: 'save',
+          payload: {
+            contractAmountDataByRegion: [],
+          },
+        });
+      }
     },
     * fetchFinalAccountsDataByRegion({payload}, {call, put}) {
-      const response = yield call(queryFinalAccountsDataByRegion, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          finalAccountsDataByRegion: response,
-        },
-      });
+      try {
+        const response = yield call(queryFinalAccountsDataByRegion, payload);
+        yield put({
+          type: 'save',
+          payload: {
+            finalAccountsDataByRegion: response || [],
+          },
+        });
+      } catch (e) {
+        yield put({
+          type: 'save',
+          payload: {
+            finalAccountsDataByRegion: [],
+          },
+        });
+      }
+    },
+    * fetchYsjscytjData({payload}, {call, put}) {
+      try {
+        const response = yield call(queryYsjscytj, payload);
+        yield put({
+          type: 'save',
+          payload: {
+            ysjscytj: response || [],
+          },
+        });
+      } catch (e) {
+        yield put({
+          type: 'save',
+          payload: {
+            ysjscytj: [],
+          },
+        });
+      }
     },
   },
 
@@ -44,6 +97,14 @@ export default {
       return {
         ...state,
         ...payload,
+      }
+    },
+    clear() {
+      return {
+        basicInfo: {},
+        contractAmountDataByRegion: [],
+        finalAccountsDataByRegion: [],
+        ysjscytj: [],
       }
     }
   }
