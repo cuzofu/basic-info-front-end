@@ -28,13 +28,13 @@ class InvestmentScatterChart extends Component {
     const legendData = [];
     data.forEach(d => {
       seriesOpts.push({
-        name: d.name,
+        name: d.type,
         type: 'scatter',
         tooltip: {
           trigger: 'axis',
           formatter: (params) => {
             const date = new Date(params.value[0]);
-            return `${params.seriesName}（${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}）<br />${params.value[1]}, ${params.value[2]}`;
+            return `${params.seriesName}（${date.getFullYear()}-${(date.getMonth() + 1)}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}）<br />${params.value[3]}, ${params.value[2]}`;
           },
           axisPointer: {
             type: 'cross',
@@ -45,20 +45,14 @@ class InvestmentScatterChart extends Component {
           }
         },
         symbolSize: (value) => Math.round(value[2] / 10),
-        data: (() => {
-          const date = [];
-          let len = 0;
-          while (len++ < 150) {
-            date.push([
-              new Date(2014, 9, 1, 0, Math.round(Math.random() * 10000)),
-              (Math.random() * 3000000).toFixed(2) - 0,
-              100
-            ]);
-          }
-          return date;
-        })()
+        data: d.list.map( r => ([
+          new Date(2014, 9, 1, 0, Math.round(Math.random() * 10000)),
+          (r.tze - 0),
+          100,
+          r.engName,
+        ])),
       });
-      legendData.push(d.name);
+      legendData.push(d.type);
     });
     // 基于准备好的dom，初始化echarts实例
     const myChart = echarts.init(document.getElementById(id));
@@ -77,8 +71,8 @@ class InvestmentScatterChart extends Component {
       },
       dataZoom: {
         show: true,
-        start: 40,
-        end: 60
+        start: 0,
+        end: 100
       },
       legend: {
         data: legendData

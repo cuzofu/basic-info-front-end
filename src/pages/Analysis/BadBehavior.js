@@ -10,21 +10,62 @@ import styles from './BadBehavior.less';
 
 @connect(({ badBehavior, loading }) => ({
   badBehavior,
-  loading: loading.effects['badBehavior/fetch'],
+  blxwJgbmzbLoading: loading.effects['badBehavior/fetchBlxwJgbmzb'], // fetchBlxwXmpm
+  blxwJgbmlxzbLoading: loading.effects['badBehavior/fetchBlxwJgbmlxzb'],
+  blxwQyxwpmLoading: loading.effects['badBehavior/fetchBlxwQyxwpm'],
+  blxwGrxwpmLoading: loading.effects['badBehavior/fetchBlxwGrxwpm'],
+  blxwXmpmLoading: loading.effects['badBehavior/fetchBlxwXmpm'],
 }))
 class BadBehavior extends Component {
+
   state = {
+    blxwQyxwpmPagination: {
+      current: 1,
+      pageSize: 10,
+    },
+    blxwGrxwpmPagination: {
+      current: 1,
+      pageSize: 10,
+    },
+    blxwXmpmPagination: {
+      current: 1,
+      pageSize: 10,
+    }
   };
 
   componentDidMount() {
     const { dispatch } = this.props;
     this.reqRef = requestAnimationFrame(() => {
       dispatch({
-        type: 'badBehavior/fetch',
+        type: 'badBehavior/fetchBlxwJgbmzb',
+        payload: {
+          time: '2018-01-01'
+        }
       });
-      this.timeoutId = setTimeout(() => {
-        this.setState({});
-      }, 600);
+      dispatch({
+        type: 'badBehavior/fetchBlxwJgbmlxzb',
+        payload: {
+          time: '2018-01-01'
+        }
+      });
+      dispatch({
+        type: 'badBehavior/fetchBlxwQyxwpm',
+        payload: {
+          time: '2018-01-01'
+        }
+      });
+      dispatch({
+        type: 'badBehavior/fetchBlxwGrxwpm',
+        payload: {
+          time: '2018-01-01'
+        }
+      });
+      dispatch({
+        type: 'badBehavior/fetchBlxwXmpm',
+        payload: {
+          time: '2018-01-01'
+        }
+      });
     });
   }
 
@@ -35,9 +76,43 @@ class BadBehavior extends Component {
     });
   }
 
+  // 企业行为排名翻页
+  handleBlxwQyxwpmTableChange = (pagination) => {
+    this.setState({
+      blxwQyxwpmPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
+
+  // 个人行为排名翻页
+  handleBlxwGrxwpmTableChange = (pagination) => {
+    this.setState({
+      blxwGrxwpmPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
+
   render() {
     const {
-      badBehavior: { loading },
+      blxwQyxwpmPagination,
+      blxwGrxwpmPagination,
+    } = this.state;
+    const {
+      blxwJgbmzbLoading,
+      blxwJgbmlxzbLoading,
+      blxwQyxwpmLoading,
+      blxwGrxwpmLoading,
+      badBehavior: {
+        blxwJgbmzb,
+        blxwJgbmlxzb,
+        blxwQyxwpm,
+        blxwGrxwpm,
+        blxwXmpmLoading,
+      },
     } = this.props;
 
     // 左右结构布局参数
@@ -124,7 +199,7 @@ class BadBehavior extends Component {
       {
         title: '所属企业',
         dataIndex: 'orgName',
-        width: '32%',
+        width: '30%',
       },
       {
         title: '信用等级',
@@ -138,13 +213,13 @@ class BadBehavior extends Component {
       },
       {
         title: '不良行为',
-        dataIndex: 'countOfBehavior',
+        dataIndex: 'amountOfBehavior',
         width: '15%',
       },
       {
         title: '占比',
         dataIndex: 'rate',
-        width: '10%',
+        width: '12%',
       },
     ];
 
@@ -158,7 +233,7 @@ class BadBehavior extends Component {
       {
         title: '企业名称',
         dataIndex: 'orgName',
-        width: '35%',
+        width: '30%',
       },
       {
         title: '信用等级',
@@ -178,31 +253,8 @@ class BadBehavior extends Component {
       {
         title: '占比',
         dataIndex: 'rate',
-        width: '10%',
-      },
-    ];
-
-    // 机构部门占比
-    const orgAnalysisData = [
-      {
-        x: '城建管理科',
-        y: 1000,
-      },
-      {
-        x: '质量安全站',
-        y: 500,
-      },
-      {
-        x: '市场站',
-        y: 300,
-      },
-      {
-        x: '招投标',
-        y: 480,
-      },
-      {
-        x: '其他',
-        y: 1015,
+        width: '15%',
+        render: (val) => `${(val * 100).toFixed(2)}%`
       },
     ];
 
@@ -210,22 +262,28 @@ class BadBehavior extends Component {
       <GridContent>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="机构部门占比" bodyStyle={{ minHeight: '300px' }}>
-              <Pie
-                hasLegend
-                subTitle="总数"
-                total={() => orgAnalysisData.reduce((pre, now) => now.y + pre, 0)}
-                data={orgAnalysisData}
-                valueFormat={value => `${value}`}
-                height={248}
-                lineWidth={4}
-              />
+            <Card loading={blxwJgbmzbLoading} title="机构部门占比" bodyStyle={{ minHeight: '300px' }}>
+              {
+                blxwJgbmzb && blxwJgbmzb.length > 0 ? (
+                  <Pie
+                    hasLegend
+                    subTitle="总数"
+                    total={() => blxwJgbmzb.reduce((pre, now) => now.y + pre, 0)}
+                    data={blxwJgbmzb}
+                    valueFormat={value => `${value}`}
+                    height={248}
+                    lineWidth={4}
+                  />
+                ) : (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                )
+              }
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
             <Card title="项目排名占比" bodyStyle={{ height: '300px', padding: '5px' }}>
               <Table
-                loading={loading}
+                loading={blxwJgbmzbLoading}
                 size="small"
                 scroll={{ y: 180 }}
                 dataSource={[
@@ -377,7 +435,7 @@ class BadBehavior extends Component {
           <Col {...doubleCardColsProps}>
             <Card title="行为类型排名占比" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
               <Table
-                loading={loading}
+                loading={blxwJgbmzbLoading}
                 size="small"
                 scroll={{ y: 280 }}
                 dataSource={[
@@ -430,149 +488,37 @@ class BadBehavior extends Component {
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="企业行为排名占比" bodyStyle={{ height: '300px', padding: '5px' }}>
+            <Card loading={blxwQyxwpmLoading} title="企业行为排名占比" bodyStyle={{ height: '400px', padding: '5px' }}>
               <Table
-                loading={loading}
                 size="small"
-                scroll={{ y: 180 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    ranking: 1,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    creditLevel: 'A',
-                    creditScore: 120,
-                    amountOfBehavior: 9,
-                    rate: 30,
-                  },
-                  {
-                    key: '2',
-                    ranking: 2,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    creditLevel: 'A',
-                    creditScore: 120,
-                    amountOfBehavior: 9,
-                    rate: 30,
-                  },
-                  {
-                    key: '3',
-                    ranking: 3,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    creditLevel: 'A',
-                    creditScore: 120,
-                    amountOfBehavior: 9,
-                    rate: 30,
-                  },
-                  {
-                    key: '4',
-                    ranking: 4,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    creditLevel: 'A',
-                    creditScore: 120,
-                    amountOfBehavior: 9,
-                    rate: 30,
-                  },
-                  {
-                    key: '5',
-                    ranking: 5,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    creditLevel: 'A',
-                    creditScore: 120,
-                    amountOfBehavior: 9,
-                    rate: 30,
-                  },
-                ]}
+                scroll={{ y: 300 }}
+                dataSource={blxwQyxwpm}
                 columns={orgBehaviorRankingList}
                 pagination={{
-                  pageSize: 5,
-                  total: 4,
-                  current: 1,
-                  pageSizeOptions: ['5', '10', '20', '50'],
-                  showQuickJumper: true,
+                  pageSize: blxwQyxwpmPagination.pageSize,
+                  current: blxwQyxwpmPagination.current,
+                  pageSizeOptions: ['10', '20', '50'],
                   showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  showTotal: total => `总计 ${total} 家企业.`,
                 }}
+                onChange={this.handleBlxwQyxwpmTableChange}
               />
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="个人行为排名占比" bodyStyle={{ height: '300px', padding: '5px' }}>
+            <Card loading={blxwGrxwpmLoading} title="个人行为排名占比" bodyStyle={{ height: '400px', padding: '5px' }}>
               <Table
-                loading={loading}
                 size="small"
-                scroll={{ y: 180 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    ranking: 1,
-                    name: '张叁',
-                    orgName: '湖北广盛',
-                    creditLevel: 'A',
-                    creditScore: 238,
-                    amountOfBehavior: 18,
-                    rate: '30%',
-                  },
-                  {
-                    key: '2',
-                    ranking: 2,
-                    name: '李四',
-                    orgName: '湖北沛函',
-                    creditLevel: 'A',
-                    creditScore: 211,
-                    amountOfBehavior: 11,
-                    rate: '20%',
-                  },
-                  {
-                    key: '3',
-                    ranking: 3,
-                    name: '王五',
-                    orgName: '中国建筑',
-                    creditLevel: 'A',
-                    creditScore: 180,
-                    amountOfBehavior: 9,
-                    rate: '10%',
-                  },
-                  {
-                    key: '4',
-                    ranking: 4,
-                    name: '赵六',
-                    orgName: '葛洲坝建设集团',
-                    creditLevel: 'A',
-                    creditScore: 146,
-                    amountOfBehavior: 13,
-                    rate: '5%',
-                  },
-                  {
-                    key: '5',
-                    ranking: 5,
-                    name: '赵六',
-                    orgName: '葛洲坝建设集团',
-                    creditLevel: 'A',
-                    creditScore: 146,
-                    amountOfBehavior: 13,
-                    rate: '5%',
-                  },
-                  {
-                    key: '6',
-                    ranking: 6,
-                    name: '赵六',
-                    orgName: '葛洲坝建设集团',
-                    creditLevel: 'A',
-                    creditScore: 146,
-                    amountOfBehavior: 13,
-                    rate: '5%',
-                  },
-                ]}
+                scroll={{ y: 280 }}
+                dataSource={blxwGrxwpm}
                 columns={personalBehaviorRankingList}
                 pagination={{
-                  pageSize: 5,
-                  total: 4,
-                  current: 1,
-                  pageSizeOptions: ['5', '10', '20', '50'],
-                  showQuickJumper: true,
+                  ...blxwGrxwpmPagination,
+                  pageSizeOptions: ['10', '50'],
                   showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  showTotal: total => `总计 ${total} 人.`,
                 }}
+                onChange={this.handleBlxwGrxwpmTableChange}
               />
             </Card>
           </Col>

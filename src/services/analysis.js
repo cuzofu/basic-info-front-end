@@ -78,3 +78,37 @@ export async function queryQycxdjzbData(params) {
   return request(`/elastic_sskj/api/search/eng/qycxdj/${params.time}`)
 }
 
+// 不良行为机构部门占比
+export async function queryBlxwJgbmzb(params) {
+  return request(`/elastic_sskj/api/search/organBad`)
+}
+
+// 不良行为机构部门类型占比
+export async function queryBlxwJgbmlxzb(params) {
+  return request(`/elastic_sskj/api/search/organTypeBad`)
+}
+
+// 执法文书明细按科室
+export async function queryBlxwZfwsks(params) {
+  return request(`/elastic_sskj/api/search/organByLaw`)
+}
+
+// 企业行为排名占比
+export async function queryBlxwQyxwpm(params) {
+  return request(`/elastic_sskj/api/search/organByRank`)
+}
+
+// 个人行为排名占比
+export async function queryBlxwGrxwpm(params) {
+  return request(`/elastic_sskj/api/search/userByRank`)
+}
+
+// 项目排名占比
+export async function queryBlxwXmpm(params) {
+  return request(`/elastic_sskj/api/search/proByRank`)
+}
+
+// 行为类型排名占比
+export async function queryBlxwXwlxpm(params) {
+  return request(`/elastic_sskj/api/search/behByRank`)
+}

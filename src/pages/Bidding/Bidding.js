@@ -30,13 +30,79 @@ import InvestmentScatterChart from './InvestmentScatterChart';
   bidding,
   basicInfoLoading: loading.effects['bidding/fetchBasicInfo'],
   engTypeLoading: loading.effects['bidding/fetchEngType'],
+  regionTypeLoading: loading.effects['bidding/fetchRegionType'],
+  gmfbLoading: loading.effects['bidding/fetchGmfb'],
+  tzefbLoading: loading.effects['bidding/fetchTzefb'],
 }))
 class Bidding extends Component {
+
+  componentDidMount() {
+    const {
+      dispatch
+    } = this.props;
+    dispatch({
+      type: 'bidding/fetchBasicInfo',
+      payload: {
+        time: '2018-10-29'
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchEngType',
+      payload: {
+        time: '2018-10-29'
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchRegionType',
+      payload: {
+        time: '2018-10-29'
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchGmfb',
+      payload: {
+        time: '2018-10-29'
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchTzefb',
+      payload: {
+        time: '2018-10-29'
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bidding/clear',
+    });
+  }
 
   render() {
 
     const {
-      basicInfoLoading
+      basicInfoLoading,
+      engTypeLoading,
+      regionTypeLoading,
+      gmfbLoading,
+      tzefbLoading,
+      bidding: {
+        basicInfo: {
+          sumZBS = 0,
+          zbytb = "0.00",
+          zbyhb= '0.00',
+          sumLBS = 0,
+          lbbl = '0.00',
+          sumCXKB = 0,
+          cxkbbl = '0.00',
+          sumZBCG = 0,
+          cgbl = '0.00',
+        },
+        engType,
+        regionType,
+        tzefb,
+      }
     } = this.props;
 
     const topColResponsiveProps = {xs: 24, sm: 12, md: 12, lg: 12, xl: 6, style: {marginBottom: 12},};
@@ -44,50 +110,12 @@ class Bidding extends Component {
     // 左右结构布局参数
     const doubleCardColsProps = { lg: 24, xl: 12, style: { marginBottom: 12 } };
 
-    const engTypeData = [
-      {
-        x: '住宅工程',
-        y: 1000,
-        tb: 0.11, // 月同比
-        hb: 0.05, // 月环比
-      },
-      {
-        x: '公共建筑',
-        y: 500,
-        tb: 0.12,
-        hb: 0.06,
-      },
-      {
-        x: '工业厂房',
-        y: 300,
-        tb: 0.31,
-        hb: 0.23,
-      },
-      {
-        x: '构筑物',
-        y: 480,
-        tb: 0.09,
-        hb: -0.05,
-      },
-      {
-        x: '市政工程',
-        y: 805,
-        tb: 0.56,
-        hb: 0.47,
-      },
-      {
-        x: '绿化工程',
-        y: 1015,
-        tb: 1.11,
-        hb: 1.05,
-      },
-      {
-        x: '其它',
-        y: 1015,
-        tb: -0.22,
-        hb: -0.30,
-      },
-    ];
+    const engTypeData = engType.map( r => ({
+      x: r.gcType,
+      y: r.gcNum,
+      tb: parseFloat(r.ytb).toFixed(2), // 月同比
+      hb: parseFloat(r.yhb).toFixed(2), // 月环比
+    }));
 
     return (
       <GridContent>
@@ -104,16 +132,16 @@ class Bidding extends Component {
                   <Icon type="info-circle-o" />
                 </Tooltip>
               }
-              total={numeral(1222).format('0,0')}
+              total={numeral({sumZBS}).format('0,0')}
               footer={
                 <div style={{ textAlign: 'center' }}>
-                  <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                  <Trend flag="up" reverseColor style={{ padding: '0 6px 0 0' }}>
                     <span>月同比</span>
-                    <span className={styles.trendText}>12%</span>
+                    <span className={styles.trendText}>{`${(parseFloat(zbytb) * 100).toFixed(2)}%`}</span>
                   </Trend>
-                  <Trend flag="down" reverseColor style={{ padding: '0 12px' }}>
+                  <Trend flag="down" reverseColor style={{ padding: '0 0 0 6px' }}>
                     <span>月环比</span>
-                    <span className={styles.trendText}>11%</span>
+                    <span className={styles.trendText}>{`${(parseFloat(zbyhb) * 100).toFixed(2)}%`}</span>
                   </Trend>
                 </div>
               }
@@ -160,61 +188,65 @@ class Bidding extends Component {
             <ChartCard
               title="流标数"
               action={<Tooltip title="指标说明"><Icon type="info-circle-o" /></Tooltip>}
-              total="833"
+              total={sumLBS}
               footer={
                 <div>
                   <span>
                     流标率
-                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>12%</Trend>
+                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>{`${(parseFloat(lbbl) * 100).toFixed(2)}%`}</Trend>
                   </span>
                 </div>
               }
               contentHeight={46}
             >
-              <MiniProgress percent={12} strokeWidth={8} />
+              <MiniProgress percent={(parseFloat(lbbl) * 100).toFixed(2)} strokeWidth={8} />
             </ChartCard>
           </Col>
           <Col {...topColResponsiveProps}>
             <ChartCard
               title="重新开标"
               action={<Tooltip title="指标说明"><Icon type="info-circle-o" /></Tooltip>}
-              total="199"
+              total={sumCXKB}
               footer={
                 <div>
                   <span>
                     成功率
-                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>90%</Trend>
+                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>{`${(parseFloat(cxkbbl) * 100).toFixed(2)}%`}</Trend>
                   </span>
                 </div>
               }
               contentHeight={46}
             >
-              <Pie percent={90} total="90%" height={100} />
+              <Pie percent={(parseFloat(cgbl) * 100).toFixed(2)} total={`${(parseFloat(cxkbbl) * 100).toFixed(2)}%`} height={100} />
             </ChartCard>
           </Col>
           <Col {...topColResponsiveProps}>
             <ChartCard
               title="招标成功"
               action={<Tooltip title="指标说明"><Icon type="info-circle-o" /></Tooltip>}
-              total="88"
+              total={sumZBCG}
               footer={
                 <div>
                   <span>
                     成功率
-                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>95%</Trend>
+                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>{`${(parseFloat(cgbl) * 100).toFixed(2)}%`}</Trend>
                   </span>
                 </div>
               }
               contentHeight={46}
             >
-              <MiniProgress percent={95} strokeWidth={8} target={90} color="green" />
+              <MiniProgress percent={(parseFloat(cgbl) * 100).toFixed(2)} strokeWidth={8} target={90} color="green" />
             </ChartCard>
           </Col>
         </Row>
 
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="工程类型" bodyStyle={{ minHeight: '300px', padding: '24px 5px' }}>
+            <Card
+              loading={engTypeLoading}
+              title="工程类型"
+              bodyStyle={{ minHeight: '300px', padding: '24px 5px' }}
+            >
               <TrendPie
                 hasLegend
                 subTitle="数量"
@@ -227,59 +259,15 @@ class Bidding extends Component {
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="区域分布" bodyStyle={{ minHeight: '300px', padding: '5px' }}>
+            <Card
+              loading={regionTypeLoading}
+              title="区域分布"
+              bodyStyle={{ minHeight: '300px', padding: '5px' }}
+            >
               <MatrixBar
                 height={290}
                 padding={[10, 10, 100, 50]}
-                data={[
-                  { groupY: '西陵区', value: 0.5, groupX: '市政工程' },
-                  { groupY: '西陵区', value: 0.5, groupX: '住宅工程' },
-                  { groupY: '西陵区', value: 0.2, groupX: '公共建筑' },
-                  { groupY: '西陵区', value: 0.33, groupX: '工业厂房' },
-                  { groupY: '西陵区', value: 0.22, groupX: '绿化工程' },
-                  { groupY: '西陵区', value: 0.11, groupX: '构筑物' },
-                  { groupY: '西陵区', value: 0.65, groupX: '其他' },
-
-                  { groupY: '伍家区', value: 0.09, groupX: '市政工程' },
-                  { groupY: '伍家区', value: 0.99, groupX: '住宅工程' },
-                  { groupY: '伍家区', value: 0.05, groupX: '公共建筑' },
-                  { groupY: '伍家区', value: 0.15, groupX: '工业厂房' },
-                  { groupY: '伍家区', value: 0.25, groupX: '绿化工程' },
-                  { groupY: '伍家区', value: 0.11, groupX: '构筑物' },
-                  { groupY: '伍家区', value: 0.65, groupX: '其他' },
-
-                  { groupY: '夷陵区', value: 0.22, groupX: '市政工程' },
-                  { groupY: '夷陵区', value: 0.33, groupX: '住宅工程' },
-                  { groupY: '夷陵区', value: 0.44, groupX: '公共建筑' },
-                  { groupY: '夷陵区', value: 0.55, groupX: '工业厂房' },
-                  { groupY: '夷陵区', value: 0.77, groupX: '绿化工程' },
-                  { groupY: '夷陵区', value: 0.88, groupX: '构筑物' },
-                  { groupY: '夷陵区', value: 0.66, groupX: '其他' },
-
-                  { groupY: '点军区', value: 0.44, groupX: '市政工程' },
-                  { groupY: '点军区', value: 0.22, groupX: '住宅工程' },
-                  { groupY: '点军区', value: 0.11, groupX: '公共建筑' },
-                  { groupY: '点军区', value: 0.09, groupX: '工业厂房' },
-                  { groupY: '点军区', value: 0.89, groupX: '绿化工程' },
-                  { groupY: '点军区', value: 0.05, groupX: '构筑物' },
-                  { groupY: '点军区', value: 0.15, groupX: '其他' },
-
-                  { groupY: '高新区', value: 0.25, groupX: '市政工程' },
-                  { groupY: '高新区', value: 0.09, groupX: '住宅工程' },
-                  { groupY: '高新区', value: 0.89, groupX: '公共建筑' },
-                  { groupY: '高新区', value: 0.05, groupX: '工业厂房' },
-                  { groupY: '高新区', value: 0.15, groupX: '绿化工程' },
-                  { groupY: '高新区', value: 0.25, groupX: '构筑物' },
-                  { groupY: '高新区', value: 0.09, groupX: '其他' },
-
-                  { groupY: '猇亭区', value: 0.89, groupX: '市政工程' },
-                  { groupY: '猇亭区', value: 0.05, groupX: '住宅工程' },
-                  { groupY: '猇亭区', value: 0.15, groupX: '公共建筑' },
-                  { groupY: '猇亭区', value: 0.25, groupX: '工业厂房' },
-                  { groupY: '猇亭区', value: 0.09, groupX: '绿化工程' },
-                  { groupY: '猇亭区', value: 0.89, groupX: '构筑物' },
-                  { groupY: '猇亭区', value: 0.05, groupX: '其他' },
-                ]}
+                data={regionType}
               />
             </Card>
           </Col>
@@ -287,38 +275,16 @@ class Bidding extends Component {
 
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="投资额分布" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
+            <Card loading={tzefbLoading} title="投资额分布" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
               <InvestmentScatterChart
                 id="investment"
                 height={390}
-                data={[
-                  {
-                    name: '住宅工程'
-                  },
-                  {
-                    name: '公共建筑'
-                  },
-                  {
-                    name: '工业厂房'
-                  },
-                  {
-                    name: '构筑物'
-                  },
-                  {
-                    name: '市政工程'
-                  },
-                  {
-                    name: '绿化工程'
-                  },
-                  {
-                    name: '其它'
-                  },
-                ]}
+                data={tzefb}
               />
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="规模分布" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
+            <Card loading={gmfbLoading} title="规模分布" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
               <DimensionsScatterChart id="dimensions" height={390} />
             </Card>
           </Col>

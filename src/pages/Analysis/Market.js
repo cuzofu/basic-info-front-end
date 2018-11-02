@@ -42,6 +42,14 @@ class Market extends Component {
 
   state = {
     subPersonZzAnalysisData: {},
+    ryhydpmPagination: {
+      current: 1,
+      pageSize: 50,
+    },
+    qyhydpmPagination: {
+      current: 1,
+      pageSize: 50,
+    }
   };
 
   componentDidMount() {
@@ -156,6 +164,60 @@ class Market extends Component {
 
   };
 
+  // 企业诚信等级占比
+  renderQycxdjzb = (data) => {
+    if (data && data.length > 0) {
+
+      const destData = [
+        {
+          group: '企业数量',
+        },
+        {
+          group: '投标数量',
+        },
+        {
+          group: '中标数量',
+        }
+      ];
+
+      data.forEach( d => {
+        switch (d.groupY) {
+          case '企业入库数量':
+            destData[0][d.groupX] = parseInt(d.value, 0);
+            break;
+          case '投标数量':
+            destData[1][d.groupX] = parseInt(d.value, 0);
+            break;
+          case '中标数量':
+            destData[2][d.groupX] = parseInt(d.value, 0);
+            break;
+          default:
+            break;
+        }
+      });
+
+      const ds = new DataSet();
+      const dv = ds.createView().source(destData);
+      dv.transform({
+        type: 'fold',
+        fields: ['企业诚信A级','企业诚信B级','企业诚信C级','企业资质诚信A级','企业资质诚信B级','企业资质诚信C级'], // 展开字段集
+        key: '诚信等级', // key字段
+        value: '数量', // value字段
+      });
+      return (
+        <Chart height={300} data={dv} forceFit>
+          <Axis name="诚信等级" />
+          <Axis name="数量" />
+          <Legend />
+          <Tooltip crosshairs={{type : "y"}} />
+          <Geom type='interval' position="诚信等级*数量" color="group" adjust={[{type: 'dodge',marginRatio: 1/32}]} />
+        </Chart>
+      );
+    }
+
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
+  };
+
   // 标段与企业明细翻页
   handleBdqymxTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
@@ -186,43 +248,38 @@ class Market extends Component {
   };
 
   // 人员活跃度排名翻页
-  handleRyhydpmTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
+  handleRyhydpmTableChange = (pagination) => {
+    this.setState({
+      ryhydpmPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
 
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
-    const params = {
-      currentPage: pagination.current - 1,
-      pageSize: pagination.pageSize,
-      ...filters,
-    };
-    if (sorter.field) {
-      params.sort = sorter.field;
-      params.direction = sorter.order;
-    } else {
-      params.sort = 'gjTime';
-      params.direction = 'descend';
-    }
-
-    dispatch({
-      type: 'market/fetchRyhydpmData',
-      payload: params,
+  // 企业活跃度排名翻页
+  handleQyhydpmTableChange = (pagination) => {
+    this.setState({
+      qyhydpmPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
     });
   };
 
   render() {
     const {
-      subPersonZzAnalysisData
+      subPersonZzAnalysisData,
+      ryhydpmPagination,
+      qyhydpmPagination,
     } = this.state;
     const {
       loading,
       qyzzfxLoading,
       ryhydpmLoading,
+      qyhydpmLoading,
       jzgmHyqycxfxLoading,
+      qycxdjzbLoading,
       market: {
         qyAndRyCount: {
           addQYRK = 0,
@@ -243,8 +300,10 @@ class Market extends Component {
         qyzzfx,
         bdqymx,
         ryhydpm,
+        qyhydpm,
         jzgmHyqycxfx,
         ryzzfx, // 人员资质分析
+        qycxdjzb, // 企业诚信占比
       },
     } = this.props;
 
@@ -339,26 +398,28 @@ class Market extends Component {
         title: '排名',
         dataIndex: 'ranking',
         width: '10%',
+        render: (val, r, index) => ((qyhydpmPagination.current - 1) === 0 ? (1 + index) : ((qyhydpmPagination.current - 1) * (qyhydpmPagination.pageSize) + 1 + index)),
       },
       {
         title: '企业名称',
-        dataIndex: 'orgName',
+        dataIndex: 'estaName',
         width: '40%',
       },
       {
         title: '中标数量',
-        dataIndex: 'amountOfBidding',
+        dataIndex: 'bidNum',
         width: '15%',
       },
       {
         title: '本期投资额(万元)',
-        dataIndex: 'investment',
+        dataIndex: 'sumTZE',
         width: '25%',
       },
       {
         title: '占比',
-        dataIndex: 'rate',
+        dataIndex: 'zhanbi',
         width: '10%',
+        render: (val) => `${(parseFloat(val) * 100).toFixed(2)}%`
       },
     ];
 
@@ -369,18 +430,18 @@ class Market extends Component {
         dataIndex: 'index',
         width: '10%',
         align: 'center',
-        render: (val, r, index) => ((ryhydpm.pagination.current - 1) === 0 ? (1 + index) : ((ryhydpm.pagination.current - 1) * (ryhydpm.pagination.pageSize) + 1 + index)),
+        render: (val, r, index) => ((ryhydpmPagination.current - 1) === 0 ? (1 + index) : ((ryhydpmPagination.current - 1) * (ryhydpmPagination.pageSize) + 1 + index)),
       },
       {
         title: '姓名',
         dataIndex: 'userName',
-        width: '25%',
+        width: '20%',
         align: 'center',
       },
       {
         title: '证件号码',
         dataIndex: 'userId',
-        width: '20%',
+        width: '25%',
         align: 'center',
       },
       {
@@ -405,20 +466,6 @@ class Market extends Component {
         subPersonZzAnalysisData.sub = d.sub;
       }
     }
-
-    const orgCreditLevelData = [
-      { group:'企业数量', '企业诚信A级': 2563, '企业诚信B级': 1256, '企业诚信C级' :652, '企业资质诚信A级': 3364, '企业资质诚信B级': 1452, '企业资质诚信C级': 4589 },
-      { group:'投标数量', '企业诚信A级': 5625, '企业诚信B级': 2658, '企业诚信C级' :1012, '企业资质诚信A级': 3256, '企业资质诚信B级': 1252, '企业资质诚信C级': 5235 },
-      { group:'中标数量', '企业诚信A级': 2302, '企业诚信B级': 2101, '企业诚信C级' :356, '企业资质诚信A级': 3125, '企业资质诚信B级': 1623, '企业资质诚信C级': 4123 },
-    ];
-    const ds = new DataSet();
-    const orgCreditLevelDataTrans = ds.createView().source(orgCreditLevelData);
-    orgCreditLevelDataTrans.transform({
-      type: 'fold',
-      fields: ['企业诚信A级','企业诚信B级','企业诚信C级','企业资质诚信A级','企业资质诚信B级','企业资质诚信C级'], // 展开字段集
-      key: '诚信等级', // key字段
-      value: '数量', // value字段
-    });
 
     return (
       <GridContent>
@@ -462,11 +509,11 @@ class Market extends Component {
               </div>
               <Divider style={{ margin: '12px 0' }} />
               <div style={{ textAlign: 'center' }}>
-                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                <Trend flag="up" reverseColor style={{ padding: '0 6px 0 0' }}>
                   <span>占比</span>
                   <span className={styles.trendText}>{`${(ratioTBS * 100).toFixed(2)}%`}</span>
                 </Trend>
-                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                <Trend flag="up" reverseColor style={{ padding: '0 0 0 6px' }}>
                   <span>占比</span>
                   <span className={styles.trendText}>{`${(ratioZBS * 100).toFixed(2)}%`}</span>
                 </Trend>
@@ -512,11 +559,11 @@ class Market extends Component {
               </div>
               <Divider style={{ margin: '12px 0' }} />
               <div style={{ textAlign: 'center' }}>
-                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                <Trend flag="up" reverseColor style={{ padding: '0 6px 0 0' }}>
                   <span>占比</span>
                   <span className={styles.trendText}>{`${(ratioUser * 100).toFixed(2)}%`}</span>
                 </Trend>
-                <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
+                <Trend flag="up" reverseColor style={{ padding: '0 0 0 6px' }}>
                   <span>占比</span>
                   <span className={styles.trendText}>{`${(userBiLi * 100).toFixed(2)}%`}</span>
                 </Trend>
@@ -563,14 +610,12 @@ class Market extends Component {
         </Card>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="企业诚信等级占比" bodyStyle={{ minHeight: '300px', padding: '0 5px' }}>
-              <Chart height={300} data={orgCreditLevelDataTrans} forceFit>
-                <Axis name="诚信等级" />
-                <Axis name="数量" />
-                <Legend />
-                <Tooltip crosshairs={{type : "y"}} />
-                <Geom type='interval' position="诚信等级*数量" color="group" adjust={[{type: 'dodge',marginRatio: 1/32}]} />
-              </Chart>
+            <Card
+              loading={qycxdjzbLoading}
+              title="企业诚信等级占比"
+              bodyStyle={{ minHeight: '300px', padding: '0 5px' }}
+            >
+              {this.renderQycxdjzb(qycxdjzb)}
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
@@ -579,53 +624,19 @@ class Market extends Component {
               bodyStyle={{ height: '300px', padding: '5px' }}
             >
               <Table
-                loading={loading}
+                loading={qyhydpmLoading}
                 size="small"
-                scroll={{ y: 180 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    ranking: 1,
-                    orgName: '湖北广盛',
-                    amountOfBidding: 18,
-                    investment: 230009.837,
-                    rate: '30%',
-                  },
-                  {
-                    key: '2',
-                    ranking: 2,
-                    orgName: '湖北沛菡',
-                    amountOfBidding: 13,
-                    investment: 110009.837,
-                    rate: '20%',
-                  },
-                  {
-                    key: '3',
-                    ranking: 3,
-                    orgName: '中国建筑',
-                    amountOfBidding: 10,
-                    investment: 90009.837,
-                    rate: '10%',
-                  },
-                  {
-                    key: '4',
-                    ranking: 4,
-                    orgName: '葛洲坝建设集团',
-                    amountOfBidding: 8,
-                    investment: 30009.837,
-                    rate: '5%',
-                  },
-                ]}
+                rowKey="estaName"
+                scroll={{ y: 200 }}
+                dataSource={qyhydpm}
                 columns={orgActivityRankingList}
                 pagination={{
-                  pageSize: 5,
-                  total: 4,
-                  current: 1,
-                  pageSizeOptions: ['5', '10', '20', '50'],
-                  showQuickJumper: true,
+                  ...qyhydpmPagination,
+                  pageSizeOptions: ['10', '50', '100'],
                   showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  showTotal: total => `总计 ${total} 家企业.`,
                 }}
+                onChange={this.handleQyhydpmTableChange}
               />
             </Card>
           </Col>
@@ -756,10 +767,12 @@ class Market extends Component {
                 size="small"
                 rowKey="userId"
                 scroll={{ y: 180 }}
-                dataSource={ryhydpm.list}
+                dataSource={ryhydpm}
                 columns={personActivityRankingList}
                 pagination={{
-                  ...ryhydpm.pagination,
+                  ...ryhydpmPagination,
+                  pageSizeOptions: ['10', '50', '100'],
+                  showSizeChanger: true,
                   showTotal: total => `总计 ${total} 人.`,
                 }}
                 onChange={this.handleRyhydpmTableChange}

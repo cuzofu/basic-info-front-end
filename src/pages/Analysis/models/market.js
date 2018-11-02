@@ -23,12 +23,8 @@ export default {
         pageSize: 10,
       }
     },
-    ryhydpm: {
-      list: [],
-      pagination: {
-        pageSize: 50,
-      }
-    },
+    ryhydpm: [],
+    qyhydpm: [],
     jzgmHyqycxfx: [],
     ryzzfx: [],
     qycxdjzb: [],
@@ -104,33 +100,38 @@ export default {
     },
     // 企业活跃度排名
     *fetchQyhydpmData({payload}, { call, put }) {
+      let qyhydpm = [];
       try {
         const response = yield call(queryQyhydpm, payload);
-        console.log(response);
-        yield put({
-          type: 'save',
-          payload: {
-            qyhydpm: response || {
-              list: [],
-              pagination: {
-                pageSize: 10,
+        const total = response.reduce((pre, now) => (now.bidNum + pre), 0);
+        if (response && !response.msg) {
+          const sortFunc = (a, b) => {
+            if (a.bidNum === b.bidNum) {
+              if (a.sumTZE > b.sumTZE) {
+                return -1;
               }
-            },
-          },
-        });
+              return 1;
+            }
+            if (a.bidNum > b.bidNum) {
+              return -1;
+            }
+            return 1;
+          };
+          qyhydpm = response.sort(sortFunc).map( r => ({
+            ...r,
+            sumTZE: (r.sumTZE - 0).toFixed(6),
+            zhanbi: total === 0 ? 0 : r.bidNum / total,
+          }));
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            qyhydpm: {
-              list: [],
-              pagination: {
-                pageSize: 10,
-              }
-            },
-          },
-        });
+        console.log('企业活跃度排名（ERROR）');
       }
+      yield put({
+        type: 'save',
+        payload: {
+          qyhydpm,
+        },
+      });
     },
     // 人员资质分析
     *fetchRyzzfxData({payload}, { call, put }) {
@@ -153,32 +154,35 @@ export default {
     },
     // 人员活跃度排名
     *fetchRyhydpmData({payload}, { call, put }) {
+      let ryhydpm = [];
       try {
         const response = yield call(queryRyhydpm, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            ryhydpm: response || {
-              list: [],
-              pagination: {
-                pageSize: 10,
+        if (response && !response.msg) {
+
+          const sortFunc = (a, b) => {
+            if (a.jobNum === b.jobNum) {
+              if (a.tze > b.tze) {
+                return -1;
               }
-            },
-          },
-        });
+              return 1;
+            }
+            if (a.jobNum > b.jobNum) {
+              return -1;
+            }
+            return 1;
+          };
+
+          ryhydpm = response.sort(sortFunc);
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            ryhydpm: {
-              list: [],
-              pagination: {
-                pageSize: 10,
-              }
-            },
-          },
-        });
+        console.log('人员活跃度排名');
       }
+      yield put({
+        type: 'save',
+        payload: {
+          ryhydpm,
+        },
+      });
     },
     // 建筑规模与活跃企业诚信等级分析
     *fetchJzgmHyqycxfxData({payload}, { call, put }) {
@@ -215,7 +219,6 @@ export default {
     *fetchQycxdjzbData({payload}, { call, put }) {
       try {
         const response = yield call(queryQycxdjzbData, payload);
-        console.log(response);
         yield put({
           type: 'save',
           payload: {
