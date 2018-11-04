@@ -41,6 +41,22 @@ class Construction extends Component {
 
   handleEngListChange = (pagination, filters, sorter) => {
     console.log(pagination, filters, sorter);
+    const { dispatch } = this.props;
+    const params = {
+      currentPage: pagination.current - 1,
+      pageSize: pagination.pageSize,
+    };
+    if (sorter.field) {
+      params.sort = sorter.field;
+      params.direction = sorter.order;
+    } else {
+      params.sort = 'gjTime';
+      params.direction = 'descend';
+    }
+    dispatch({
+      type: 'construction/fetchEngList',
+      payload: params,
+    });
   };
 
   handleCorpListChange = (pagination, filters, sorter) => {
@@ -283,8 +299,11 @@ class Construction extends Component {
             rowKey="id"
             showHeader={false}
             loading={corpListLoading}
-            dataSource={corpList.data}
-            pagination={corpList.pagination}
+            dataSource={corpList}
+            pagination={{
+              current: 1,
+              pageSize: 10,
+            }}
             columns={columnsCorpList}
             scroll={{ y: 420 }}
             onChange={this.handleCorpListChange}
