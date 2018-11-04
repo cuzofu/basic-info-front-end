@@ -15,6 +15,13 @@ import styles from './Construction.less';
 }))
 class Construction extends Component {
 
+  state = {
+    corpListPagination: {
+      current: 1,
+      pageSize: 10,
+    }
+  };
+
   componentDidMount() {
     const {
       dispatch,
@@ -30,17 +37,11 @@ class Construction extends Component {
     });
     dispatch({
       type: 'construction/fetchCorpList',
-      payload: {
-        pageSize: 10,
-        currentPage: 0,
-        sort: 'gjTime',
-        direction: 'descend',
-      }
+      payload: {}
     });
   }
 
   handleEngListChange = (pagination, filters, sorter) => {
-    console.log(pagination, filters, sorter);
     const { dispatch } = this.props;
     const params = {
       currentPage: pagination.current - 1,
@@ -59,12 +60,18 @@ class Construction extends Component {
     });
   };
 
-  handleCorpListChange = (pagination, filters, sorter) => {
-    console.log(pagination, filters, sorter);
+  handleCorpListChange = (pagination) => {
+    this.setState({
+      corpListPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
   };
 
   render() {
 
+    const {corpListPagination} = this.state;
     const {
       construction: {
         engList,
@@ -176,16 +183,16 @@ class Construction extends Component {
     const columnsCorpList = [
       {
         title: '企业名称',
-        dataIndex: 'corpName',
-        key: 'corpName',
-        render: (corpName, corp) => (
+        dataIndex: 'cioName',
+        key: 'cioName',
+        render: (cioName, row) => (
           <div>
             <div className={styles.divMb5}>
-              <Ellipsis length={20} tooltip>{corpName}</Ellipsis>
+              <Ellipsis length={20} tooltip>{cioName}</Ellipsis>
             </div>
             <div className={styles.divMt5}>
-              <Tag color="magenta">{corp.corpType}</Tag>
-              <Tag color="volcano" className={styles.headerTag}>{corp.regionType}</Tag>
+              <Tag color="magenta">{row.qylx}</Tag>
+              <Tag color="volcano" className={styles.headerTag}>{row.cioType}</Tag>
             </div>
           </div>
         ),
@@ -195,7 +202,7 @@ class Construction extends Component {
         dataIndex: 'creditLevel',
         key: 'creditLevel',
         render: (creditLevel) => (
-          <span>{`诚信等级 ${creditLevel}级`}</span>
+          <span>{`诚信等级 ${creditLevel}`}</span>
         ),
       },
       {
@@ -208,10 +215,10 @@ class Construction extends Component {
       },
       {
         title: '预警类型图标',
-        dataIndex: 'alertType',
-        key: 'alertTypeIcon',
-        render: (alertType) => {
-          switch (alertType) {
+        dataIndex: 'yjlx',
+        key: 'yjlxIcon',
+        render: (yjlx) => {
+          switch (yjlx) {
             case '证书预警':
             case '人员预警':
               return (
@@ -238,27 +245,27 @@ class Construction extends Component {
       },
       {
         title: '预警类型',
-        dataIndex: 'alertType',
-        key: 'alertType',
-        render: (alertType) => {
-          switch (alertType) {
+        dataIndex: 'yjlx',
+        key: 'yjlx',
+        render: (yjlx) => {
+          switch (yjlx) {
             case '诚信加分':
               return (
                 <div>
-                  <span className={`${styles.engStatusFont} ${styles.greenAlert}`}>{alertType}</span>
+                  <span className={`${styles.engStatusFont} ${styles.greenAlert}`}>{yjlx}</span>
                 </div>
               );
             case '诚信扣分':
               return (
                 <div>
-                  <span className={`${styles.engStatusFont} ${styles.redAlert}`}>{alertType}</span>
+                  <span className={`${styles.engStatusFont} ${styles.redAlert}`}>{yjlx}</span>
                 </div>
               );
             case '证书预警':
             case '人员预警':
               return (
                 <div>
-                  <span className={`${styles.engStatusFont} ${styles.yellowAlert}`}>{alertType}</span>
+                  <span className={`${styles.engStatusFont} ${styles.yellowAlert}`}>{yjlx}</span>
                 </div>
               );
             default:
@@ -268,21 +275,21 @@ class Construction extends Component {
       },
       {
         title: '预警内容',
-        dataIndex: 'alertContext',
-        key: 'alertContext'
+        dataIndex: 'yjms',
+        key: 'yjms'
       },
       {
         title: '详情',
         key: 'more',
         render: (_, record) => (
-          <div><Link to={{pathname: `/corp/analysis/${record.id}`}}>详情</Link></div>
+          <div><Link to={{pathname: `/corp/analysis/${record.key}`}}>详情</Link></div>
         ),
       },
     ];
 
     return (
       <GridContent>
-        <Card title="工程列表" bodyStyle={{ height: '484px', padding: '5px 16px' }}>
+        <Card title="工程列表" bodyStyle={{ maxHeight: '484px', padding: '5px 16px' }}>
           <Table
             rowKey="id"
             showHeader={false}
@@ -294,15 +301,16 @@ class Construction extends Component {
             onChange={this.handleEngListChange}
           />
         </Card>
-        <Card title="企业列表" bodyStyle={{ height: '484px', padding: '5px 16px' }}>
+        <Card style={{marginTop: '10px'}} title="企业列表" bodyStyle={{ maxHeight: '484px', padding: '5px 16px' }}>
           <Table
             rowKey="id"
             showHeader={false}
             loading={corpListLoading}
             dataSource={corpList}
             pagination={{
-              current: 1,
-              pageSize: 10,
+              ...corpListPagination,
+              pageSizeOptions: ['10', '50'],
+              showSizeChanger: true,
             }}
             columns={columnsCorpList}
             scroll={{ y: 420 }}

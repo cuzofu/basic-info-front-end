@@ -23,7 +23,6 @@ export default {
       };
       try {
         const response = yield call(queryEngList, payload);
-        console.log(response);
         if (response && !response.msg) {
           engList = response;
         }
@@ -41,19 +40,8 @@ export default {
       let corpList = [];
       try {
         const response = yield call(queryCorpList, payload);
-        console.log(response);
         if (response && !response.msg) {
-          corpList = response.map( r => ({
-            id: r.id,
-            key: r.key,
-            corpName: r.cioName,
-            creditLevel: r.creditLevel,
-            creditScore: r.creditScore,
-            alertType: r.yjlx,
-            alertContext: r.yjms,
-            corpType: r.qylx,
-            regionType: r.cioType,
-          }));
+          corpList = response;
         }
       } catch (e) {
         console.log('获取（企业列表）数据失败');
