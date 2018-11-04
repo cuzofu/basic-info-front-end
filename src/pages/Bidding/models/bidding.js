@@ -46,24 +46,18 @@ export default {
       let regionType = [];
       try {
         const response = yield call(queryBiddingRegionType, payload);
-        if (response) {
-          if (response.msg) {
-            regionType = [];
-          } else {
-            regionType = response.map( r => {
-              const rtn = {
-                groupX: r.groupX,
-                groupY: r.groupY,
-              };
-              rtn.value = sum(response, r.groupY) === 0 ? 0 : parseFloat(r.value) / sum(response, r.groupY);
-              return rtn;
-            });
-          }
-        } else {
-          regionType = [];
+        if (response && !response.msg) {
+          regionType = response.map( r => {
+            const rtn = {
+              groupX: r.groupX,
+              groupY: r.groupY,
+            };
+            rtn.value = sum(response, r.groupY) === 0 ? 0 : parseFloat(r.value) / sum(response, r.groupY);
+            return rtn;
+          });
         }
       } catch (e) {
-        regionType = [];
+        console.log('获取（区域类型）数据失败')
       }
       yield put({
         type: 'save',
@@ -102,11 +96,9 @@ export default {
       };
       try {
         const response = yield call(queryGmfb, payload);
-        if (response) {
-          if (response.msg) {
-          } else {
-            gmfb = response;
-          }
+        console.log(response);
+        if (response && !response.msg) {
+          gmfb = response;
         }
       } catch (e) {
         console.log('获取规模分布数据失败')
@@ -122,12 +114,8 @@ export default {
       let tzefb = [];
       try {
         const response = yield call(queryTzefb, payload);
-        console.log(response);
-        if (response) {
-          if (response.msg) {
-          } else {
-            tzefb = response;
-          }
+        if (response && !response.msg) {
+          tzefb = response;
         }
       } catch (e) {
         console.log('获取投资额分布数据失败')

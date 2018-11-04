@@ -10,11 +10,12 @@ import styles from './BadBehavior.less';
 
 @connect(({ badBehavior, loading }) => ({
   badBehavior,
-  blxwJgbmzbLoading: loading.effects['badBehavior/fetchBlxwJgbmzb'], // fetchBlxwXmpm
+  blxwJgbmzbLoading: loading.effects['badBehavior/fetchBlxwJgbmzb'],
   blxwJgbmlxzbLoading: loading.effects['badBehavior/fetchBlxwJgbmlxzb'],
   blxwQyxwpmLoading: loading.effects['badBehavior/fetchBlxwQyxwpm'],
   blxwGrxwpmLoading: loading.effects['badBehavior/fetchBlxwGrxwpm'],
   blxwXmpmLoading: loading.effects['badBehavior/fetchBlxwXmpm'],
+  blxwXwlxpmLoading: loading.effects['badBehavior/fetchBlxwXwlxpm'],
 }))
 class BadBehavior extends Component {
 
@@ -28,6 +29,10 @@ class BadBehavior extends Component {
       pageSize: 10,
     },
     blxwXmpmPagination: {
+      current: 1,
+      pageSize: 10,
+    },
+    blxwXwlxpmPagination: {
       current: 1,
       pageSize: 10,
     }
@@ -66,6 +71,12 @@ class BadBehavior extends Component {
           time: '2018-01-01'
         }
       });
+      dispatch({
+        type: 'badBehavior/fetchBlxwXwlxpm',
+        payload: {
+          time: '2018-01-01'
+        }
+      });
     });
   }
 
@@ -75,6 +86,26 @@ class BadBehavior extends Component {
       type: 'badBehavior/clear',
     });
   }
+
+  // 不良行为项目排名翻页
+  handleBlxwXmpmTableChange = (pagination) => {
+    this.setState({
+      blxwXmpmPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
+
+  // 行为类型排名翻页
+  handleBlxwXwlxpmTableChange = (pagination) => {
+    this.setState({
+      blxwXwlxpmPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
 
   // 企业行为排名翻页
   handleBlxwQyxwpmTableChange = (pagination) => {
@@ -100,18 +131,23 @@ class BadBehavior extends Component {
     const {
       blxwQyxwpmPagination,
       blxwGrxwpmPagination,
+      blxwXmpmPagination,
+      blxwXwlxpmPagination,
     } = this.state;
     const {
       blxwJgbmzbLoading,
       blxwJgbmlxzbLoading,
       blxwQyxwpmLoading,
       blxwGrxwpmLoading,
+      blxwXmpmLoading,
+      blxwXwlxpmLoading,
       badBehavior: {
         blxwJgbmzb,
         blxwJgbmlxzb,
         blxwQyxwpm,
         blxwGrxwpm,
-        blxwXmpmLoading,
+        blxwXmpm,
+        blxwXwlxpm,
       },
     } = this.props;
 
@@ -151,7 +187,7 @@ class BadBehavior extends Component {
     ];
 
     // 项目排名占比
-    const projectRankingData = [
+    const projectRankingColumns = [
       {
         title: '排名',
         dataIndex: 'rank',
@@ -163,12 +199,12 @@ class BadBehavior extends Component {
         width: '30%',
       },
       {
-        title: '记录(企业)',
+        title: '企业',
         dataIndex: 'countEng',
         width: '15%',
       },
       {
-        title: '记录(人员)',
+        title: '人员',
         dataIndex: 'countPerson',
         width: '15%',
       },
@@ -283,75 +319,18 @@ class BadBehavior extends Component {
           <Col {...doubleCardColsProps}>
             <Card title="项目排名占比" bodyStyle={{ height: '300px', padding: '5px' }}>
               <Table
-                loading={blxwJgbmzbLoading}
+                loading={blxwXmpmLoading}
                 size="small"
-                scroll={{ y: 180 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    rank: 1,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    countEng: 12,
-                    countPerson: 5,
-                    count: 17,
-                    rate: '7%',
-                  },
-                  {
-                    key: '2',
-                    rank: 2,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    countEng: 11,
-                    countPerson: 5,
-                    count: 16,
-                    rate: '5%',
-                  },
-                  {
-                    key: '3',
-                    rank: 3,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    countEng: 10,
-                    countPerson: 4,
-                    count: 14,
-                    rate: '4%',
-                  },
-                  {
-                    key: '4',
-                    rank: 4,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    countEng: 9,
-                    countPerson: 4,
-                    count: 13,
-                    rate: '3%',
-                  },
-                  {
-                    key: '5',
-                    rank: 5,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    countEng: 9,
-                    countPerson: 2,
-                    count: 11,
-                    rate: '3%',
-                  },
-                  {
-                    key: '6',
-                    rank: 5,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    countEng: 6,
-                    countPerson: 2,
-                    count: 8,
-                    rate: '2%',
-                  },
-                ]}
-                columns={projectRankingData}
+                scroll={{ y: 200 }}
+                dataSource={blxwXmpm}
+                columns={projectRankingColumns}
                 pagination={{
-                  pageSize: 5,
-                  total: 6,
-                  current: 1,
-                  pageSizeOptions: ['5', '10', '20', '50'],
-                  showQuickJumper: true,
+                  ...blxwXmpmPagination,
+                  pageSizeOptions: ['10', '20', '50'],
                   showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  showTotal: total => `总计 ${total} 个项目.`,
                 }}
+                onChange={this.handleBlxwXmpmTableChange}
               />
             </Card>
           </Col>
@@ -362,126 +341,24 @@ class BadBehavior extends Component {
               <MatrixBar
                 height={390}
                 padding={[5, 5, 100, 60]}
-                data={[
-                  { groupY: '建设', value: 0.5, groupX: '城建管理科' },
-                  { groupY: '建设', value: 0.2, groupX: '质量安全站' },
-                  { groupY: '建设', value: 0.33, groupX: '市场站' },
-                  { groupY: '建设', value: 0.11, groupX: '招投标' },
-                  { groupY: '建设', value: 0.65, groupX: '其他' },
-
-                  { groupY: '施工', value: 0.09, groupX: '城建管理科' },
-                  { groupY: '施工', value: 0.99, groupX: '质量安全站' },
-                  { groupY: '施工', value: 0.05, groupX: '市场站' },
-                  { groupY: '施工', value: 0.15, groupX: '招投标' },
-                  { groupY: '施工', value: 0.25, groupX: '其他' },
-
-                  { groupY: '监理', value: 0.22, groupX: '城建管理科' },
-                  { groupY: '监理', value: 0.33, groupX: '质量安全站' },
-                  { groupY: '监理', value: 0.44, groupX: '市场站' },
-                  { groupY: '监理', value: 0.55, groupX: '招投标' },
-                  { groupY: '监理', value: 0.77, groupX: '其他' },
-
-                  { groupY: '勘察', value: 0.88, groupX: '城建管理科' },
-                  { groupY: '勘察', value: 0.66, groupX: '质量安全站' },
-                  { groupY: '勘察', value: 0.44, groupX: '市场站' },
-                  { groupY: '勘察', value: 0.22, groupX: '招投标' },
-                  { groupY: '勘察', value: 0.11, groupX: '其他' },
-
-                  { groupY: '设计', value: 0.09, groupX: '城建管理科' },
-                  { groupY: '设计', value: 0.89, groupX: '质量安全站' },
-                  { groupY: '设计', value: 0.05, groupX: '市场站' },
-                  { groupY: '设计', value: 0.15, groupX: '招投标' },
-                  { groupY: '设计', value: 0.25, groupX: '其他' },
-
-                  { groupY: '商混', value: 0.09, groupX: '城建管理科' },
-                  { groupY: '商混', value: 0.89, groupX: '质量安全站' },
-                  { groupY: '商混', value: 0.05, groupX: '市场站' },
-                  { groupY: '商混', value: 0.15, groupX: '招投标' },
-                  { groupY: '商混', value: 0.25, groupX: '其他' },
-
-                  { groupY: '装饰装修', value: 0.09, groupX: '城建管理科' },
-                  { groupY: '装饰装修', value: 0.89, groupX: '质量安全站' },
-                  { groupY: '装饰装修', value: 0.05, groupX: '市场站' },
-                  { groupY: '装饰装修', value: 0.15, groupX: '招投标' },
-                  { groupY: '装饰装修', value: 0.25, groupX: '其他' },
-
-                  { groupY: '起重设备', value: 0.09, groupX: '城建管理科' },
-                  { groupY: '起重设备', value: 0.89, groupX: '质量安全站' },
-                  { groupY: '起重设备', value: 0.05, groupX: '市场站' },
-                  { groupY: '起重设备', value: 0.15, groupX: '招投标' },
-                  { groupY: '起重设备', value: 0.25, groupX: '其他' },
-
-                  { groupY: '造价/招标', value: 0.09, groupX: '城建管理科' },
-                  { groupY: '造价/招标', value: 0.89, groupX: '质量安全站' },
-                  { groupY: '造价/招标', value: 0.05, groupX: '市场站' },
-                  { groupY: '造价/招标', value: 0.15, groupX: '招投标' },
-                  { groupY: '造价/招标', value: 0.25, groupX: '其他' },
-
-                  { groupY: '劳务分包', value: 0.09, groupX: '城建管理科' },
-                  { groupY: '劳务分包', value: 0.89, groupX: '质量安全站' },
-                  { groupY: '劳务分包', value: 0.05, groupX: '市场站' },
-                  { groupY: '劳务分包', value: 0.15, groupX: '招投标' },
-                  { groupY: '劳务分包', value: 0.25, groupX: '其他' },
-
-                  { groupY: '节能/检测/图审', value: 0.09, groupX: '城建管理科' },
-                  { groupY: '节能/检测/图审', value: 0.89, groupX: '质量安全站' },
-                  { groupY: '节能/检测/图审', value: 0.05, groupX: '市场站' },
-                  { groupY: '节能/检测/图审', value: 0.15, groupX: '招投标' },
-                  { groupY: '节能/检测/图审', value: 0.25, groupX: '其他' },
-                ]}
+                data={blxwJgbmlxzb}
               />
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="行为类型排名占比" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
+            <Card loading={blxwXwlxpmLoading} title="行为类型排名占比" bodyStyle={{ maxHeight: '400px', padding: '5px' }}>
               <Table
-                loading={blxwJgbmzbLoading}
                 size="small"
-                scroll={{ y: 280 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    index: 1,
-                    behaviorNo: 'YCJS(2011)072',
-                    behaviorType: 'XXXXXXXXXXXXXXXXXXXXXXXXX',
-                    countOfEng: 33,
-                    rate: 11,
-                  },
-                  {
-                    key: '2',
-                    index: 2,
-                    behaviorNo: 'YCJS(2011)072',
-                    behaviorType: 'XXXXXXXXXXXXXXXXXXXXXXXXX',
-                    countOfEng: 27,
-                    rate: 9,
-                  },
-                  {
-                    key: '3',
-                    index: 3,
-                    behaviorNo: 'YCJS(2011)072',
-                    behaviorType: 'XXXXXXXXXXXXXXXXXXXXXXXXX',
-                    countOfEng: 21,
-                    rate: 7,
-                  },
-                  {
-                    key: '4',
-                    index: 4,
-                    behaviorNo: 'YCJS(2011)072',
-                    behaviorType: 'XXXXXXXXXXXXXXXXXXXXXXXXX',
-                    countOfEng: 9,
-                    rate: 3,
-                  },
-                ]}
+                scroll={{ y: 305 }}
+                dataSource={blxwXwlxpm}
                 columns={behaviorListColumns}
                 pagination={{
-                  pageSize: 5,
-                  total: 4,
-                  current: 1,
-                  pageSizeOptions: ['5', '10', '20', '50'],
-                  showQuickJumper: true,
+                  ...blxwXwlxpmPagination,
+                  pageSizeOptions: ['10', '20', '50'],
                   showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  showTotal: total => `总计 ${total} 种行为类型.`,
                 }}
+                onChange={this.handleBlxwXwlxpmTableChange}
               />
             </Card>
           </Col>

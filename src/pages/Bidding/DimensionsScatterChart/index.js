@@ -19,7 +19,150 @@ class DimensionsScatterChart extends Component {
 
   componentDidMount() {
 
-    const {id} = this.props;
+    const {id, data} = this.props;
+    // 基于准备好的dom，初始化echarts实例
+    const myChart = echarts.init(document.getElementById(id));
+    // 绘制图表
+    myChart.setOption({
+      grid: {
+        left: '3%',
+        right: '7%',
+        bottom: '3%',
+        containLabel: true
+      },
+      tooltip : {
+        showDelay : 0,
+        formatter: (params) => {
+          if (params.value.length > 1) {
+            if (params.seriesName === '投资额/面积') {
+              return `${params.seriesName}<br/>投资额：${params.value[0]}万元<br/>面积：${params.value[1]}㎡ `;
+            }
+            return `${params.seriesName}<br/>投资额：${params.value[0]}万元<br/>公里数：${params.value[1]}m `
+          }
+          return `投资额/${params.data.seriesName}<br/>${params.name} : ${params.value}万元`;
+        },
+        axisPointer:{
+          show: true,
+          type : 'cross',
+          lineStyle: {
+            type : 'dashed',
+            width : 1
+          }
+        }
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {},
+          brush: {
+            type: ['rect', 'polygon', 'clear']
+          }
+        }
+      },
+      brush: {
+      },
+      legend: {
+        data: ['投资额/面积','投资额/公里数'],
+        left: 'center'
+      },
+      xAxis : [
+        {
+          name: '面积/公里数',
+          nameLocation: 'center',
+          nameGap: 20,
+          type : 'value',
+          scale:true,
+          axisLabel : {
+            formatter: (value) => `${value}(㎡/m)`
+          },
+          splitLine: {
+            show: false
+          }
+        }
+      ],
+      yAxis : [
+        {
+          type : 'value',
+          scale:true,
+          axisLabel : {
+            formatter: '{value} 万元'
+          },
+          splitLine: {
+            show: false
+          }
+        }
+      ],
+      series : [
+        {
+          name:'投资额/面积',
+          type:'scatter',
+          data: data.listmje,
+          markArea: {
+            silent: true,
+            itemStyle: {
+              normal: {
+                color: 'transparent',
+                borderWidth: 1,
+                borderType: 'dashed'
+              }
+            },
+            data: [[{
+              name: '面积分布区域',
+              xAxis: 'min',
+              yAxis: 'min'
+            }, {
+              xAxis: 'max',
+              yAxis: 'max'
+            }]]
+          },
+          markPoint : {
+            data : [
+              {type : 'max', name: '最大投资额', seriesName: '面积'},
+              {type : 'min', name: '最小投资额', seriesName: '面积'}
+            ]
+          },
+        },
+        {
+          name:'投资额/公里数',
+          type:'scatter',
+          data: data.listgls,
+          markArea: {
+            silent: true,
+            itemStyle: {
+              normal: {
+                color: 'transparent',
+                borderWidth: 1,
+                borderType: 'dashed'
+              }
+            },
+            data: [[{
+              name: '公里分布区域',
+              xAxis: 'min',
+              yAxis: 'min'
+            }, {
+              xAxis: 'max',
+              yAxis: 'max'
+            }]]
+          },
+          markPoint : {
+            data : [
+              {type : 'max', name: '最大投资额', seriesName: '公里数'},
+              {type : 'min', name: '最小投资额', seriesName: '公里数'}
+            ]
+          },
+        }
+      ]
+    });
+
+    window.addEventListener('resize', () => {myChart.resize()});
+
+  }
+
+  init = () => {
+
+    const {
+      id,
+      data,
+    } = this.props;
     // 基于准备好的dom，初始化echarts实例
     const myChart = echarts.init(document.getElementById(id));
     // 绘制图表
@@ -95,20 +238,7 @@ class DimensionsScatterChart extends Component {
         {
           name:'投资额/面积',
           type:'scatter',
-          data: [[161.2, 51.6], [167.5, 59.0], [159.5, 49.2], [157.0, 63.0], [155.8, 53.6],
-            [170.0, 59.0], [159.1, 47.6], [166.0, 69.8], [176.2, 66.8], [160.2, 75.2],
-            [172.5, 55.2], [170.9, 54.2], [172.9, 62.5], [153.4, 42.0], [160.0, 50.0],
-            [147.2, 49.8], [168.2, 49.2], [175.0, 73.2], [157.0, 47.8], [167.6, 68.8],
-            [159.5, 50.6], [175.0, 82.5], [166.8, 57.2], [176.5, 87.8], [170.2, 72.8],
-            [174.0, 54.5], [173.0, 59.8], [179.9, 67.3], [170.5, 67.8], [160.0, 47.0],
-            [154.4, 46.2], [162.0, 55.0], [176.5, 83.0], [160.0, 54.4], [152.0, 45.8],
-            [162.1, 53.6], [170.0, 73.2], [160.2, 52.1], [161.3, 67.9], [166.4, 56.6],
-            [168.9, 62.3], [163.8, 58.5], [167.6, 54.5], [160.0, 50.2], [161.3, 60.3],
-            [167.6, 58.3], [165.1, 56.2], [160.0, 50.2], [170.0, 72.9], [157.5, 59.8],
-            [167.6, 61.0], [160.7, 69.1], [163.2, 55.9], [152.4, 46.5], [157.5, 54.3],
-            [168.3, 54.8], [180.3, 60.7], [165.5, 60.0], [165.0, 62.0], [164.5, 60.3],
-            [156.0, 52.7], [160.0, 74.3], [163.0, 62.0], [165.7, 73.1], [161.0, 80.0],
-          ],
+          data: data.listmje,
           markArea: {
             silent: true,
             itemStyle: {
@@ -197,7 +327,7 @@ class DimensionsScatterChart extends Component {
 
     window.addEventListener('resize', () => {myChart.resize()});
 
-  }
+  };
 
   render() {
     const {id, height} = this.props;

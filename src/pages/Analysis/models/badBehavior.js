@@ -7,6 +7,8 @@ import {
   queryBlxwXwlxpm,
 } from '@/services/analysis';
 
+const sum = (data, key1) => data.filter( r => r.y === key1).reduce((pre, now) => parseInt(now.value, 0) + pre, 0);
+
 export default {
   namespace: 'badBehavior',
 
@@ -15,6 +17,7 @@ export default {
     blxwJgbmlxzb: [],
     blxwQyxwpm: [],
     blxwGrxwpm: [],
+    blxwXwlxpm: [],
   },
 
   effects: {
@@ -45,7 +48,15 @@ export default {
       try {
         const response = yield call(queryBlxwJgbmlxzb, payload);
         if (response && !response.msg) {
-          blxwJgbmlxzb = response;
+          blxwJgbmlxzb = response.map( r => {
+            const rtn = {
+              groupX: r.x,
+              groupY: r.y,
+            };
+            const total = sum(response, r.y);
+            rtn.value = total === 0 ? 0 : parseFloat(r.value) / total;
+            return rtn;
+          });
         }
       } catch (e) {
         console.log('获取(机构部门类型占比)数据失败');
@@ -102,7 +113,7 @@ export default {
       try {
         const response = yield call(queryBlxwGrxwpm, payload);
         if (response && !response.msg) {
-          const total = response.map( r => r.numBad).reduce((pre, now) => now + pre, 0);
+          const total = response.reduce((pre, now) => now.numBad + pre, 0);
           const sortFunction = (a, b) => {
             if (a.numBad === b.numBad) {
               if (a.numXYF > b.numXYF) {
@@ -141,9 +152,36 @@ export default {
       let blxwXmpm = [];
       try {
         const response = yield call(queryBlxwXmpm, payload);
-        console.log(response);
         if (response && !response.msg) {
-          blxwXmpm = response;
+          const total = response.reduce((pre, now) => now.count + pre, 0);
+          const sortFunction = (a, b) => {
+            if (a.count === b.count) {
+              if (a.numQY === b.numQY) {
+                if (a.numUser > b.numUser) {
+                  return -1;
+                }
+                return 1;
+              }
+              if (a.numQY > b.numQY) {
+                return -1;
+              }
+              return 1;
+            }
+            if (a.count > b.count) {
+              return -1;
+            }
+            return 1;
+          };
+
+          blxwXmpm = response.sort(sortFunction).map((r, index) => ({
+            key: index + 1,
+            rank: index + 1,
+            engName: r.nameXM,
+            countEng: r.numQY,
+            countPerson: r.numUser,
+            count: r.count,
+            rate: `${(total === 0 ? 0 : (r.count / total * 100)).toFixed(2)}%`,
+          }));
         }
       } catch (e) {
         console.log('获取(项目排名)数据失败');
@@ -153,6 +191,33 @@ export default {
         payload: {
           blxwXmpm,
         },
+      });
+    },
+    // 行为类型排名
+    *fetchBlxwXwlxpm({payload}, { call, put}) {
+      let blxwXwlxpm = [];
+      try {
+        const response = yield call(queryBlxwXwlxpm, {payload});
+        if (response && !response.msg) {
+          const total = response.reduce((pre, now) => now.count + pre, 0);
+          const sortFunction = (a, b) => a.count > b.count ? -1 : 1;
+          blxwXwlxpm = response.sort(sortFunction).map((r, index) => ({
+            key: index + 1,
+            index: index + 1,
+            behaviorNo: r.username,
+            behaviorType: r.QYname,
+            countOfEng: r.count,
+            rate: `${(total === 0 ? 0 : r.count / total * 100).toFixed(2)}%`,
+          }));
+        }
+      } catch (e) {
+        console.log('获取（行为类型排名）数据失败');
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          blxwXwlxpm,
+        }
       });
     }
   },

@@ -102,6 +102,7 @@ class Bidding extends Component {
         engType,
         regionType,
         tzefb,
+        gmfb,
       }
     } = this.props;
 
@@ -285,7 +286,7 @@ class Bidding extends Component {
           </Col>
           <Col {...doubleCardColsProps}>
             <Card loading={gmfbLoading} title="规模分布" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
-              <DimensionsScatterChart id="dimensions" height={390} />
+              <DimensionsScatterChart id="dimensions" height={390} data={gmfb} />
             </Card>
           </Col>
         </Row>

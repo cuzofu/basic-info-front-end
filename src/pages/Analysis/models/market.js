@@ -7,6 +7,7 @@ import {
   queryRyhydpm,
   queryJzgmHyqycxfxData,
   queryQycxdjzbData,
+  queryQyzzmx,
 } from '@/services/analysis';
 
 const sum = (data, key1, key2) => data.filter( r => r.groupY === key1 && r.groupX.indexOf(key2) >= 0).reduce((pre, now) => parseInt(now.value, 0) + pre, 0);
@@ -28,75 +29,68 @@ export default {
     jzgmHyqycxfx: [],
     ryzzfx: [],
     qycxdjzb: [],
+    qyzzmx: [],
   },
 
   effects: {
     // 企业及人员数量统计
     *fetchQyAndRyCount({payload}, { call, put}) {
+      let qyAndRyCount = [];
       try {
         const response = yield call(queryQyAndRyCount, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            qyAndRyCount: response || {}
-          }
-        });
+        if (response && !response.msg) {
+          qyAndRyCount = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            qyAndRyCount: {}
-          }
-        });
+        console.log('获取（企业及人员数量统计）数据失败')
       }
+      yield put({
+        type: 'save',
+        payload: {
+          qyAndRyCount,
+        }
+      });
     },
     // 企业资质分析
     *fetchQyzzfxData({payload}, { call, put }) {
+      let qyzzfx = [];
       try {
         const response = yield call(queryQyzzfx, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            qyzzfx: response
-          },
-        });
+        if (response && !response.msg) {
+          qyzzfx = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            qyzzfx: []
-          },
-        });
+        console.log('获取（企业资质分析）数据失败')
       }
+      yield put({
+        type: 'save',
+        payload: {
+          qyzzfx,
+        },
+      });
     },
     // 标段与企业明细
     *fetchBdqymxData({payload}, { call, put }) {
+      let bdqymx = {
+        list: [],
+        pagination: {
+          pageSize: 10,
+        }
+      };
       try {
         const response = yield call(queryBdqymx, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            bdqymx: response || {
-              list: [],
-              pagination: {
-                pageSize: 5,
-              }
-            },
-          },
-        });
+        if (response && !response.msg) {
+          bdqymx = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            bdqymx: {
-              list: [],
-              pagination: {
-                pageSize: 10,
-              }
-            },
-          },
-        });
+        console.log('获取（标段与企业明细）数据失败')
       }
+      yield put({
+        type: 'save',
+        payload: {
+          bdqymx,
+        },
+      });
     },
     // 企业活跃度排名
     *fetchQyhydpmData({payload}, { call, put }) {
@@ -135,22 +129,21 @@ export default {
     },
     // 人员资质分析
     *fetchRyzzfxData({payload}, { call, put }) {
+      let ryzzfx = [];
       try {
         const response = yield call(queryRyzzfx, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            ryzzfx: response || [],
-          },
-        });
+        if (response && !response.msg) {
+          ryzzfx = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            ryzzfx: [],
-          },
-        });
+        console.log('获取数据失败');
       }
+      yield put({
+        type: 'save',
+        payload: {
+          ryzzfx,
+        },
+      });
     },
     // 人员活跃度排名
     *fetchRyhydpmData({payload}, { call, put }) {
@@ -186,9 +179,10 @@ export default {
     },
     // 建筑规模与活跃企业诚信等级分析
     *fetchJzgmHyqycxfxData({payload}, { call, put }) {
+      let jzgmHyqycxfx = [];
       try {
         const response = yield call(queryJzgmHyqycxfxData, payload);
-        const jzgmHyqycxfx = response && response.map( r => {
+        jzgmHyqycxfx = response && response.map( r => {
           const rtn = {
             groupX: r.groupX,
             groupY: r.groupY,
@@ -200,40 +194,56 @@ export default {
           }
           return rtn;
         });
-        yield put({
-          type: 'save',
-          payload: {
-            jzgmHyqycxfx,
-          },
-        });
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            jzgmHyqycxfx: [],
-          },
-        });
+        console.log('获取（建筑规模与活跃企业诚信等级分析）数据失败')
       }
+      yield put({
+        type: 'save',
+        payload: {
+          jzgmHyqycxfx,
+        },
+      });
     },
     // 企业诚信等级占比
     *fetchQycxdjzbData({payload}, { call, put }) {
+      let qycxdjzb = [];
       try {
         const response = yield call(queryQycxdjzbData, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            qycxdjzb: response || [],
-          },
-        });
+        if (response && !response.msg) {
+          qycxdjzb = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            qycxdjzb: [],
-          },
-        });
+        console.log('获取（企业诚信等级占比）数据失败')
       }
+      yield put({
+        type: 'save',
+        payload: {
+          qycxdjzb,
+        },
+      });
     },
+    // 企业资质明细
+    *fetchQyzzmxData({payload}, { call, put }) {
+      let qyzzmx = [];
+      try {
+        const response = yield call(queryQyzzmx, payload);
+        if (response && !response.msg) {
+          const total = response.reduce((pre, now) => now.numZZ + pre, 0);
+          qyzzmx = response.map(r => ({
+            ...r,
+            ratio: (total === 0 ? 0 : r.numZZ / total * 100).toFixed(2)
+          }));
+        }
+      } catch (e) {
+        console.log('获取（企业资质明细）数据失败');
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          qyzzmx,
+        },
+      });
+    }
   },
 
   reducers: {
@@ -253,14 +263,10 @@ export default {
             pageSize: 10,
           }
         },
-        ryhydpm: {
-          list: [],
-          pagination: {
-            pageSize: 50,
-          }
-        },
+        ryhydpm: [],
         jzgmHyqycxfx: [],
         ryzzfx: [],
+        qyzzmx: [],
       };
     },
   },

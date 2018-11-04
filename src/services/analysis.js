@@ -72,6 +72,14 @@ export async function queryJzgmHyqycxfxData(params) {
 }
 
 // 企业资质明细
+export async function queryQyzzmx(params) {
+  return request(`/elastic_sskj/api/search/eng/qyzzmx`, {
+    method: 'POST',
+    body: {
+      ...params
+    }
+  })
+}
 
 // 企业诚信等级占比
 export async function queryQycxdjzbData(params) {

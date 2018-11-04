@@ -37,6 +37,7 @@ const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
   ryhydpmLoading: loading.effects['market/fetchRyhydpmData'],
   jzgmHyqycxfxLoading: loading.effects['market/fetchJzgmHyqycxfxData'],
   qycxdjzbLoading: loading.effects['market/fetchQycxdjzbData'],
+  qyzzmxLoading: loading.effects['market/fetchQyzzmxData'],
 }))
 class Market extends Component {
 
@@ -49,6 +50,10 @@ class Market extends Component {
     qyhydpmPagination: {
       current: 1,
       pageSize: 50,
+    },
+    qyzzmxPagination: {
+      current: 1,
+      pageSize: 10,
     }
   };
 
@@ -114,6 +119,16 @@ class Market extends Component {
           direction: 'descend',
         }
       });
+      dispatch({
+        type: 'market/fetchQyzzmxData',
+        payload: {
+          time: '2018-01-01',
+          pageSize: 10,
+          currentPage: 0,
+          sort: 'gjTime',
+          direction: 'descend',
+        }
+      });
     });
   }
 
@@ -132,7 +147,7 @@ class Market extends Component {
     });
   };
 
-  handlerPersonZzPieClick = (ev) => {
+  handlePersonZzPieClick = (ev) => {
     if (!ev || !ev.data || ev.data === undefined || !ev.data._origin) {
       return;
     }
@@ -221,17 +236,9 @@ class Market extends Component {
   // 标段与企业明细翻页
   handleBdqymxTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
-
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
     const params = {
       currentPage: pagination.current - 1,
       pageSize: pagination.pageSize,
-      ...filters,
     };
     if (sorter.field) {
       params.sort = sorter.field;
@@ -240,10 +247,19 @@ class Market extends Component {
       params.sort = 'gjTime';
       params.direction = 'descend';
     }
-
     dispatch({
       type: 'market/fetchBdqymxData',
       payload: params,
+    });
+  };
+
+  // 企业资质明细翻页
+  handleQyzzmxTableChange = (pagination) => {
+    this.setState({
+      qyzzmxPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
     });
   };
 
@@ -272,6 +288,7 @@ class Market extends Component {
       subPersonZzAnalysisData,
       ryhydpmPagination,
       qyhydpmPagination,
+      qyzzmxPagination,
     } = this.state;
     const {
       loading,
@@ -280,6 +297,7 @@ class Market extends Component {
       qyhydpmLoading,
       jzgmHyqycxfxLoading,
       qycxdjzbLoading,
+      qyzzmxLoading,
       market: {
         qyAndRyCount: {
           addQYRK = 0,
@@ -304,6 +322,7 @@ class Market extends Component {
         jzgmHyqycxfx,
         ryzzfx, // 人员资质分析
         qycxdjzb, // 企业诚信占比
+        qyzzmx, // 企业资质明细
       },
     } = this.props;
 
@@ -369,26 +388,28 @@ class Market extends Component {
         title: '排名',
         dataIndex: 'index',
         width: '10%',
+        render: (val, r, index) => ((qyzzmxPagination.current - 1) === 0 ? (1 + index) : ((qyzzmxPagination.current - 1) * (qyzzmxPagination.pageSize) + 1 + index)),
       },
       {
         title: '类型',
-        dataIndex: 'zzType',
+        dataIndex: 'type',
         width: '20%',
       },
       {
         title: '资质类型',
-        dataIndex: 'zzSubType',
+        dataIndex: 'nameZZ',
         width: '40%',
       },
       {
         title: '企业数量',
-        dataIndex: 'amountOfOrg',
+        dataIndex: 'numZZ',
         width: '15%',
       },
       {
         title: '占比',
-        dataIndex: 'rate',
+        dataIndex: 'ratio',
         width: '15%',
+        render: (val) => `${val}%`
       },
     ];
 
@@ -648,71 +669,20 @@ class Market extends Component {
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="企业资质明细" bodyStyle={{ height: '300px', padding: '5px' }}>
+            <Card loading={qyzzmxLoading} title="企业资质明细" bodyStyle={{ height: '300px', padding: '5px' }}>
               <Table
-                loading={loading}
+                rowKey="typeId"
                 size="small"
-                scroll={{ y: 180 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    index: 1,
-                    zzType: '施工总承包',
-                    zzSubType: '建筑业企业资质_施工总承包_建筑工程_特级',
-                    amountOfOrg: 1000,
-                    rate: '7%',
-                  },
-                  {
-                    key: '2',
-                    index: 2,
-                    zzType: '施工总承包',
-                    zzSubType: '建筑业企业资质_施工总承包_建筑工程_壹级',
-                    amountOfOrg: 889,
-                    rate: '20%',
-                  },
-                  {
-                    key: '3',
-                    index: 3,
-                    zzType: '施工总承包',
-                    zzSubType: '建筑业企业资质_施工总承包_建筑工程_贰级',
-                    amountOfOrg: 1129,
-                    rate: '33%',
-                  },
-                  {
-                    key: '4',
-                    index: 4,
-                    zzType: '施工总承包',
-                    zzSubType: '建筑业企业资质_施工总承包_建筑工程_叁级',
-                    amountOfOrg: 1728,
-                    rate: '40%',
-                  },
-                  {
-                    key: '5',
-                    index: 5,
-                    zzType: '施工总承包',
-                    zzSubType: '建筑业企业资质_施工总承包_建筑工程_叁级',
-                    amountOfOrg: 1728,
-                    rate: '40%',
-                  },
-                  {
-                    key: '6',
-                    index: 6,
-                    zzType: '施工总承包',
-                    zzSubType: '建筑业企业资质_施工总承包_建筑工程_叁级',
-                    amountOfOrg: 1728,
-                    rate: '40%',
-                  },
-                ]}
+                scroll={{ y: 200 }}
+                dataSource={qyzzmx}
                 columns={orgZzListColumns}
                 pagination={{
-                  pageSize: 5,
-                  total: 6,
-                  current: 1,
-                  pageSizeOptions: ['5', '10', '20', '50'],
-                  showQuickJumper: true,
+                  ...qyzzmxPagination,
+                  pageSizeOptions: ['10', '20', '50'],
                   showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  showTotal: total => `总计 ${total} 项资质.`,
                 }}
+                onChange={this.handleQyzzmxTableChange}
               />
             </Card>
           </Col>
@@ -733,7 +703,7 @@ class Market extends Component {
                           height={248}
                           padding={40}
                           lineWidth={1}
-                          onPlotClick={this.handlerPersonZzPieClick}
+                          onPlotClick={this.handlePersonZzPieClick}
                         />
                       </Col>
                       <Col span={12}>
@@ -749,21 +719,19 @@ class Market extends Component {
                                 lineWidth={4}
                               />) :
                             (
-                              <div>无数据</div>
+                              <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
                             )
                         }
                       </Col>
                     </Row>
                   ) :
-                  (<div>暂无数据</div>)
+                  (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>)
               }
-
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card title="人员活跃度排名" bodyStyle={{ height: '300px', padding: '5px' }}>
+            <Card loading={ryhydpmLoading} title="人员活跃度排名" bodyStyle={{ height: '300px', padding: '5px' }}>
               <Table
-                loading={ryhydpmLoading}
                 size="small"
                 rowKey="userId"
                 scroll={{ y: 180 }}
