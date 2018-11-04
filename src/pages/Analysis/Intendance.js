@@ -12,7 +12,7 @@ import BarLine from "./Line/BarLine";
 
 @connect(({ intendance, loading }) => ({
   intendance,
-  loading: loading.effects['intendance/fetch'],
+  zfwsksLoading: loading.effects['intendance/fetchZfwsks'],
 }))
 class Intendance extends Component {
 
@@ -20,6 +20,25 @@ class Intendance extends Component {
     zgType1: '全部',
     zgType2: '全部',
   };
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    this.reqRef = requestAnimationFrame(() => {
+      dispatch({
+        type: 'intendance/fetchZfwsks',
+        payload: {
+          time: '2018-01-01'
+        }
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'intendance/clear',
+    });
+  }
 
   handleChange1 = e => {
     this.setState({
@@ -36,7 +55,10 @@ class Intendance extends Component {
   render() {
 
     const {
-      loading
+      zfwsksLoading,
+      intendance: {
+        zfwsks,
+      }
     } = this.props;
     const {
       zgType1,
@@ -132,32 +154,32 @@ class Intendance extends Component {
       },
       {
         title: '文书数量',
-        dataIndex: 'count',
+        dataIndex: '文书数量',
         align: 'center',
       },
       {
-        title: '限期整改',
-        dataIndex: 'xqzg',
+        title: '口头整改',
+        dataIndex: '口头整改',
+        align: 'center',
+      },
+      {
+        title: '整改',
+        dataIndex: '整改',
         align: 'center',
       },
       {
         title: '局部停工',
-        dataIndex: 'jbtg',
-        align: 'center',
-      },
-      {
-        title: '停工整改',
-        dataIndex: 'tgzg',
+        dataIndex: '局部停工',
         align: 'center',
       },
       {
         title: '不良行为',
-        dataIndex: 'blxw',
+        dataIndex: '不良行为记录',
         align: 'center',
       },
       {
         title: '其他',
-        dataIndex: 'other',
+        dataIndex: '其他',
         align: 'center',
       },
     ];
@@ -207,7 +229,6 @@ class Intendance extends Component {
           <Col {...doubleCardColsProps}>
             <Card title="项目排名占比" bodyStyle={{ height: '410px', padding: '5px' }}>
               <Table
-                loading={loading}
                 size="small"
                 scroll={{ y: 310 }}
                 dataSource={[
@@ -359,7 +380,6 @@ class Intendance extends Component {
                 </Radio.Group>
               </div>
               <Table
-                loading={loading}
                 size="small"
                 scroll={{ y: 260 }}
                 dataSource={[
@@ -486,7 +506,6 @@ class Intendance extends Component {
                 </Radio.Group>
               </div>
               <Table
-                loading={loading}
                 size="small"
                 scroll={{ y: 260 }}
                 dataSource={[
@@ -576,54 +595,13 @@ class Intendance extends Component {
           </Col>
         </Row>
         <Card
+          loading={zfwsksLoading}
           title="执法文书明细按科室"
           bodyStyle={{ minHeight: '300px', padding: '5px' }}
         >
           <Table
-            loading={loading}
-            dataSource={[
-              {
-                key: '1',
-                ksName: '监督一室',
-                count: 17,
-                xqzg: 15,
-                jbtg: 10,
-                tgzg: 3,
-                blxw: 89,
-                other: 19
-              },
-              {
-                key: '2',
-                ksName: '监督二室',
-                count: 17,
-                xqzg: 15,
-                jbtg: 10,
-                tgzg: 3,
-                blxw: 89,
-                other: 19
-              },
-              {
-                key: '3',
-                ksName: '市政一室',
-                count: 17,
-                xqzg: 15,
-                jbtg: 10,
-                tgzg: 3,
-                blxw: 89,
-                other: 19
-              },
-              {
-                key: '4',
-                rank: 4,
-                ksName: '市政二室',
-                count: 17,
-                xqzg: 15,
-                jbtg: 10,
-                tgzg: 3,
-                blxw: 89,
-                other: 19
-              },
-            ]}
+            rowKey="ksName"
+            dataSource={zfwsks}
             columns={zfwsRankingData}
             pagination={false}
           />

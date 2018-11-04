@@ -96,11 +96,6 @@ export async function queryBlxwJgbmlxzb(params) {
   return request(`/elastic_sskj/api/search/organTypeBad`)
 }
 
-// 执法文书明细按科室
-export async function queryBlxwZfwsks(params) {
-  return request(`/elastic_sskj/api/search/organByLaw`)
-}
-
 // 企业行为排名占比
 export async function queryBlxwQyxwpm(params) {
   return request(`/elastic_sskj/api/search/organByRank`)
@@ -119,4 +114,9 @@ export async function queryBlxwXmpm(params) {
 // 行为类型排名占比
 export async function queryBlxwXwlxpm(params) {
   return request(`/elastic_sskj/api/search/behByRank`)
+}
+
+// 执法文书明细按科室
+export async function queryZfwsks(params) {
+  return request(`/elastic_sskj/api/search/organByLaw`)
 }
