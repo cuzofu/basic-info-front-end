@@ -53,6 +53,21 @@ export default [
             name: 'intendance',
             component: './Analysis/Intendance',
           },
+          {
+            path: '/analysis/bidding',
+            name: 'bidding',
+            component: './Analysis/Bidding',
+          },
+          {
+            path: '/analysis/contract',
+            name: 'contract',
+            component: './Analysis/Contract',
+          },
+          {
+            path: '/analysis/search',
+            name: 'search',
+            component: './Analysis/Search',
+          },
         ],
       },
       {
@@ -64,18 +79,6 @@ export default [
         path: '/corp/analysis/:id',
         name: 'corpAnalysis',
         component: './Analysis/CorpAnalysis',
-      },
-      {
-        path: '/bidding',
-        name: 'bidding',
-        icon: 'profile',
-        component: './Bidding/Bidding',
-      },
-      {
-        path: '/contract',
-        name: 'contract',
-        icon: 'profile',
-        component: './Contract/Contract',
       },
       {
         path: '/corporation/:id',

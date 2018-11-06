@@ -24,6 +24,15 @@ class Analysis extends Component {
       case 'intendance':
         router.push(`${match.url}/intendance`);
         break;
+      case 'bidding':
+        router.push(`${match.url}/bidding`);
+        break;
+      case 'contract':
+        router.push(`${match.url}/contract`);
+        break;
+      case 'search':
+        router.push(`${match.url}/search`);
+        break;
       default:
         router.push(`${match.url}/market`);
         break;
@@ -44,16 +53,24 @@ class Analysis extends Component {
         tab: '建筑业分析',
       },
       {
-        key: 'credit',
-        tab: '诚信分析',
-      },
-      {
         key: 'badBehavior',
         tab: '不良行为分析',
       },
       {
         key: 'intendance',
         tab: '质量安全监督',
+      },
+      {
+        key: 'bidding',
+        tab: '招投标',
+      },
+      {
+        key: 'contract',
+        tab: '合同',
+      },
+      {
+        key: 'search',
+        tab: '企业人员搜索',
       },
     ];
 

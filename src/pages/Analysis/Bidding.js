@@ -4,6 +4,7 @@ import {connect} from 'dva';
 import numeral from 'numeral';
 
 import {
+  Table,
   Row,
   Col,
   Card,
@@ -19,7 +20,7 @@ import {
   TrendPie,
 } from '@/components/Charts';
 import Trend from '@/components/Trend';
-import MatrixBar from '../Analysis/MatrixBar/MatrixBar';
+import MatrixBar from './MatrixBar/MatrixBar';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 
 import styles from './Bidding.less';
@@ -33,6 +34,7 @@ import InvestmentScatterChart from './InvestmentScatterChart';
   regionTypeLoading: loading.effects['bidding/fetchRegionType'],
   gmfbLoading: loading.effects['bidding/fetchGmfb'],
   tzefbLoading: loading.effects['bidding/fetchTzefb'],
+  zbfstjLoading: loading.effects['bidding/fetchZbfstj'],
 }))
 class Bidding extends Component {
 
@@ -70,6 +72,13 @@ class Bidding extends Component {
         time: '2018-10-29'
       }
     });
+    dispatch({
+      type: 'bidding/fetchZbfstj',
+      payload: {
+        firstTime: '2018-01-01',
+        lastTime: '2018-12-30',
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -87,6 +96,7 @@ class Bidding extends Component {
       regionTypeLoading,
       gmfbLoading,
       tzefbLoading,
+      zbfstjLoading,
       bidding: {
         basicInfo: {
           sumZBS = 0,
@@ -103,6 +113,7 @@ class Bidding extends Component {
         regionType,
         tzefb,
         gmfb,
+        zbfstj,
       }
     } = this.props;
 
@@ -117,6 +128,36 @@ class Bidding extends Component {
       tb: parseFloat(r.ytb).toFixed(2), // 月同比
       hb: parseFloat(r.yhb).toFixed(2), // 月环比
     }));
+
+    const biddingColumns = [
+      {
+        title: '招标方式',
+        dataIndex: 'zbfs',
+        align: 'center',
+      },
+      {
+        title: '项目总数',
+        dataIndex: 'count',
+        align: 'center',
+      },
+      {
+        title: '投资总额（万元）',
+        dataIndex: 'zbje',
+        align: 'center',
+        render: (val) => (val - 0).toFixed(4)
+      },
+      {
+        title: '面积（㎡）',
+        dataIndex: 'zbmj',
+        align: 'center',
+        render: (val) => (val - 0).toFixed(2)
+      },
+      {
+        title: '公里数（km）',
+        dataIndex: 'gls',
+        align: 'center',
+      },
+    ];
 
     return (
       <GridContent>
@@ -240,7 +281,19 @@ class Bidding extends Component {
             </ChartCard>
           </Col>
         </Row>
-
+        <Card
+          loading={zbfstjLoading}
+          title="招标方式数据统计"
+          style={{marginBottom: '12px'}}
+          bodyStyle={{ minHeight: '300px', padding: '5px' }}
+        >
+          <Table
+            rowKey="zbfs"
+            dataSource={zbfstj}
+            columns={biddingColumns}
+            pagination={false}
+          />
+        </Card>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card

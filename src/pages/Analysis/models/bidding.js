@@ -4,6 +4,7 @@ import {
   queryBiddingRegionType,
   queryGmfb,
   queryTzefb,
+  queryZbfstj,
 } from '@/services/bidding';
 
 const sum = (data, key1) => data.filter( r => r.groupY === key1).reduce((pre, now) => parseInt(now.value, 0) + pre, 0);
@@ -20,13 +21,13 @@ export default {
       listmje: [],
     },
     tzefb: [],
+    zbfstj: [],
   },
 
   effects: {
     * fetchBasicInfo({payload}, {call, put}) {
       try {
         const response = yield call(queryBiddingBasicInfo, payload);
-        console.log(response);
         yield put({
           type: 'save',
           payload: {
@@ -96,7 +97,6 @@ export default {
       };
       try {
         const response = yield call(queryGmfb, payload);
-        console.log(response);
         if (response && !response.msg) {
           gmfb = response;
         }
@@ -127,6 +127,32 @@ export default {
         },
       });
     },
+    * fetchZbfstj({payload}, {call, put}) {
+      let zbfstj = [];
+      try {
+        const response = yield call(queryZbfstj, payload);
+        console.log(response);
+        if (response && !response.msg) {
+          const total = [{
+            zbfs: '合计',
+            count: response.reduce((pre, now) => ((now.count - 0) + pre), 0),
+            zbje: response.reduce((pre, now) => ((now.zbje - 0) + pre), 0),
+            zbmj: response.reduce((pre, now) => ((now.zbmj - 0) + pre), 0),
+            gls: response.reduce((pre, now) => ((now.gls - 0) + pre), 0),
+          }];
+          console.log(total);
+          zbfstj = response.concat(total);
+        }
+      } catch (e) {
+        console.log('获取数据失败')
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          zbfstj,
+        },
+      });
+    }
   },
 
   reducers: {
@@ -146,6 +172,7 @@ export default {
           listmje: [],
         },
         tzefb: [],
+        zbfstj: [],
       };
     },
   }

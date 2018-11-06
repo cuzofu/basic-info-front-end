@@ -1,3 +1,4 @@
+import { stringify } from 'qs';
 import request from '@/utils/request';
 
 export async function queryBiddingBasicInfo(params) {
@@ -20,4 +21,9 @@ export async function queryGmfb(params) {
 // 投资额分布
 export async function queryTzefb(params) {
   return request(`/elastic_sskj/api/search/eng/tzefb/${params.time}`);
+}
+
+// 招标方式统计列表
+export async function queryZbfstj(params) {
+  return request(`/elastic_sskj/api/search/eng/searchgBYfs?${stringify(params)}`);
 }
