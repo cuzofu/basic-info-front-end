@@ -68,6 +68,21 @@ export default [
             name: 'search',
             component: './Analysis/Search',
           },
+          {
+            path: '/analysis/mm',
+            name: 'mm',
+            component: './Analysis/MarketMonitor',
+          },
+          {
+            path: '/analysis/ce',
+            name: 'ce',
+            component: './Analysis/ConstructionEfficiency',
+          },
+          {
+            path: '/analysis/ae',
+            name: 'ae',
+            component: './Analysis/AdministrativeEfficiency',
+          },
         ],
       },
       {

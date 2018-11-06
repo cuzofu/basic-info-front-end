@@ -110,7 +110,6 @@ class Contract extends Component {
   handlePageChange = (pageNumber) => {
     const { contract: { ysjscytj }} = this.props;
     const ycjscytjList = this.renderYjscy(ysjscytj, pageNumber);
-    console.log(ycjscytjList);
     this.setState({
       currentPage: pageNumber,
       ysjscytjList: ycjscytjList
@@ -123,8 +122,6 @@ class Contract extends Component {
       currentPage,
       ysjscytjList,
     } = this.state;
-
-    console.log('ysjscytjList', ysjscytjList);
 
     const {
       basicInfoLoading,

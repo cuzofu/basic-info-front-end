@@ -131,7 +131,6 @@ export default {
       let zbfstj = [];
       try {
         const response = yield call(queryZbfstj, payload);
-        console.log(response);
         if (response && !response.msg) {
           const total = [{
             zbfs: '合计',
@@ -140,7 +139,6 @@ export default {
             zbmj: response.reduce((pre, now) => ((now.zbmj - 0) + pre), 0),
             gls: response.reduce((pre, now) => ((now.gls - 0) + pre), 0),
           }];
-          console.log(total);
           zbfstj = response.concat(total);
         }
       } catch (e) {

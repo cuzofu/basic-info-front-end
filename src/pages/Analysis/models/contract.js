@@ -19,7 +19,6 @@ export default {
     * fetchBasicInfo({payload}, {call, put}) {
       try {
         const response = yield call(queryContractBasicInfo, payload);
-        console.log(response);
         yield put({
           type: 'save',
           payload: {
@@ -38,7 +37,6 @@ export default {
     * fetchContractAmountDataByRegion({payload}, {call, put}) {
       try {
         const response = yield call(queryContractAmountDataByRegion, payload);
-        console.log(response);
         yield put({
           type: 'save',
           payload: {

@@ -27,7 +27,6 @@ class PlusMinusBar extends Component {
       dimensions = [],
       color = ['#8C8C8C', '#2fc25b', '#1890ff'],
     } = this.props;
-    console.log(data);
     const myChart = echarts.init(document.getElementById(id));
     myChart.setOption({
       color,
