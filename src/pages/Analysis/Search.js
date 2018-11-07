@@ -91,10 +91,10 @@ class Search extends Component {
             dataSource={[
               {
                 id: '420500197501270015',
-                name: '陈亮',
+                name: '谢瑞钢',
                 gender: '男',
-                idCard: '420581198501180039',
-                engName: '湖北升思科技股份有限公司',
+                idCard: '420500197501270015',
+                engName: '湖北三峡建设项目管理股份有限公司',
               }
             ]}
             columns={columnsPersonList}

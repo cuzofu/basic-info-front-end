@@ -479,6 +479,7 @@ class Person extends Component {
     const {
       姓名,
       性别 = '-',
+      年龄 = '-',
       学历 = '-',
       民族 = '-',
       入册工龄 = '-',
@@ -492,9 +493,9 @@ class Person extends Component {
 
     const description = (
       <DescriptionList className={styles.headerList} size="small" col="2">
-        <Description>{性别} | {学历} | {民族} | 33岁</Description>
+        <Description>{性别} | {学历} | {民族} | {年龄}岁</Description>
         <Description term="入册工龄">{入册工龄}年</Description>
-        <Description term="身份证">{身份证号}</Description>
+        <Description term="身份证号">{身份证号}</Description>
         <Description term="手机号码">{移动电话}</Description>
       </DescriptionList>
     );
@@ -517,36 +518,7 @@ class Person extends Component {
     const cardTimelineLeft = {xs: 24, sm: 5, md: 4, lg: 4, xl: 6, xxl: 5, style: { marginBottom: 12 }};
     const cardTimelineRight = {xs: 24, sm: 19, md: 20, lg: 20, xl: 18, xxl: 19};
 
-    const IMAGES = [
-      {
-        src: 'https://c7.staticflickr.com/9/8106/28941228886_86d1450016_b.jpg',
-        thumbnail: 'https://c7.staticflickr.com/9/8106/28941228886_86d1450016_n.jpg',
-        thumbnailWidth: 271,
-        thumbnailHeight: 320,
-        caption: '职称证书',
-      },
-      {
-        src: 'https://c3.staticflickr.com/9/8583/28354353794_9f2d08d8c0_b.jpg',
-        thumbnail: 'https://c3.staticflickr.com/9/8583/28354353794_9f2d08d8c0_n.jpg',
-        thumbnailWidth: 320,
-        thumbnailHeight: 190,
-        caption: '岗位证书',
-      },
-      {
-        src: 'https://c7.staticflickr.com/9/8569/28941134686_d57273d933_b.jpg',
-        thumbnail: 'https://c7.staticflickr.com/9/8569/28941134686_d57273d933_n.jpg',
-        thumbnailWidth: 320,
-        thumbnailHeight: 148,
-        caption: '身份证',
-      },
-      {
-        src: 'https://c6.staticflickr.com/9/8342/28897193381_800db6419e_b.jpg',
-        thumbnail: 'https://c6.staticflickr.com/9/8342/28897193381_800db6419e_n.jpg',
-        thumbnailWidth: 320,
-        thumbnailHeight: 213,
-        caption: '印章',
-      },
-    ];
+    const IMAGES = [];
 
     IMAGES.map(i => {
       i.customOverlay = (

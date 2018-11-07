@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Chart, Tooltip, Geom, Coord } from 'bizcharts';
+import { Chart, Tooltip, Geom, Coord, Label } from 'bizcharts';
 import { DataView } from '@antv/data-set';
 import { Divider } from 'antd';
 import classNames from 'classnames';
@@ -134,6 +134,7 @@ class Pie extends Component {
       colors,
       lineWidth = 1,
       onPlotClick,
+      innerLabel = false,
     } = this.props;
 
     const { legendData, legendBlock } = this.state;
@@ -231,7 +232,22 @@ class Pie extends Component {
                 position="percent"
                 color={['x', percent || percent === 0 ? formatColor : defaultColors]}
                 selected={selected}
-              />
+              >
+                {
+                  innerLabel && (
+                    <Label
+                      content="x"
+                      offset={-40}
+                      textStyle={{
+                        rotate: 0,
+                        textAlign: "center",
+                        shadowBlur: 2,
+                        shadowColor: "rgba(0, 0, 0, .45)"
+                      }}
+                    />
+                  )
+                }
+              </Geom>
             </Chart>
 
             {(subTitle || total) && (

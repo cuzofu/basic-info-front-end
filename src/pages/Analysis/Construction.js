@@ -175,7 +175,7 @@ class Construction extends Component {
         title: '详情',
         key: 'more',
         render: (_, record) => (
-          <div><Link to={{pathname: `/eng/analysis/${record.key}`}}>详情</Link></div>
+          <div><a href={`/eng/analysis/${record.key}`} target="_blank">详情</a></div>
         ),
       },
     ];
@@ -282,7 +282,7 @@ class Construction extends Component {
         title: '详情',
         key: 'more',
         render: (_, record) => (
-          <div><Link to={{pathname: `/corp/analysis/${record.key}`}}>详情</Link></div>
+          <div><a href={`/corp/analysis/${record.key}`} target="_blank">详情</a></div>
         ),
       },
     ];

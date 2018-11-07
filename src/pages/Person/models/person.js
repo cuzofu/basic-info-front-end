@@ -26,14 +26,14 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            basicInfo: response.msg ? {} : response
+            basicInfo: response
           },
         });
       } catch (e) {
         yield put({
           type: 'save',
           payload: {
-            basicInfo: []
+            basicInfo: {}
           }
         });
       }
