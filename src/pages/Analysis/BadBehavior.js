@@ -337,7 +337,7 @@ class BadBehavior extends Component {
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="机构部门类型占比" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
+            <Card loading={blxwJgbmlxzbLoading} title="机构部门类型占比" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
               <MatrixBar
                 height={390}
                 padding={[5, 5, 100, 60]}

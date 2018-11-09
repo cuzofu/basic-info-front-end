@@ -4,23 +4,13 @@ export default {
   namespace: 'construction',
 
   state: {
-    engList: {
-      list: [],
-      pagination: {
-        pageSize: 10,
-      }
-    },
+    engList: [],
     corpList: [],
   },
 
   effects: {
     *fetchEngList({payload}, { call, put }) {
-      let engList = {
-        list: [],
-        pagination: {
-          pageSize: 10,
-        }
-      };
+      let engList = [];
       try {
         const response = yield call(queryEngList, payload);
         if (response && !response.msg) {
@@ -64,12 +54,7 @@ export default {
     },
     clear() {
       return {
-        engList: {
-          data: [],
-          pagination: {
-            pageSize: 5,
-          }
-        },
+        engList: [],
         corpList: [],
       };
     },

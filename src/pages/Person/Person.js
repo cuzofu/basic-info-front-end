@@ -42,37 +42,37 @@ class Person extends Component {
     dispatch({
       type: 'person/fetchBasicInfo',
       payload: {
-        id,
+        certNum: id,
       }
     });
     dispatch({
       type: 'person/fetchCredit',
       payload: {
-        id,
+        certNum: id,
       }
     });
     dispatch({
       type: 'person/fetchEngList',
       payload: {
-        id,
+        certNum: id,
       }
     });
     dispatch({
       type: 'person/fetchWorkList',
       payload: {
-        id,
+        certNum: id,
       }
     });
     dispatch({
       type: 'person/fetchJobList',
       payload: {
-        id,
+        certNum: id,
       }
     });
     dispatch({
       type: 'person/fetchRyzjList',
       payload: {
-        id,
+        certNum: id,
       }
     });
   }
@@ -541,109 +541,6 @@ class Person extends Component {
       );
       return i;
     });
-
-    const jobData = [
-      {
-        job: '施工员',
-        countOfEng: 9,
-        amountOfInvestment: 83423,
-      },
-      {
-        job: '安全员',
-        countOfEng: 8,
-        amountOfInvestment: 7656456,
-      },
-      {
-        job: '项目经理',
-        countOfEng: 2,
-        amountOfInvestment: 231232,
-      },
-      {
-        job: '项目总监',
-        countOfEng: 2,
-        amountOfInvestment: 324344,
-      }
-    ];
-
-    const workResume = [
-      {
-        id: '1',
-        createTime: '2018-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-        job: '项目总监',
-        isChanged: true,
-        status: '投标',
-        company: '中铁三局建设集团中铁三局建设集团中铁三局建设集团中铁三局建设集团中铁三局建设集团',
-        lng: '111.351723',
-        lat: '30.720449'
-      },
-      {
-        id: '2',
-        createTime: '2017-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-        job: '项目经理',
-        isChanged: true,
-        status: '中标',
-        company: '中铁三局建设集团',
-        lng: '111.336295',
-        lat: '30.721462'
-      },
-      {
-        id: '3',
-        createTime: '2015-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-        job: '项目经理',
-        isChanged: false,
-        status: '完工',
-        company: '中铁三局建设集团',
-        lng: '111.30737',
-        lat: '30.706746'
-      },
-      {
-        id: '4',
-        createTime: '2014-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-        job: '施工员',
-        isChanged: true,
-        status: '完工',
-        company: '中铁三局建设集团',
-        lng: '111.338415',
-        lat: '30.691841'
-      },
-      {
-        id: '5',
-        createTime: '2013-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  湖北升思科技大厦',
-        job: '施工员',
-        isChanged: false,
-        status: '完工',
-        company: '中铁三局建设集团',
-        lng: '111.296159',
-        lat: '30.684511'
-      },
-      {
-        id: '6',
-        createTime: '2012-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  宜昌市一中',
-        job: '施工员',
-        isChanged: false,
-        status: '完工',
-        company: '中铁三局建设集团',
-        lng: '111.248872',
-        lat: '30.70836'
-      },
-      {
-        id: '7',
-        createTime: '2011-09-12 15:52:12',
-        sgxkName: 'YCJS(2011)073  夷陵中学',
-        job: '施工员',
-        isChanged: true,
-        status: '完工',
-        company: '中铁三局建设集团',
-        lng: '111.325911',
-        lat: '30.702026'
-      }
-    ];
 
     return (
       <PageHeaderWrapper

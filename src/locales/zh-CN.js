@@ -15,6 +15,7 @@ export default {
   'menu.analysis.mm': '市场监测分析',
   'menu.analysis.ce': '建筑业能效分析',
   'menu.analysis.ae': '行政审批能效分析',
+  'menu.analysis.engs': '工程列表',
   'menu.person': '人员信息',
   'menu.corporation': '企业信息',
   'menu.engAnalysis': '工程分析',

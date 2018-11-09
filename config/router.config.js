@@ -83,6 +83,11 @@ export default [
             name: 'ae',
             component: './Analysis/AdministrativeEfficiency',
           },
+          {
+            path: '/analysis/engs',
+            name: 'engs',
+            component: './Analysis/EngList',
+          },
         ],
       },
       {

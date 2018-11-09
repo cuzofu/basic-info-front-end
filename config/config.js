@@ -95,7 +95,7 @@ export default {
   },
   proxy: {
     "/elastic_sskj/api": {
-      target: 'http://192.168.0.208:8180/',
+      target: 'http://192.168.0.208:4310/',
       changeOrigin: true,
     }
   }

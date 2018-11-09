@@ -8,110 +8,197 @@ import {
 
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 
-import styles from './Search.less';
-
 @connect(({ search, loading }) => ({
   search,
-  loading: loading.effects['search/fetch'],
+  orgLoading: loading.effects['search/searchOrg'],
+  personLoading: loading.effects['search/searchPerson'],
 }))
 class Search extends Component {
 
-  render() {
+  componentDidMount() {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'search/searchOrg',
+      payload: {}
+    });
+    dispatch({
+      type: 'search/searchPerson',
+      payload: {
+      }
+    });
+  }
+
+  renderOrgList = () => {
+    const {
+      search: {
+        orgList,
+      }
+    } = this.props;
+
+    const columnsOrgList = [
+      {
+        title: '名称',
+        dataIndex: '企业名称',
+        width: '25%',
+        align: 'left',
+      },
+      {
+        title: '类别',
+        dataIndex: '企业类别',
+        width: '10%',
+        align: 'center',
+      },
+      {
+        title: '机构代码',
+        dataIndex: '组织机构代码',
+        width: '15%',
+        align: 'center',
+      },
+      {
+        title: '地址',
+        dataIndex: '办公地址',
+        width: '30%',
+        align: 'left',
+      },
+      {
+        title: '诚信等级',
+        dataIndex: '诚信等级',
+        width: '10%',
+        align: 'center',
+      },
+      {
+        title: '详情',
+        key: 'more',
+        width: '10%',
+        align: 'center',
+        render: (_, record) => (
+          <div><a href={`/corporation/${record.id}`} target="_blank">查看</a></div>
+        ),
+      },
+    ];
+
+    return (
+      <Table
+        rowKey="id"
+        dataSource={orgList.data}
+        pagination={{
+          ...orgList.pagination,
+          pageSizeOptions: ['10', '20', '50'],
+          showQuickJumper: true,
+          showSizeChanger: true,
+        }}
+        columns={columnsOrgList}
+        scroll={{ y: 370 }}
+        onChange={this.handleOrgListChange}
+      />
+    );
+  };
+
+  renderPersonList = () => {
+    const {
+      search: {
+        personList,
+      }
+    } = this.props;
 
     const columnsPersonList = [
       {
         title: '姓名',
-        dataIndex: 'name',
+        dataIndex: '姓名',
         key: 'name',
         width: '10%',
       },
       {
         title: '性别',
-        dataIndex: 'gender',
-        key: 'gender',
+        dataIndex: '性别',
         width: '10%',
       },
       {
-        title: '证件号码',
-        dataIndex: 'idCard',
-        key: 'idCard',
-        width: '30%',
+        title: '身份证号',
+        dataIndex: '身份证号',
+        width: '15%',
       },
       {
-        title: '所在企业',
-        dataIndex: 'engName',
-        key: 'engName',
-        width: '40%',
+        title: '入册工龄',
+        dataIndex: '入册工龄',
+        width: '15%',
+        align: 'center'
+      },
+      {
+        title: '所属企业',
+        dataIndex: '所属企业',
+        width: '25%',
+      },
+      {
+        title: '专业',
+        dataIndex: '专业',
+        width: '15%',
       },
       {
         title: '更多',
         key: 'more',
         width: '10%',
         render: (_, record) => (
-          <div><a href={`/person/${record.id}`} target="_blank">查看</a></div>
+          <div><a href={`/person/${record.身份证号}`} target="_blank">查看</a></div>
         ),
       },
     ];
 
-    const columnsOrgList = [
-      {
-        title: '名称',
-        dataIndex: 'orgName',
+    return (
+      <Table
+        rowKey="id"
+        dataSource={personList.data}
+        pagination={{
+          ...personList.pagination,
+          pageSizeOptions: ['10', '20', '50'],
+          showQuickJumper: true,
+          showSizeChanger: true,
+        }}
+        columns={columnsPersonList}
+        scroll={{ y: 370 }}
+        onChange={this.handlePersonListChange}
+      />
+    );
+  };
+
+  handleOrgListChange = (pagination) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'search/searchOrg',
+      payload: {
+        currentPage: pagination.current - 1,
+        pageSize: pagination.pageSize,
       },
-      {
-        title: '类型',
-        dataIndex: 'gender',
+    });
+  };
+
+  handlePersonListChange = (pagination) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'search/searchPerson',
+      payload: {
+        currentPage: pagination.current - 1,
+        pageSize: pagination.pageSize,
       },
-      {
-        title: '统一编码',
-        dataIndex: 'unicode',
-      },
-      {
-        title: '地址',
-        dataIndex: 'idCard',
-      },
-      {
-        title: '诚信',
-        dataIndex: 'credit',
-      },
-      {
-        title: '详情',
-        key: 'more',
-      },
-    ];
+    });
+  };
+
+  render() {
 
     return (
       <GridContent>
-        <Card
-          title="人员"
-          bodyStyle={{ maxHeight: '484px', padding: '5px 16px' }}
-        >
-          <Table
-            rowKey="id"
-            dataSource={[
-              {
-                id: '420500197501270015',
-                name: '谢瑞钢',
-                gender: '男',
-                idCard: '420500197501270015',
-                engName: '湖北三峡建设项目管理股份有限公司',
-              }
-            ]}
-            columns={columnsPersonList}
-            scroll={{ y: 420 }}
-          />
-        </Card>
         <Card
           style={{marginTop: '10px'}}
           title="企业"
           bodyStyle={{ maxHeight: '484px', padding: '5px 16px' }}
         >
-          <Table
-            rowKey="id"
-            dataSource={[]}
-            columns={columnsOrgList}
-            scroll={{ y: 420 }}
-          />
+          {this.renderOrgList()}
+        </Card>
+        <Card
+          title="人员"
+          bodyStyle={{ maxHeight: '484px', padding: '5px 16px' }}
+        >
+          {this.renderPersonList()}
         </Card>
       </GridContent>
     );

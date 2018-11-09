@@ -19,6 +19,10 @@ class Construction extends Component {
     corpListPagination: {
       current: 1,
       pageSize: 10,
+    },
+    engListPagination: {
+      current: 1,
+      pageSize: 10,
     }
   };
 
@@ -41,22 +45,12 @@ class Construction extends Component {
     });
   }
 
-  handleEngListChange = (pagination, filters, sorter) => {
-    const { dispatch } = this.props;
-    const params = {
-      currentPage: pagination.current - 1,
-      pageSize: pagination.pageSize,
-    };
-    if (sorter.field) {
-      params.sort = sorter.field;
-      params.direction = sorter.order;
-    } else {
-      params.sort = 'gjTime';
-      params.direction = 'descend';
-    }
-    dispatch({
-      type: 'construction/fetchEngList',
-      payload: params,
+  handleEngListChange = (pagination) => {
+    this.setState({
+      engListPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
     });
   };
 
@@ -71,7 +65,10 @@ class Construction extends Component {
 
   render() {
 
-    const {corpListPagination} = this.state;
+    const {
+      corpListPagination,
+      engListPagination,
+    } = this.state;
     const {
       construction: {
         engList,
@@ -294,8 +291,12 @@ class Construction extends Component {
             rowKey="id"
             showHeader={false}
             loading={engListLoading}
-            dataSource={engList.list}
-            pagination={engList.pagination}
+            dataSource={engList}
+            pagination={{
+              ...engListPagination,
+              pageSizeOptions: ['10', '50'],
+              showSizeChanger: true,
+            }}
             columns={columnsEngList}
             scroll={{ y: 420 }}
             onChange={this.handleEngListChange}

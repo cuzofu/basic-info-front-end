@@ -27,10 +27,12 @@ const checkStatus = response => {
     return response;
   }
   const errortext = codeMessage[response.status] || response.statusText;
+  /*
   notification.error({
     message: `请求错误 ${response.status}: ${response.url}`,
     description: errortext,
   });
+  */
   const error = new Error(errortext);
   error.name = response.status;
   error.response = response;
@@ -131,10 +133,13 @@ export default function request(
       return response.json();
     })
     .catch(e => {
+      console.log(e);
       const status = e.name;
+      console.log(status);
+      /*
       if (status === 401) {
         // @HACK
-        /* eslint-disable no-underscore-dangle */
+        /!* eslint-disable no-underscore-dangle *!/
         window.g_app._store.dispatch({
           type: 'login/logout',
         });
@@ -152,5 +157,6 @@ export default function request(
       if (status >= 404 && status < 422) {
         router.push('/exception/404');
       }
+      */
     });
 }

@@ -13,9 +13,26 @@ import styles from './CorpAnalysis.less';
 
 const { Description } = DescriptionList;
 
+const dateFormat = (date, format) => {
+  const d = moment(date);
+  if (d.isValid()) {
+    return d.format(format);
+  }
+  return '未知';
+};
+
+// 左右结构布局参数
+const doubleCardColsProps = { lg: 24, xl: 12, style: { marginBottom: 12 } };
+
 @connect(({ corpAnalysis, loading }) => ({
   corpAnalysis,
   basicInfoLoading: loading.effects['corpAnalysis/fetchBasicInfo'],
+  zxxxLoading: loading.effects['corpAnalysis/fetchZxxx'],
+  cjqkLoading: loading.effects['corpAnalysis/fetchCjqk'],
+  blxwtjLoading: loading.effects['corpAnalysis/fetchBlxwtj'],
+  cxtjLoading: loading.effects['corpAnalysis/fetchCxtj'],
+  blxwkfLoading: loading.effects['corpAnalysis/fetchBlxwkf'],
+  wtlbLoading: loading.effects['corpAnalysis/fetchWtlb'],
 }))
 class CorpAnalysis extends Component {
 
@@ -31,8 +48,32 @@ class CorpAnalysis extends Component {
     dispatch({
       type: 'corpAnalysis/fetchBasicInfo',
       payload: {
-        id,
+        jcxxId: id
       }
+    });
+    dispatch({
+      type: 'corpAnalysis/fetchZxxx',
+      payload: {id}
+    });
+    dispatch({
+      type: 'corpAnalysis/fetchCjqk',
+      payload: {id}
+    });
+    dispatch({
+      type: 'corpAnalysis/fetchBlxwtj',
+      payload: {id}
+    });
+    dispatch({
+      type: 'corpAnalysis/fetchCxtj',
+      payload: {id}
+    });
+    dispatch({
+      type: 'corpAnalysis/fetchBlxwkf',
+      payload: {id}
+    });
+    dispatch({
+      type: 'corpAnalysis/fetchWtlb',
+      payload: {id}
     });
   }
 
@@ -44,34 +85,224 @@ class CorpAnalysis extends Component {
     return '未知';
   };
 
-  render() {
-
+  renderCorpTitleInfo = () => {
     const {
-      basicInfoLoading,
       corpAnalysis: {
-        basicInfo,
+        basicInfo: {
+          glsj = '-',
+          jcxxMx = '{}',
+        },
       }
     } = this.props;
+    const {
+      企业类型 = '-',
+      企业类别 = '-',
+    } = JSON.parse(jcxxMx);
+    return (
+      <div>
+        <p className={styles.headerTitle}>{glsj}</p>
+        <div>
+          {企业类型 ? (<Tag color="magenta">{企业类型}</Tag>) : null}
+          {企业类别 ? (<Tag color="volcano" className={styles.headerTag}>{企业类别}</Tag>) : null}
+        </div>
+      </div>
+    )
+  };
 
-    const description = (
+  renderDescription = () => {
+
+    const {
+      corpAnalysis: {
+        basicInfo: {
+          jcxxMx = '{}',
+        },
+      }
+    } = this.props;
+    const {
+      经营范围 = '-',
+      办公地址 = '-',
+      日常联系人 = '-',
+      日常联系电话 = '-',
+      联系手机 = '-',
+      传真 = '-',
+      办公所在地行政区划 = '-',
+    } = JSON.parse(jcxxMx);
+    return (
       <Fragment>
         <DescriptionList className={styles.headerList} size="small" col={4}>
-          <Description term="联系人">张三</Description>
-          <Description term="电话">0717-6623595</Description>
-          <Description term="手机">13123456789</Description>
-          <Description term="传真">0717-6623595</Description>
+          <Description term="联系人">{日常联系人}</Description>
+          <Description term="电话">{日常联系电话}</Description>
+          <Description term="手机">{联系手机}</Description>
+          <Description term="传真">{传真}</Description>
         </DescriptionList>
         <DescriptionList className={styles.headerList} size="small" col={2}>
-          <Description term="办公所在地">湖北省_宜昌市_西陵区</Description>
-          <Description term="办公地址">湖北省宜昌市高新区兰台路13号1号楼</Description>
+          <Description term="办公所在地">{办公所在地行政区划}</Description>
+          <Description term="办公地址">{办公地址}</Description>
         </DescriptionList>
         <DescriptionList className={styles.headerList} size="small" col="1">
           <Description term="经营范围">
-            <Ellipsis tooltip lines={3}>房屋建筑工程施工总承包壹级可承担单项建安合同额不超过企业注册资本金5倍的下列房屋建筑工程的施工：（1）40层以下、各类跨度的房屋建筑工程；（2）高度240米及以下的构筑物；（3）建筑面积20万平方米及以下的住宅小区或建筑群体。建筑装修装饰工程专业总承包叁级可承担单位工程造价60万元及以下建筑室内、室外装修装饰工程（建筑幕墙工程除外）的施工。</Ellipsis>
+            <Ellipsis tooltip lines={3}>{经营范围}</Ellipsis>
           </Description>
         </DescriptionList>
       </Fragment>
     );
+  };
+
+  renderZxxx = () => {
+    const {
+      zxxxLoading,
+      corpAnalysis: {
+        zxxx,
+      }
+    } = this.props;
+
+    let content = (
+      <div>
+        <Ellipsis tooltip lines={1}>暂无消息</Ellipsis>
+        <div style={{textAlign: 'right'}}><span title="2018年8月1日">{dateFormat(Date.now(), 'YYYY日MM月DD日')}</span></div>
+      </div>
+    );
+    if (zxxx.length > 0) {
+      const {
+        des,
+        tag,
+        gjTime,
+      } = zxxx[0];
+      content = (
+        <div>
+          <Ellipsis tooltip lines={1}>{`${tag}：${des}`}</Ellipsis>
+          <div style={{textAlign: 'right'}}><span title="2018年8月1日">{dateFormat(gjTime, 'YYYY日MM月DD日')}</span></div>
+        </div>
+      )
+    }
+    return (
+      <Card loading={zxxxLoading} bodyStyle={{ padding: 0 }} bordered={false}>
+        <Card.Meta
+          title={
+            <div className={styles.cardTitle}>
+              <Icon type="message" theme="filled" style={{fontSize: '24px', color: 'green'}} />
+              <span style={{marginLeft: '12px'}}>最新消息</span>
+            </div>
+          }
+        />
+        <div style={{paddingTop: '12px'}}>
+          {content}
+        </div>
+      </Card>
+    );
+  };
+
+  renderCjqk = () => {
+    const {
+      cjqkLoading,
+      corpAnalysis: {
+        cjqk: {
+          sumNum = 0,
+          wanCheng = 0,
+          weiGui = 0,
+          zaiJian = 0,
+        },
+      }
+    } = this.props;
+
+    return (
+      <Card loading={cjqkLoading} bodyStyle={{ padding: 0 }} bordered={false}>
+        <Card.Meta
+          title={
+            <div className={styles.cardTitle}>
+              <Icon type="project" theme="filled" style={{fontSize: '24px', color: 'chocolate'}} />
+              <span style={{marginLeft: '12px'}}>参建情况</span>
+            </div>
+          }
+        />
+        <div style={{paddingTop: '12px'}}>
+          <Ellipsis tooltip lines={1}>承建项目：{sumNum}个</Ellipsis>
+          <Ellipsis tooltip lines={1}>在建：{wanCheng}个，完工：{weiGui}个，停工{zaiJian}个</Ellipsis>
+        </div>
+      </Card>
+    );
+  };
+
+  renderBlxwtj = () => {
+    const {
+      blxwtjLoading,
+      corpAnalysis: {
+        blxwtj
+      }
+    } = this.props;
+    let content = (
+      <div>
+        <Ellipsis tooltip lines={1}>扣分0分，共0次</Ellipsis>
+        <Ellipsis tooltip lines={1}>暂无不良行为记录</Ellipsis>
+      </div>
+    );
+    if (blxwtj && blxwtj.length > 0) {
+      const {
+        wtType = '',
+        ciShu = 0,
+        sum = 0,
+      } = blxwtj[0];
+      content = (
+        <div>
+          <Ellipsis tooltip lines={1}>扣分{sum}分，共{ciShu}次</Ellipsis>
+          <Ellipsis tooltip lines={1}>突出问题：{wtType}</Ellipsis>
+        </div>
+      );
+    }
+    return (
+      <Card loading={blxwtjLoading} bodyStyle={{ padding: 0 }} bordered={false}>
+        <Card.Meta
+          title={
+            <div className={styles.cardTitle}>
+              <Icon type="question-circle" theme="filled" style={{fontSize: '24px', color: 'red'}} />
+              <span style={{marginLeft: '12px'}}>不良行为统计</span>
+            </div>
+          }
+        />
+        <div style={{paddingTop: '12px'}}>{content}</div>
+      </Card>
+    );
+  };
+
+  renderCxtj = () => {
+    const {
+      cxtjLoading,
+      corpAnalysis: {
+        cxtj: {
+          jiaFen = '',
+          jianFen = '',
+        },
+      }
+    } = this.props;
+    return (
+      <Card loading={cxtjLoading} bodyStyle={{ padding: 0 }} bordered={false}>
+        <Card.Meta
+          title={
+            <div className={styles.cardTitle}>
+              <Icon type="credit-card" theme="filled" style={{fontSize: '24px', color: 'deepskyblue'}} />
+              <span style={{marginLeft: '12px'}}>诚信统计</span>
+            </div>
+          }
+        />
+        <div style={{paddingTop: '12px'}}>
+          <Ellipsis tooltip lines={1}>{jiaFen}</Ellipsis>
+          <Ellipsis tooltip lines={1}>{jianFen}</Ellipsis>
+        </div>
+      </Card>
+    );
+  };
+
+  render() {
+
+    const {
+      basicInfoLoading,
+      blxwkfLoading,
+      wtlbLoading,
+      corpAnalysis: {
+        blxwkf,
+        wtlb,
+      }
+    } = this.props;
 
     // 参建方信息 栅格布局参数
     const cjfColsProps = {
@@ -88,16 +319,8 @@ class CorpAnalysis extends Component {
 
     return (
       <PageHeaderWrapper
-        title={
-          <div>
-            <p className={styles.headerTitle}>湖北升思科技股份有限公司</p>
-            <div>
-              <Tag color="magenta">本地企业</Tag>
-              <Tag color="volcano" className={styles.headerTag}>建筑业企业</Tag>
-            </div>
-          </div>
-        }
-        content={description}
+        title={this.renderCorpTitleInfo()}
+        content={this.renderDescription()}
       >
         <Card
           className={styles.messageList}
@@ -106,68 +329,16 @@ class CorpAnalysis extends Component {
           bodyStyle={{padding: '12px', minHeight: '120px'}}
         >
           <Card.Grid className={styles.messageGrid}>
-            <Card bodyStyle={{ padding: 0 }} bordered={false}>
-              <Card.Meta
-                title={
-                  <div className={styles.cardTitle}>
-                    <Icon type="message" theme="filled" style={{fontSize: '24px', color: 'green'}} />
-                    <span style={{marginLeft: '12px'}}>最新消息</span>
-                  </div>
-                }
-              />
-              <div style={{paddingTop: '12px'}}>
-                <Ellipsis tooltip lines={1}>XXXXXXXXXXXXXXXX不良行为扣分</Ellipsis>
-                <div style={{textAlign: 'right'}}><span title="2018年8月1日">2018年8月1日</span></div>
-              </div>
-            </Card>
+            {this.renderZxxx()}
           </Card.Grid>
           <Card.Grid className={styles.messageGrid}>
-            <Card bodyStyle={{ padding: 0 }} bordered={false}>
-              <Card.Meta
-                title={
-                  <div className={styles.cardTitle}>
-                    <Icon type="project" theme="filled" style={{fontSize: '24px', color: 'chocolate'}} />
-                    <span style={{marginLeft: '12px'}}>参建情况</span>
-                  </div>
-                }
-              />
-              <div style={{paddingTop: '12px'}}>
-                <Ellipsis tooltip lines={1}>承建项目：10个</Ellipsis>
-                <Ellipsis tooltip lines={1}>在建：5个，完工：4个，停工1个</Ellipsis>
-              </div>
-            </Card>
+            {this.renderCjqk()}
           </Card.Grid>
           <Card.Grid className={styles.messageGrid}>
-            <Card bodyStyle={{ padding: 0 }} bordered={false}>
-              <Card.Meta
-                title={
-                  <div className={styles.cardTitle}>
-                    <Icon type="question-circle" theme="filled" style={{fontSize: '24px', color: 'red'}} />
-                    <span style={{marginLeft: '12px'}}>不良行为统计</span>
-                  </div>
-                }
-              />
-              <div style={{paddingTop: '12px'}}>
-                <Ellipsis tooltip lines={1}>扣分15分，共5次</Ellipsis>
-                <Ellipsis tooltip lines={1}>突出问题：xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</Ellipsis>
-              </div>
-            </Card>
+            {this.renderBlxwtj()}
           </Card.Grid>
           <Card.Grid className={styles.messageGrid}>
-            <Card bodyStyle={{ padding: 0 }} bordered={false}>
-              <Card.Meta
-                title={
-                  <div className={styles.cardTitle}>
-                    <Icon type="credit-card" theme="filled" style={{fontSize: '24px', color: 'deepskyblue'}} />
-                    <span style={{marginLeft: '12px'}}>诚信统计</span>
-                  </div>
-                }
-              />
-              <div style={{paddingTop: '12px'}}>
-                <Ellipsis tooltip lines={1}>诚信加分20分，共5次</Ellipsis>
-                <Ellipsis tooltip lines={1}>诚信扣分5分，共1次</Ellipsis>
-              </div>
-            </Card>
+            {this.renderCxtj()}
           </Card.Grid>
         </Card>
         <Card
@@ -242,75 +413,63 @@ class CorpAnalysis extends Component {
             </Timeline>
           </div>
         </Card>
-        <Card
-          loading={basicInfoLoading}
-          bordered={false}
-          title="不良行为扣分"
-          style={{marginTop: 12}}
-          bodyStyle={{minHeight: '300px', padding: '12px'}}
-        >
-          <div className={styles.issueCard}>
-            <Row gutter={0}>
-              <Col xl={12} lg={12} md={24} sm={24} xs={24}>
-                <div className={styles.issuePie}>
-                  <CustomPie
-                    hasLegend
-                    subTitle="扣分次数"
-                    total={() => `${[].reduce((pre, now) => now.y + pre, 0)}次`}
-                    data={[
-                      {
-                        x: "质量安全建筑节能管理",
-                        y: 2,
-                      },
-                      {
-                        x: "市场行为管理",
-                        y: 2,
-                      },
-                      {
-                        x: "其他",
-                        y: 1,
-                      }
-                    ]}
-                    valueFormat={value => `${value}次`}
-                    height={248}
-                    lineWidth={4}
-                  />
-                </div>
-              </Col>
-              <Col xl={12} lg={12} md={24} sm={24} xs={24}>
+        <Row gutter={12}>
+          <Col {...doubleCardColsProps}>
+            <Card
+              loading={blxwkfLoading}
+              bordered={false}
+              title="不良行为扣分"
+              style={{marginTop: 12}}
+              bodyStyle={{minHeight: '300px', padding: '12px'}}
+            >
+              <div className={styles.issuePie}>
+                <CustomPie
+                  hasLegend
+                  subTitle="扣分次数"
+                  total={() => `${blxwkf.reduce((pre, now) => now.y + pre, 0)}次`}
+                  data={blxwkf}
+                  valueFormat={value => `${value}次`}
+                  height={248}
+                  lineWidth={4}
+                />
+              </div>
+            </Card>
+          </Col>
+          <Col {...doubleCardColsProps}>
+            <Card
+              loading={wtlbLoading}
+              bordered={false}
+              title="问题列表"
+              style={{marginTop: 12}}
+              bodyStyle={{minHeight: '300px', padding: '12px'}}
+            >
+              <div className={styles.issueCard}>
                 <div className={styles.issueRank}>
-                  <h4 className={styles.rankingTitle}>问题列表</h4>
-                  <ul className={styles.rankingList}>
-                    <li>
-                      <span className={`${styles.rankingItemNumber} ${styles.active}`}>1</span>
-                      <span className={styles.rankingItemIssue} title="xxxxxxxxxxxxxxxxx">xxxxxxxxxxxxxxxxx</span>
-                      <span className={styles.rankingItemType} title="质量">质量安全建筑节能管理</span>
-                      <span className={styles.rankingItemValue}>2个</span>
-                    </li>
-                    <li>
-                      <span className={`${styles.rankingItemNumber} ${styles.active}`}>2</span>
-                      <span className={styles.rankingItemIssue} title="xxxxxxxxxxxxxxxxx">xxxxxxxxxxxxxxxxx</span>
-                      <span className={styles.rankingItemType} title="质量">市场行为管理</span>
-                      <span className={styles.rankingItemValue}>1个</span>
-                    </li>
-                    <li>
-                      <span className={`${styles.rankingItemNumber} ${styles.active}`}>3</span>
-                      <span className={styles.rankingItemIssue} title="xxxxxxxxxxxxxxxxx">xxxxxxxxxxxxxxxxx</span>
-                      <span className={styles.rankingItemType} title="质量">市场行为管理</span>
-                      <span className={styles.rankingItemValue}>1个</span>
-                    </li>
-                    <li>
-                      <span className={`${styles.rankingItemNumber}`}>4</span>
-                      <span className={styles.rankingItemIssue} title="xxxxxxxxxxxxxxxxx">xxxxxxxxxxxxxxxxx</span>
-                      <span className={styles.rankingItemType} title="质量">其他</span>
-                      <span className={styles.rankingItemValue}>1个</span>
-                    </li>
-                  </ul>
+                  {
+                    wtlb && wtlb.length > 0 ? (
+                      <ul className={styles.rankingList}>
+                        {wtlb.map((r, index) => (
+                          <li key={r.wtType+r.wtTypeNum}>
+                            {
+                              index < 3 ?
+                                (<span className={`${styles.rankingItemNumber} ${styles.active}`}>{index+1}</span>)
+                                :
+                                (<span className={`${styles.rankingItemNumber}`}>{index+2}</span>)
+                            }
+                            <span className={styles.rankingItemIssue} title={r.wtType}>{r.wtType}</span>
+                            <span className={styles.rankingItemType} title={r.wtTypeXW}>{r.wtTypeXW}</span>
+                            <span className={styles.rankingItemValue}>{r.wtTypeNum}个</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>)
+                  }
                 </div>
-              </Col>
-            </Row>
-          </div>
-        </Card>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+
         <Card
           loading={basicInfoLoading}
           bordered={false}

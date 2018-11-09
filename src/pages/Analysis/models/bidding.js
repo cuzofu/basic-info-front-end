@@ -26,22 +26,22 @@ export default {
 
   effects: {
     * fetchBasicInfo({payload}, {call, put}) {
+      let basicInfo = {};
       try {
         const response = yield call(queryBiddingBasicInfo, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            basicInfo: response || {},
-          },
-        });
+        console.log(response);
+        if (response && !response.msg) {
+          basicInfo = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            basicInfo: {},
-          },
-        });
+        console.log('获取基本信息失败')
       }
+      yield put({
+        type: 'save',
+        payload: {
+          basicInfo,
+        },
+      });
     },
     * fetchRegionType({payload}, {call, put}) {
       let regionType = [];

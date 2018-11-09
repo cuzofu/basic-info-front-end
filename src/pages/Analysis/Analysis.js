@@ -54,7 +54,11 @@ class Analysis extends Component {
       },
       {
         key: 'search',
-        tab: '企业人员搜索',
+        tab: '企业人员',
+      },
+      {
+        key: 'engs',
+        tab: '工程',
       },
     ];
 

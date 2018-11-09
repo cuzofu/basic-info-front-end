@@ -13,22 +13,65 @@ import BarLine from "./Line/BarLine";
 @connect(({ intendance, loading }) => ({
   intendance,
   zfwsksLoading: loading.effects['intendance/fetchZfwsks'],
+  zfwstjLoading: loading.effects['intendance/fetchZfwstjData'],
+  zlwtpmLoading: loading.effects['intendance/fetchZlwtpmData'],
+  zfwsGcpmLoading: loading.effects['intendance/fetchZfwsGcpmData'],
+  zfwsQypmLoading: loading.effects['intendance/fetchZfwsQypmData'],
+  gczlwtpmLoading: loading.effects['intendance/fetchGczlwtpmData'],
 }))
 class Intendance extends Component {
 
   state = {
-    zgType1: '全部',
-    zgType2: '全部',
+    qypmType: '全部',
+    gcpmType: '全部',
+    zfwsGcpmPagination: {
+      current: 1,
+      pageSize: 10,
+    },
+    zfwsQypmPagination: {
+      current: 1,
+      pageSize: 10,
+    },
+    zlwtpmPagination: {
+      current: 1,
+      pageSize: 10,
+    }
   };
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const {
+      qypmType,
+      gcpmType,
+    } = this.state;
     this.reqRef = requestAnimationFrame(() => {
       dispatch({
         type: 'intendance/fetchZfwsks',
+        payload: {}
+      });
+      dispatch({
+        type: 'intendance/fetchZfwstjData',
+        payload: {}
+      });
+      dispatch({
+        type: 'intendance/fetchZlwtpmData',
+        payload: {}
+      });
+      dispatch({
+        type: 'intendance/fetchZfwsQypmData',
         payload: {
-          time: '2018-01-01'
+          type: qypmType
         }
+      });
+      dispatch({
+        type: 'intendance/fetchZfwsGcpmData',
+        payload: {
+          type: gcpmType
+        }
+      });
+      dispatch({
+        type: 'intendance/fetchGczlwtpmData',
+        payload: {}
       });
     });
   }
@@ -40,15 +83,82 @@ class Intendance extends Component {
     });
   }
 
-  handleChange1 = e => {
+  handleChangeQypmType = e => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'intendance/fetchZfwsQypmData',
+      payload: {
+        type: e.target.value
+      }
+    });
     this.setState({
-      zgType1: e.target.value,
+      qypmType: e.target.value,
+      zfwsQypmPagination: {
+        current: 1,
+        pageSize: 10,
+      }
     });
   };
 
-  handleChange2 = e => {
+  handleChangeGcpmType = e => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'intendance/fetchZfwsGcpmData',
+      payload: {
+        type: e.target.value
+      }
+    });
     this.setState({
-      zgType2: e.target.value,
+      gcpmType: e.target.value,
+      zfwsGcpmPagination: {
+        current: 1,
+        pageSize: 10,
+      }
+    });
+  };
+
+  renderZfwstj = () => {
+    const {
+      intendance: {
+        zfwstj
+      }
+    } = this.props;
+    if (zfwstj && zfwstj.length > 0) {
+      return (
+        <BarLine
+          id="zfwstj"
+          height={390}
+          data={zfwstj}
+        />
+      );
+    }
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
+  };
+
+  handleZfwsGcpmPagination = (pagination) => {
+    this.setState({
+      zfwsGcpmPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
+
+  handleZfwsQypmPagination = (pagination) => {
+    this.setState({
+      zfwsQypmPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
+
+  handleZlwtpmPagination = (pagination) => {
+    this.setState({
+      zlwtpmPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+      }
     });
   };
 
@@ -56,13 +166,25 @@ class Intendance extends Component {
 
     const {
       zfwsksLoading,
+      zfwstjLoading,
+      zfwsGcpmLoading,
+      zfwsQypmLoading,
+      zlwtpmLoading,
+      gczlwtpmLoading,
       intendance: {
         zfwsks,
+        zfwsGcpm,
+        zfwsQypm,
+        zlwtpm,
+        gczlwtpm,
       }
     } = this.props;
     const {
-      zgType1,
-      zgType2
+      qypmType,
+      gcpmType,
+      zfwsGcpmPagination,
+      zfwsQypmPagination,
+      zlwtpmPagination,
     } = this.state;
 
     // 左右结构布局参数
@@ -118,11 +240,12 @@ class Intendance extends Component {
         title: '占比',
         dataIndex: 'rate',
         width: '15%',
+        render: (val) => `${val}%`
       },
     ];
 
     // 工程排名（执法文书）
-    const engZgRankingData = [
+    const zfwsGcpmColumns = [
       {
         title: '排名',
         dataIndex: 'rank',
@@ -142,6 +265,7 @@ class Intendance extends Component {
         title: '占比',
         dataIndex: 'rate',
         width: '15%',
+        render: (val) => `${val}%`
       },
     ];
 
@@ -229,141 +353,28 @@ class Intendance extends Component {
           <Col {...doubleCardColsProps}>
             <Card title="项目排名占比" bodyStyle={{ height: '410px', padding: '5px' }}>
               <Table
+                loading={zlwtpmLoading}
                 size="small"
                 scroll={{ y: 310 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    rank: 1,
-                    issueDes: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 17,
-                  },
-                  {
-                    key: '2',
-                    rank: 2,
-                    issueDes: 'xxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 16,
-                  },
-                  {
-                    key: '3',
-                    rank: 3,
-                    issueDes: 'xxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 14,
-                  },
-                  {
-                    key: '4',
-                    rank: 4,
-                    issueDes: 'xxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 13,
-                  },
-                  {
-                    key: '5',
-                    rank: 5,
-                    issueDes: 'xxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 11,
-                  },
-                  {
-                    key: '6',
-                    rank: 6,
-                    issueDes: 'xxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 8,
-                  },
-                  {
-                    key: '7',
-                    rank: 7,
-                    issueDes: 'xxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 8,
-                  },
-                  {
-                    key: '8',
-                    rank: 8,
-                    issueDes: 'xxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 8,
-                  },
-                  {
-                    key: '9',
-                    rank: 9,
-                    issueDes: 'xxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 8,
-                  },
-                  {
-                    key: '10',
-                    rank: 10,
-                    issueDes: 'xxxxxxxxxxxxxxxx',
-                    issueType: '质量',
-                    issueSubType: '行为类',
-                    count: 8,
-                  },
-                ]}
+                dataSource={zlwtpm}
                 columns={issueRankingData}
                 pagination={{
-                  pageSize: 10,
-                  total: 6,
-                  current: 1,
+                  ...zlwtpmPagination,
                   pageSizeOptions: ['10', '20', '50'],
-                  showQuickJumper: true,
                   showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  showTotal: total => `总计 ${total} 种问题.`,
                 }}
+                onChange={this.handleZlwtpmPagination}
               />
             </Card>
           </Col>
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="工程排名（按问题）" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
+            <Card loading={gczlwtpmLoading} title="工程排名（按问题）" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
               <StackedBar
                 fields={['质量问题', '安全问题']}
-                data={[
-                  {
-                    rank: 'No.1',
-                    engName: "XXXXXXXXXXXXXXXXXXXXX工程1",
-                    "质量问题": 40,
-                    "安全问题": 40
-                  },
-                  {
-                    rank: 'No.2',
-                    engName: "XXXXXXXXXXXXXXXXXXXXX工程2",
-                    "质量问题": 30,
-                    "安全问题": 40
-                  },
-                  {
-                    rank: 'No.3',
-                    engName: "XXXXXXXXXXXXXXXXXXXXX工程3",
-                    "质量问题": 32,
-                    "安全问题": 30
-                  },
-                  {
-                    rank: 'No.4',
-                    engName: "XXXXXXXXXXXXXXXXXXXXX工程4",
-                    "质量问题": 30,
-                    "安全问题": 18
-                  },
-                  {
-                    rank: 'No.5',
-                    engName: "XXXXXXXXXXXXXXXXXXXXX工程5",
-                    "质量问题": 15,
-                    "安全问题": 30
-                  }
-                ].reverse()}
+                data={gczlwtpm}
               />
             </Card>
           </Col>
@@ -373,124 +384,33 @@ class Intendance extends Component {
               bodyStyle={{ height: '400px', padding: '5px' }}
             >
               <div style={{padding: '10px 0'}}>
-                <Radio.Group value={zgType1} onChange={this.handleChange1}>
+                <Radio.Group value={qypmType} onChange={this.handleChangeQypmType}>
                   <Radio.Button value="全部">全部</Radio.Button>
                   <Radio.Button value="停工">停工</Radio.Button>
                   <Radio.Button value="整改">整改</Radio.Button>
                 </Radio.Group>
               </div>
               <Table
+                loading={zfwsQypmLoading}
                 size="small"
                 scroll={{ y: 260 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    rank: 1,
-                    orgName: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-                    count: 17,
-                    rate: 15,
-                  },
-                  {
-                    key: '2',
-                    rank: 2,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    count: 16,
-                    rate: 10,
-                  },
-                  {
-                    key: '3',
-                    rank: 3,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    count: 14,
-                    rate: 8,
-                  },
-                  {
-                    key: '4',
-                    rank: 4,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    count: 13,
-                    rate: 5,
-                  },
-                  {
-                    key: '5',
-                    rank: 5,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    count: 11,
-                    rate: 4,
-                  },
-                  {
-                    key: '6',
-                    rank: 6,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    count: 8,
-                    rate: 3,
-                  },
-                  {
-                    key: '7',
-                    rank: 7,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    count: 8,
-                    rate: 3,
-                  },
-                  {
-                    key: '8',
-                    rank: 8,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    count: 8,
-                    rate: 3,
-                  },
-                  {
-                    key: '9',
-                    rank: 9,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    count: 8,
-                    rate: 3,
-                  },
-                  {
-                    key: '10',
-                    rank: 10,
-                    orgName: 'xxxxxxxxxxxxxxxx',
-                    count: 8,
-                    rate: 3,
-                  },
-                ]}
+                dataSource={zfwsQypm}
                 columns={orgZgRankingData}
                 pagination={{
-                  pageSize: 10,
-                  total: 10,
-                  current: 1,
+                  ...zfwsQypmPagination,
                   pageSizeOptions: ['10', '20', '50'],
-                  showQuickJumper: true,
                   showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  showTotal: total => `总计 ${total} 家单位.`,
                 }}
+                onChange={this.handleZfwsQypmPagination}
               />
             </Card>
           </Col>
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="执法文书统计" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
-              <BarLine
-                id="zfws"
-                height={390}
-                data={{
-                  '质量': {
-                    '限期整改': 400,
-                    '局部停工': 374,
-                    '停工整改': 251,
-                    '不良行为': 300,
-                    '其他': 420,
-                  },
-                  '安全': {
-                    '限期整改': 320,
-                    '局部停工': 332,
-                    '停工整改': 301,
-                    '不良行为': 334,
-                    '其他': 360,
-                  }
-                }}
-              />
+            <Card loading={zfwstjLoading} title="执法文书统计" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
+              {this.renderZfwstj()}
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
@@ -499,97 +419,25 @@ class Intendance extends Component {
               bodyStyle={{ height: '400px', padding: '5px' }}
             >
               <div style={{padding: '10px 0'}}>
-                <Radio.Group value={zgType2} onChange={this.handleChange2}>
+                <Radio.Group value={gcpmType} onChange={this.handleChangeGcpmType}>
                   <Radio.Button value="全部">全部</Radio.Button>
                   <Radio.Button value="停工">停工</Radio.Button>
                   <Radio.Button value="整改">整改</Radio.Button>
                 </Radio.Group>
               </div>
               <Table
+                loading={zfwsGcpmLoading}
                 size="small"
                 scroll={{ y: 260 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    rank: 1,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 17,
-                    rate: 15,
-                  },
-                  {
-                    key: '2',
-                    rank: 2,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 16,
-                    rate: 10,
-                  },
-                  {
-                    key: '3',
-                    rank: 3,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 14,
-                    rate: 8,
-                  },
-                  {
-                    key: '4',
-                    rank: 4,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 13,
-                    rate: 5,
-                  },
-                  {
-                    key: '5',
-                    rank: 5,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 11,
-                    rate: 4,
-                  },
-                  {
-                    key: '6',
-                    rank: 6,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 8,
-                    rate: 3,
-                  },
-                  {
-                    key: '7',
-                    rank: 7,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 8,
-                    rate: 3,
-                  },
-                  {
-                    key: '8',
-                    rank: 8,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 8,
-                    rate: 3,
-                  },
-                  {
-                    key: '9',
-                    rank: 9,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 8,
-                    rate: 3,
-                  },
-                  {
-                    key: '10',
-                    rank: 10,
-                    engName: 'xxxxxxxxxxxxxxxx工程',
-                    count: 8,
-                    rate: 3,
-                  },
-                ]}
-                columns={engZgRankingData}
+                dataSource={zfwsGcpm}
+                columns={zfwsGcpmColumns}
                 pagination={{
-                  pageSize: 10,
-                  total: 10,
-                  current: 1,
+                  ...zfwsGcpmPagination,
                   pageSizeOptions: ['10', '20', '50'],
-                  showQuickJumper: true,
                   showSizeChanger: true,
-                  showTotal: total => `Total ${total} items.`,
+                  showTotal: total => `总计 ${total} 个工程.`,
                 }}
+                onChange={this.handleZfwsGcpmPagination}
               />
             </Card>
           </Col>

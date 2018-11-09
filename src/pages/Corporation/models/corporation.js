@@ -1,4 +1,4 @@
-import {queryBasicInfo, queryCredit, queryHyjl, queryZjgc} from '../../../services/corporation';
+import {queryBasicInfo, queryCredit, queryHyjl, queryZjgc} from '@/services/corporation';
 
 export default {
   namespace: 'corporation',

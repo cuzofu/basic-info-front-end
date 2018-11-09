@@ -15,7 +15,55 @@ class BarLine extends Component {
 
     const {
       id,
+      data,
     } = this.props;
+
+    const xAxis = [];
+    const legend = [];
+    data.forEach( r => {
+      if (xAxis.indexOf(r.x) === -1) {
+        xAxis.push(r.x);
+      }
+      if (legend.indexOf(r.y) === -1) {
+        legend.push(r.y);
+      }
+    });
+    const data1 = [];
+    legend.forEach( x => {
+      data1[x] = data.filter( r => r.y === x).reduce((pre, now) => ({...pre, [now.x]: now.value}), {});
+    });
+    const diffData = xAxis.map(x => data1[legend[0]][x] - data1[legend[1]][x]);
+    const minData = xAxis.map(x => {
+      const v1 = data1[legend[0]][x];
+      const v2 = data1[legend[1]][x];
+      return v1 > v2 ? v2 : v1;
+    });
+    const seriesData = legend.map( l => ({
+      name: l,
+      type: 'line',
+      data: xAxis.map( x => data1[l][x])
+    }));
+    seriesData.push({
+      name:'min',
+      type:'bar',
+      stack: '1',
+      barWidth: 6,
+      itemStyle:{
+        normal:{
+          color:'rgba(0,0,0,0)'
+        },
+        emphasis:{
+          color:'rgba(0,0,0,0)'
+        }
+      },
+      data: minData
+    });
+    seriesData.push({
+      name:'diff',
+      type:'bar',
+      stack: '1',
+      data: diffData.map( d => d >= 0 ? d : ({value: -d, itemStyle:{ normal:{color:'red'}}})),
+    });
 
     // 基于准备好的dom，初始化echarts实例
     const myChart = echarts.init(document.getElementById(id));
@@ -26,13 +74,13 @@ class BarLine extends Component {
         formatter: (params) => `${params[0].seriesName} : ${params[0].value}<br />${params[1].seriesName} : ${params[1].value}`
       },
       legend: {
-        data:['质量', '安全'],
-        selectedMode:false
+        data: legend,
+        selectedMode: false
       },
       xAxis : [
         {
           type : 'category',
-          data : ['限期整改','局部停工','停工整改','不良行为','其他']
+          data : xAxis.map(x=> x.substr(0, 4)),
         }
       ],
       yAxis : [
@@ -40,44 +88,7 @@ class BarLine extends Component {
           type : 'value',
         }
       ],
-      series : [
-        {
-          name:'质量',
-          type:'line',
-          data:[400, 374, 251, 300, 420]
-        },
-        {
-          name:'安全',
-          type:'line',
-          data:[320, 332, 301, 334, 360]
-        },
-        {
-          name:'min',
-          type:'bar',
-          stack: '1',
-          barWidth: 6,
-          itemStyle:{
-            normal:{
-              color:'rgba(0,0,0,0)'
-            },
-            emphasis:{
-              color:'rgba(0,0,0,0)'
-            }
-          },
-          data:[320, 332, 251, 300, 360]
-        },
-        {
-          name:'diff',
-          type:'bar',
-          stack: '1',
-          data:[
-            80, 42,
-            {value : 50, itemStyle:{ normal:{color:'red'}}},
-            {value : 34, itemStyle:{ normal:{color:'red'}}},
-            60
-          ]
-        }
-      ]
+      series : seriesData
     });
 
     window.addEventListener('resize', () => {myChart.resize()});

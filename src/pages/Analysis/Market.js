@@ -63,31 +63,31 @@ class Market extends Component {
       dispatch({
         type: 'market/fetchQyAndRyCount',
         payload: {
-          time: '2018-10-29'
+          gjTime: '2018-10-29'
         }
       });
       dispatch({
         type: 'market/fetchQycxdjzbData',
         payload: {
-          time: '2018-10-29'
+          gjTime: '2018-10-29'
         }
       });
       dispatch({
         type: 'market/fetchJzgmHyqycxfxData',
         payload: {
-          time: '2018-10-29'
+          gjTime: '2018-10-29'
         }
       });
       dispatch({
         type: 'market/fetchQyzzfxData',
         payload: {
-          time: '2018-10-29'
+          gjTime: '2018-10-29'
         }
       });
       dispatch({
         type: 'market/fetchRyzzfxData',
         payload: {
-          time: '2018-10-29'
+          gjTime: '2018-10-29'
         }
       });
       dispatch({

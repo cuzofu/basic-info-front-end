@@ -40,25 +40,25 @@ class Corporation extends Component {
     dispatch({
       type: 'corporation/fetchBasicInfo',
       payload: {
-        id,
+        jcxxId: id,
       }
     });
     dispatch({
       type: 'corporation/fetchHyjl',
       payload: {
-        id,
+        jcxxId: id,
       }
     });
     dispatch({
       type: 'corporation/fetchZjgc',
       payload: {
-        id,
+        jcxxId: id,
       }
     });
     dispatch({
       type: 'corporation/fetchCredit',
       payload: {
-        id,
+        jcxxId: id,
       }
     });
   }
@@ -423,6 +423,7 @@ class Corporation extends Component {
     const {
       jcxxMx = '{}',
     } = credit;
+    console.log(credit);
     try {
       const jcxxMxJson = JSON.parse(jcxxMx);
       const {诚信等级 = '-'} = jcxxMxJson;
@@ -504,11 +505,11 @@ class Corporation extends Component {
       <Row>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信等级</div>
-          <div className={styles.heading}>{this.renderCreditLevel(credit)}</div>
+          <div className={styles.heading}>{诚信等级}</div>
         </Col>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信分值</div>
-          <div className={styles.heading}>{this.renderCreditScore(credit)}</div>
+          <div className={styles.heading}>{诚信分值}</div>
         </Col>
       </Row>
     );

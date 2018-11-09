@@ -3,6 +3,7 @@ import {connect} from 'dva';
 
 import numeral from 'numeral';
 
+import { getTimeDistance } from '@/utils/utils';
 import {
   Table,
   Row,
@@ -10,6 +11,7 @@ import {
   Card,
   Tooltip,
   Icon,
+  DatePicker,
 } from 'antd';
 
 import {
@@ -27,6 +29,8 @@ import styles from './Bidding.less';
 import DimensionsScatterChart from './DimensionsScatterChart';
 import InvestmentScatterChart from './InvestmentScatterChart';
 
+const { RangePicker } = DatePicker;
+
 @connect(({bidding, loading}) => ({
   bidding,
   basicInfoLoading: loading.effects['bidding/fetchBasicInfo'],
@@ -38,10 +42,25 @@ import InvestmentScatterChart from './InvestmentScatterChart';
 }))
 class Bidding extends Component {
 
+  state = {
+    rangePickerValue: getTimeDistance('year'),
+  };
+
   componentDidMount() {
     const {
       dispatch
     } = this.props;
+    const {
+      rangePickerValue,
+    } = this.state;
+
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    const startTime = rangePickerValue[0].format("YYYY-MM-DD");
+    const endTime = rangePickerValue[1].format("YYYY-MM-DD");
+
     dispatch({
       type: 'bidding/fetchBasicInfo',
       payload: {
@@ -75,8 +94,8 @@ class Bidding extends Component {
     dispatch({
       type: 'bidding/fetchZbfstj',
       payload: {
-        firstTime: '2018-01-01',
-        lastTime: '2018-12-30',
+        firstTime: startTime,
+        lastTime: endTime,
       }
     });
   }
@@ -88,7 +107,50 @@ class Bidding extends Component {
     });
   }
 
+  isActive = type => {
+    const { rangePickerValue } = this.state;
+    const value = getTimeDistance(type);
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return '';
+    }
+    if (
+      rangePickerValue[0].isSame(value[0], 'day') &&
+      rangePickerValue[1].isSame(value[1], 'day')
+    ) {
+      return styles.currentDate;
+    }
+    return '';
+  };
+
+  selectDate = type => {
+
+    const rangePickerValue = getTimeDistance(type);
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    const { dispatch } = this.props;
+    this.setState({
+      rangePickerValue,
+    });
+
+    const startTime = rangePickerValue[0].format("YYYY-MM-DD");
+    const endTime = rangePickerValue[1].format("YYYY-MM-DD");
+
+    dispatch({
+      type: 'bidding/fetchZbfstj',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+  };
+
   render() {
+
+    const {
+      rangePickerValue,
+    } = this.state;
 
     const {
       basicInfoLoading,
@@ -156,11 +218,24 @@ class Bidding extends Component {
         title: '公里数（km）',
         dataIndex: 'gls',
         align: 'center',
+        render: (val) => (val - 0).toFixed(2)
       },
     ];
 
     return (
       <GridContent>
+        <div className={styles.timeExtraWrap}>
+          <div className={styles.timeExtra}>
+            <a className={this.isActive('today')} onClick={() => this.selectDate('today')}>今日</a>
+            <a className={this.isActive('week')} onClick={() => this.selectDate('week')}>本周</a>
+            <a className={this.isActive('month')} onClick={() => this.selectDate('month')}>本月</a>
+            <a className={this.isActive('year')} onClick={() => this.selectDate('year')}>今年</a>
+          </div>
+          <RangePicker
+            value={rangePickerValue}
+            style={{ width: 256 }}
+          />
+        </div>
         <Row gutter={12}>
           <Col {...topColResponsiveProps}>
             <ChartCard

@@ -12,6 +12,7 @@ export default {
   'menu.analysis.mm': 'Market Monitoring',
   'menu.analysis.ce': 'Construction Efficiency',
   'menu.analysis.ae': 'Administrative Efficiency',
+  'menu.analysis.engs': 'Eng List',
   'menu.engAnalysis': 'Eng Analysis',
   'menu.corpAnalysis': 'Corporation Analysis',
   'menu.person': 'Personal Profile',
