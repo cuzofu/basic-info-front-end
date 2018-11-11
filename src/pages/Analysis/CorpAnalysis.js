@@ -33,6 +33,8 @@ const doubleCardColsProps = { lg: 24, xl: 12, style: { marginBottom: 12 } };
   cxtjLoading: loading.effects['corpAnalysis/fetchCxtj'],
   blxwkfLoading: loading.effects['corpAnalysis/fetchBlxwkf'],
   wtlbLoading: loading.effects['corpAnalysis/fetchWtlb'],
+  gcgmfxLoading: loading.effects['corpAnalysis/fetchGcgmfx'],
+  gcgmfxlbLoading: loading.effects['corpAnalysis/fetchGcgmfxlb'],
 }))
 class CorpAnalysis extends Component {
 
@@ -48,32 +50,56 @@ class CorpAnalysis extends Component {
     dispatch({
       type: 'corpAnalysis/fetchBasicInfo',
       payload: {
-        jcxxId: id
+        key: id
       }
     });
     dispatch({
       type: 'corpAnalysis/fetchZxxx',
-      payload: {id}
+      payload: {
+        key: id
+      }
     });
     dispatch({
       type: 'corpAnalysis/fetchCjqk',
-      payload: {id}
+      payload: {
+        key: id
+      }
     });
     dispatch({
       type: 'corpAnalysis/fetchBlxwtj',
-      payload: {id}
+      payload: {
+        key: id
+      }
     });
     dispatch({
       type: 'corpAnalysis/fetchCxtj',
-      payload: {id}
+      payload: {
+        key: id
+      }
     });
     dispatch({
       type: 'corpAnalysis/fetchBlxwkf',
-      payload: {id}
+      payload: {
+        key: id
+      }
     });
     dispatch({
       type: 'corpAnalysis/fetchWtlb',
-      payload: {id}
+      payload: {
+        key: id
+      }
+    });
+    dispatch({
+      type: 'corpAnalysis/fetchGcgmfx',
+      payload: {
+        key: id
+      }
+    });
+    dispatch({
+      type: 'corpAnalysis/fetchGcgmfxlb',
+      payload: {
+        key: id
+      }
     });
   }
 
@@ -164,14 +190,13 @@ class CorpAnalysis extends Component {
     );
     if (zxxx.length > 0) {
       const {
-        des,
-        tag,
-        gjTime,
+        yjms,
+        time,
       } = zxxx[0];
       content = (
         <div>
-          <Ellipsis tooltip lines={1}>{`${tag}：${des}`}</Ellipsis>
-          <div style={{textAlign: 'right'}}><span title="2018年8月1日">{dateFormat(gjTime, 'YYYY日MM月DD日')}</span></div>
+          <Ellipsis tooltip lines={1}>{`${yjms}`}</Ellipsis>
+          <div style={{textAlign: 'right'}}><span title="2018年8月1日">{dateFormat(time, 'YYYY日MM月DD日')}</span></div>
         </div>
       )
     }
@@ -238,7 +263,7 @@ class CorpAnalysis extends Component {
     );
     if (blxwtj && blxwtj.length > 0) {
       const {
-        wtType = '',
+        wtType = '无',
         ciShu = 0,
         sum = 0,
       } = blxwtj[0];
@@ -292,15 +317,95 @@ class CorpAnalysis extends Component {
     );
   };
 
+  renderYjtx = () => {
+    const {
+      corpAnalysis: {
+        zxxx,
+      }
+    } = this.props;
+    if (zxxx.length <= 0) {
+      return (<div>暂无消息</div>)
+    }
+
+    // 参建方信息 栅格布局参数
+    const cjfColsProps = {
+      alertType: {
+        xs: 24, sm: 24, md: 6, lg: 6, xl: 6, xxl: 6
+      },
+      alertMessage: {
+        xs: 24, sm: 24, md: 14, lg: 14, xl: 14, xxl: 14
+      },
+      alertDate: {
+        xs: 24, sm: 24, md: 4, lg: 4, xl: 4, xxl: 4
+      },
+    };
+
+    return (
+      <div style={{height: 276, overflowY: 'auto'}}>
+        <Timeline style={{margin: '10px', width: '95%'}}>
+          {
+            zxxx.map(r => {
+
+              let color = '#FC0';
+              switch (r.type) {
+                case '证书预警':
+                  color = '#FC0';
+                  break;
+                case '诚信加分':
+                  color = 'green';
+                  break;
+                case '诚信扣分':
+                  color = 'red';
+                  break;
+                case '人员预警':
+                  color = '#FC0';
+                  break;
+                default:
+                  color = '#FC0';
+                  break;
+              }
+              return (
+                <Timeline.Item color={color}>
+                  <Row gutter={12}>
+                    <Col {...cjfColsProps.alertType}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <Icon type="exclamation-circle" theme="filled" style={{color}} />
+                        <span style={{marginLeft: '10px', color}}>{r.type}</span>
+                      </div>
+                    </Col>
+                    <Col {...cjfColsProps.alertMessage}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span>{r.yjms}</span>
+                      </div>
+                    </Col>
+                    <Col {...cjfColsProps.alertDate}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span>{r.time}</span>
+                      </div>
+                    </Col>
+                  </Row>
+                </Timeline.Item>
+              );
+            })
+          }
+        </Timeline>
+      </div>
+    );
+  };
+
   render() {
 
     const {
       basicInfoLoading,
       blxwkfLoading,
       wtlbLoading,
+      gcgmfxLoading,
+      gcgmfxlbLoading,
       corpAnalysis: {
         blxwkf,
         wtlb,
+        gcgmfx,
+        gcgmfxlb,
       }
     } = this.props;
 
@@ -348,70 +453,7 @@ class CorpAnalysis extends Component {
           style={{marginTop: 12}}
           bodyStyle={{height: '300px', padding: '12px'}}
         >
-          <div style={{height: 276, overflowY: 'auto'}}>
-            <Timeline style={{margin: '10px', width: '95%'}}>
-              <Timeline.Item color="#FC0">
-                <Row gutter={12}>
-                  <Col {...cjfColsProps.alertType}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <Icon type="exclamation-circle" theme="filled" style={{color: '#FC0'}} />
-                      <span style={{marginLeft: '10px', color: '#FC0'}}>资质证书到期</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.alertMessage}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span>D123456789    建筑业企业资质_施工总承包_建筑工程_壹级</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.alertDate}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span>2018年10月8日</span>
-                    </div>
-                  </Col>
-                </Row>
-              </Timeline.Item>
-              <Timeline.Item color="red">
-                <Row gutter={12}>
-                  <Col {...cjfColsProps.alertType}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <Icon type="close-circle" theme="filled" style={{color: 'red'}} />
-                      <span style={{marginLeft: '10px', color: 'red'}}>诚信扣分</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.alertMessage}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span>xxxxxxxxxxx扣分：5分</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.alertDate}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span>2018年10月1日</span>
-                    </div>
-                  </Col>
-                </Row>
-              </Timeline.Item>
-              <Timeline.Item color="green">
-                <Row gutter={12}>
-                  <Col {...cjfColsProps.alertType}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <Icon type="check-circle" theme="filled" style={{color: 'green'}} />
-                      <span style={{marginLeft: '10px', color: 'green'}}>诚信加分</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.alertMessage}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span>xxxxxxxxxxx加分：5分</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.alertDate}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span>2018年9月1日</span>
-                    </div>
-                  </Col>
-                </Row>
-              </Timeline.Item>
-            </Timeline>
-          </div>
+          {this.renderYjtx()}
         </Card>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
@@ -470,135 +512,71 @@ class CorpAnalysis extends Component {
           </Col>
         </Row>
 
-        <Card
-          loading={basicInfoLoading}
-          bordered={false}
-          title="承建工程规模分析"
-          style={{marginTop: 12}}
-          bodyStyle={{minHeight: '300px', padding: '12px'}}
-        >
-          <div className={styles.issueCard}>
-            <Row gutter={0}>
-              <Col xl={12} lg={12} md={24} sm={24} xs={24}>
-                <div className={styles.issuePie}>
-                  <CustomPie
-                    hasLegend
-                    subTitle="总数量"
-                    total={() => `${[].reduce((pre, now) => now.y + pre, 0)}个`}
-                    data={[
-                      {
-                        x: "2万㎡或5000万以上",
-                        y: 3,
-                      },
-                      {
-                        x: "1万㎡或3000万以上",
-                        y: 3,
-                      },
-                      {
-                        x: "3000㎡或1000万以上",
-                        y: 5,
-                      },
-                      {
-                        x: "3000㎡或1000万以下",
-                        y: 1,
-                      },
-                      {
-                        x: "其他",
-                        y: 0,
-                      }
-                    ]}
-                    valueFormat={value => `${value}个`}
-                    height={248}
-                    lineWidth={4}
-                  />
-                </div>
-              </Col>
-              <Col xl={12} lg={12} md={24} sm={24} xs={24}>
-                <Table
-                  loading={basicInfoLoading}
-                  size="small"
-                  scroll={{ y: 180 }}
-                  dataSource={[
-                    {
-                      key: '1',
-                      index: 1,
-                      engType: '房建工程',
-                      engName: 'xxxxxxxxxxxxxxxxxxxxxxxx工程',
-                      investment: 12562,
-                    },
-                    {
-                      key: '2',
-                      index: 2,
-                      engType: '市政工程',
-                      engName: 'xxxxxxxxxxxxxxxxxxxxxxxx工程',
-                      investment: 8869,
-                      rate: '20%',
-                    },
-                    {
-                      key: '3',
-                      index: 3,
-                      engType: '房建工程',
-                      engName: 'xxxxxxxxxxxxxxxxxxxxxxxx工程',
-                      investment: 3150,
-                    },
-                    {
-                      key: '4',
-                      index: 4,
-                      engType: '房建工程',
-                      engName: 'xxxxxxxxxxxxxxxxxxxxxxxx工程',
-                      investment: 1728,
-                    },
-                    {
-                      key: '5',
-                      index: 5,
-                      engType: '房建工程',
-                      engName: 'xxxxxxxxxxxxxxxxxxxxxxxx工程',
-                      investment: 1000,
-                    },
-                    {
-                      key: '6',
-                      index: 6,
-                      engType: '市政工程',
-                      engName: 'xxxxxxxxxxxxxxxxxxxxxxxx工程',
-                      investment: 808,
-                    },
-                  ]}
-                  columns={[
-                    {
-                      title: '排名',
-                      dataIndex: 'index',
-                      width: '10%',
-                    },
-                    {
-                      title: '类型',
-                      dataIndex: 'engType',
-                      width: '20%',
-                    },
-                    {
-                      title: '工程名称',
-                      dataIndex: 'engName',
-                      width: '50%',
-                    },
-                    {
-                      title: '投资额',
-                      dataIndex: 'investment',
-                      width: '20%',
-                    },
-                  ]}
-                  pagination={{
-                    pageSize: 5,
-                    total: 6,
-                    current: 1,
-                    pageSizeOptions: ['5', '10', '20', '50'],
-                    showQuickJumper: true,
-                    showSizeChanger: true,
-                    showTotal: total => `Total ${total} items.`,
-                  }}
-                />
-              </Col>
-            </Row>
-          </div>
-        </Card>
+        <Row gutter={12}>
+          <Col {...doubleCardColsProps}>
+            <Card
+              loading={gcgmfxLoading}
+              bordered={false}
+              title="承建工程规模分析"
+              style={{marginTop: 12}}
+              bodyStyle={{minHeight: '300px', padding: '12px'}}
+            >
+              <CustomPie
+                hasLegend
+                subTitle="总数量"
+                total={() => `${gcgmfx.reduce((pre, now) => now.y + pre, 0)}个`}
+                data={gcgmfx}
+                valueFormat={value => `${value}个`}
+                height={248}
+                lineWidth={4}
+              />
+            </Card>
+          </Col>
+          <Col {...doubleCardColsProps}>
+            <Card
+              loading={gcgmfxlbLoading}
+              bordered={false}
+              title="工程列表"
+              style={{marginTop: 12}}
+              bodyStyle={{minHeight: '300px', padding: '12px'}}
+            >
+              <Table
+                loading={gcgmfxlbLoading}
+                size="small"
+                scroll={{ y: 180 }}
+                dataSource={gcgmfxlb.list}
+                columns={[
+                  {
+                    title: '序号',
+                    dataIndex: 'index',
+                    width: '10%',
+                  },
+                  {
+                    title: '类型',
+                    dataIndex: 'engType',
+                    width: '20%',
+                  },
+                  {
+                    title: '工程名称',
+                    dataIndex: 'engName',
+                    width: '50%',
+                  },
+                  {
+                    title: '投资额',
+                    dataIndex: 'investment',
+                    width: '20%',
+                  },
+                ]}
+                pagination={{
+                  ...gcgmfxlb.pagination,
+                  pageSizeOptions: ['10', '20', '50'],
+                  showSizeChanger: true,
+                  showTotal: total => `总计 ${total} 个工程.`,
+                }}
+              />
+            </Card>
+          </Col>
+        </Row>
       </PageHeaderWrapper>
     );
   }

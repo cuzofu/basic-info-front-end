@@ -19,7 +19,8 @@ class Search extends Component {
     const {dispatch} = this.props;
     dispatch({
       type: 'search/searchOrg',
-      payload: {}
+      payload: {
+      }
     });
     dispatch({
       type: 'search/searchPerson',

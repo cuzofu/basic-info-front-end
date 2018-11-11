@@ -17,76 +17,72 @@ export default {
 
   effects: {
     * fetchBasicInfo({payload}, {call, put}) {
+      let basicInfo = {};
       try {
         const response = yield call(queryContractBasicInfo, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            basicInfo: response || {},
-          },
-        });
+        if (response && !response.msg) {
+          basicInfo = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            basicInfo: {},
-          },
-        });
+        console.log(e);
       }
+      yield put({
+        type: 'save',
+        payload: {
+          basicInfo,
+        },
+      });
     },
     * fetchContractAmountDataByRegion({payload}, {call, put}) {
+      let contractAmountDataByRegion = [];
       try {
         const response = yield call(queryContractAmountDataByRegion, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            contractAmountDataByRegion: response || [],
-          },
-        });
+        if (response && response.msg) {
+          contractAmountDataByRegion = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            contractAmountDataByRegion: [],
-          },
-        });
+        console.log(e);
       }
+      yield put({
+        type: 'save',
+        payload: {
+          contractAmountDataByRegion,
+        },
+      });
     },
     * fetchFinalAccountsDataByRegion({payload}, {call, put}) {
+      let finalAccountsDataByRegion = [];
       try {
         const response = yield call(queryFinalAccountsDataByRegion, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            finalAccountsDataByRegion: response || [],
-          },
-        });
+        if (response && response.msg) {
+          finalAccountsDataByRegion = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            finalAccountsDataByRegion: [],
-          },
-        });
+        console.log(e);
       }
+      yield put({
+        type: 'save',
+        payload: {
+          finalAccountsDataByRegion,
+        },
+      });
     },
     * fetchYsjscytjData({payload}, {call, put}) {
+      let ysjscytj = [];
       try {
         const response = yield call(queryYsjscytj, payload);
-        yield put({
-          type: 'save',
-          payload: {
-            ysjscytj: response || [],
-          },
-        });
+        if (response && !response.msg) {
+          ysjscytj = response;
+        }
       } catch (e) {
-        yield put({
-          type: 'save',
-          payload: {
-            ysjscytj: [],
-          },
-        });
+        console.log(e);
       }
+      yield put({
+        type: 'save',
+        payload: {
+          ysjscytj,
+        },
+      });
     },
   },
 

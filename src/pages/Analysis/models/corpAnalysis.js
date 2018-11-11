@@ -6,6 +6,8 @@ import {
   queryQyCxtj,
   queryQyBlxwkf,
   queryQyWtlb,
+  queryGcgmfx,
+  queryGcgmfxlb,
 } from '@/services/analysis';
 
 export default {
@@ -18,6 +20,11 @@ export default {
     cxtj: {},
     blxwkf: [],
     wtlb: [],
+    gcgmfx: [],
+    gcgmfxlb: {
+      list: [],
+      pagination: false,
+    },
   },
 
   effects: {
@@ -143,6 +150,56 @@ export default {
         },
       });
     },
+    *fetchGcgmfx({payload}, { call, put }) {
+      let gcgmfx = [];
+      try {
+        const response = yield call(queryGcgmfx, payload);
+        console.log(response);
+        if (response && !response.msg) {
+          gcgmfx = response.map(r => ({
+            ...r,
+            x: r.guiMo,
+            y: r.guiMoNum,
+          }));
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          gcgmfx,
+        },
+      });
+    },
+    *fetchGcgmfxlb({payload}, { call, put }) {
+      const gcgmfxlb = {
+        list: [],
+        pagination: false,
+      };
+      try {
+        const response = yield call(queryGcgmfxlb, payload);
+        console.log(response);
+        if (response && !response.msg) {
+          gcgmfxlb.list = response.list.map((r, index) => ({
+            key: index + 1,
+            index: index + 1,
+            engType: r.gcType,
+            engName: r.gcName,
+            investment: r.gcTZE,
+          }));
+          gcgmfxlb.pagination = response.pagination;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          gcgmfxlb,
+        },
+      });
+    },
   },
 
   reducers: {
@@ -160,6 +217,11 @@ export default {
         cxtj: {},
         blxwkf: [],
         wtlb: [],
+        gcgmfx: [],
+        gcgmfxlb: {
+          list: [],
+          pagination: false,
+        },
       };
     },
   },

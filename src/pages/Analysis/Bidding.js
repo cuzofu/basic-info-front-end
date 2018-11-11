@@ -64,31 +64,31 @@ class Bidding extends Component {
     dispatch({
       type: 'bidding/fetchBasicInfo',
       payload: {
-        time: '2018-10-29'
+        gjTime: '2018-10-29'
       }
     });
     dispatch({
       type: 'bidding/fetchEngType',
       payload: {
-        time: '2018-10-29'
+        gjTime: '2018-10-29'
       }
     });
     dispatch({
       type: 'bidding/fetchRegionType',
       payload: {
-        time: '2018-10-29'
+        gjTime: '2018-10-29'
       }
     });
     dispatch({
       type: 'bidding/fetchGmfb',
       payload: {
-        time: '2018-10-29'
+        gjTime: '2018-10-29'
       }
     });
     dispatch({
       type: 'bidding/fetchTzefb',
       payload: {
-        time: '2018-10-29'
+        gjTime: '2018-10-29'
       }
     });
     dispatch({
@@ -170,6 +170,7 @@ class Bidding extends Component {
           cxkbbl = '0.00',
           sumZBCG = 0,
           cgbl = '0.00',
+          list = [],
         },
         engType,
         regionType,
@@ -264,40 +265,10 @@ class Bidding extends Component {
               }
               contentHeight={46}
             >
-              <MiniBar data={[
-                {
-                  x: '2018-01',
-                  y: 45
-                },
-                {
-                  x: '2018-02',
-                  y: 69
-                },
-                {
-                  x: '2018-03',
-                  y: 108
-                },
-                {
-                  x: '2018-04',
-                  y: 88
-                },
-                {
-                  x: '2018-05',
-                  y: 79
-                },
-                {
-                  x: '2018-06',
-                  y: 99
-                },
-                {
-                  x: '2018-07',
-                  y: 112
-                },
-                {
-                  x: '2018-08',
-                  y: 69
-                }
-              ]}
+              <MiniBar data={list.map(r => ({
+                x: r.groupX,
+                y: r.groupY - 0,
+              }))}
               />
             </ChartCard>
           </Col>
@@ -376,15 +347,21 @@ class Bidding extends Component {
               title="工程类型"
               bodyStyle={{ minHeight: '300px', padding: '24px 5px' }}
             >
-              <TrendPie
-                hasLegend
-                subTitle="数量"
-                total={() => `${engTypeData.reduce((pre, now) => now.y + pre, 0)}个`}
-                data={engTypeData}
-                valueFormat={value => `${value}个`}
-                height={248}
-                lineWidth={4}
-              />
+              {
+                engTypeData && engTypeData.length > 0 ? (
+                  <TrendPie
+                    hasLegend
+                    subTitle="数量"
+                    total={() => `${engTypeData.reduce((pre, now) => now.y + pre, 0)}个`}
+                    data={engTypeData}
+                    valueFormat={value => `${value}个`}
+                    height={248}
+                    lineWidth={4}
+                  />
+                ) : (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                )
+              }
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
@@ -393,11 +370,17 @@ class Bidding extends Component {
               title="区域分布"
               bodyStyle={{ minHeight: '300px', padding: '5px' }}
             >
-              <MatrixBar
-                height={290}
-                padding={[10, 10, 100, 50]}
-                data={regionType}
-              />
+              {
+                regionType && regionType.length > 0 ? (
+                  <MatrixBar
+                    height={290}
+                    padding={[10, 10, 100, 50]}
+                    data={regionType}
+                  />
+                ) : (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                )
+              }
             </Card>
           </Col>
         </Row>
@@ -405,16 +388,28 @@ class Bidding extends Component {
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card loading={tzefbLoading} title="投资额分布" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
-              <InvestmentScatterChart
-                id="investment"
-                height={390}
-                data={tzefb}
-              />
+              {
+                tzefb && tzefb.length > 0 ? (
+                  <InvestmentScatterChart
+                    id="investment"
+                    height={390}
+                    data={tzefb}
+                  />
+                ) : (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                )
+              }
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
             <Card loading={gmfbLoading} title="规模分布" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
-              <DimensionsScatterChart id="dimensions" height={390} data={gmfb} />
+              {
+                gmfb.listgls.length === 0 && gmfb.listmje.length === 0 ? (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                ) : (
+                  <DimensionsScatterChart id="dimensions" height={390} data={gmfb} />
+                )
+              }
             </Card>
           </Col>
         </Row>

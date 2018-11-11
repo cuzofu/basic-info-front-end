@@ -106,7 +106,6 @@ class Contract extends Component {
     return [];
   };
 
-  // 标段与企业明细翻页
   handlePageChange = (pageNumber) => {
     const { contract: { ysjscytj }} = this.props;
     const ycjscytjList = this.renderYjscy(ysjscytj, pageNumber);
@@ -348,21 +347,29 @@ class Contract extends Component {
               title="预算与决算差异统计"
               bodyStyle={{ minHeight: '300px', padding: '5px' }}
               extra={
-                <Pagination
-                  simple
-                  current={currentPage}
-                  pageSize={5}
-                  total={ysjscytj.length}
-                  onChange={this.handlePageChange}
-                />
+                ysjscytj && ysjscytj.length > 0 && (
+                  <Pagination
+                    simple
+                    current={currentPage}
+                    pageSize={5}
+                    total={ysjscytj.length}
+                    onChange={this.handlePageChange}
+                  />
+                )
               }
             >
-              <PlusMinusBar
-                id="ysjscytj"
-                height={290}
-                dimensions={['合同编号', '差额', '合同额', '决算额']}
-                data={ysjscytjList.length > 0 ? ysjscytjList : this.renderYjscy(ysjscytj, 1, 5)}
-              />
+              {
+                ysjscytj && ysjscytj.length > 0 ? (
+                  <PlusMinusBar
+                    id="ysjscytj"
+                    height={290}
+                    dimensions={['合同编号', '差额', '合同额', '决算额']}
+                    data={ysjscytjList.length > 0 ? ysjscytjList : this.renderYjscy(ysjscytj, 1, 5)}
+                  />
+                ) : (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                )
+              }
             </Card>
           </Col>
         </Row>

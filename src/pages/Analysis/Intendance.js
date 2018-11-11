@@ -372,10 +372,16 @@ class Intendance extends Component {
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card loading={gczlwtpmLoading} title="工程排名（按问题）" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
-              <StackedBar
-                fields={['质量问题', '安全问题']}
-                data={gczlwtpm}
-              />
+              {
+                gczlwtpm && gczlwtpm.length > 0 ? (
+                  <StackedBar
+                    fields={['质量问题', '安全问题']}
+                    data={gczlwtpm}
+                  />
+                ) : (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                )
+              }
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>

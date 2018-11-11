@@ -44,37 +44,31 @@ class BadBehavior extends Component {
       dispatch({
         type: 'badBehavior/fetchBlxwJgbmzb',
         payload: {
-          time: '2018-01-01'
         }
       });
       dispatch({
         type: 'badBehavior/fetchBlxwJgbmlxzb',
         payload: {
-          time: '2018-01-01'
         }
       });
       dispatch({
         type: 'badBehavior/fetchBlxwQyxwpm',
         payload: {
-          time: '2018-01-01'
         }
       });
       dispatch({
         type: 'badBehavior/fetchBlxwGrxwpm',
         payload: {
-          time: '2018-01-01'
         }
       });
       dispatch({
         type: 'badBehavior/fetchBlxwXmpm',
         payload: {
-          time: '2018-01-01'
         }
       });
       dispatch({
         type: 'badBehavior/fetchBlxwXwlxpm',
         payload: {
-          time: '2018-01-01'
         }
       });
     });
@@ -338,11 +332,17 @@ class BadBehavior extends Component {
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card loading={blxwJgbmlxzbLoading} title="机构部门类型占比" bodyStyle={{ minHeight: '400px', padding: '5px' }}>
-              <MatrixBar
-                height={390}
-                padding={[5, 5, 100, 60]}
-                data={blxwJgbmlxzb}
-              />
+              {
+                blxwJgbmlxzb && blxwJgbmlxzb.length > 0 ? (
+                  <MatrixBar
+                    height={390}
+                    padding={[5, 5, 100, 60]}
+                    data={blxwJgbmlxzb}
+                  />
+                ) : (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                )
+              }
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>

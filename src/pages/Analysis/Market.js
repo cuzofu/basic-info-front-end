@@ -63,31 +63,26 @@ class Market extends Component {
       dispatch({
         type: 'market/fetchQyAndRyCount',
         payload: {
-          gjTime: '2018-10-29'
         }
       });
       dispatch({
         type: 'market/fetchQycxdjzbData',
         payload: {
-          gjTime: '2018-10-29'
         }
       });
       dispatch({
         type: 'market/fetchJzgmHyqycxfxData',
         payload: {
-          gjTime: '2018-10-29'
         }
       });
       dispatch({
         type: 'market/fetchQyzzfxData',
         payload: {
-          gjTime: '2018-10-29'
         }
       });
       dispatch({
         type: 'market/fetchRyzzfxData',
         payload: {
-          gjTime: '2018-10-29'
         }
       });
       dispatch({
@@ -102,31 +97,16 @@ class Market extends Component {
       dispatch({
         type: 'market/fetchQyhydpmData',
         payload: {
-          time: '2018-01-01',
-          pageSize: 10,
-          currentPage: 0,
-          sort: 'gjTime',
-          direction: 'descend',
         }
       });
       dispatch({
         type: 'market/fetchRyhydpmData',
         payload: {
-          time: '2018-01-01',
-          pageSize: 50,
-          currentPage: 0,
-          sort: 'gjTime',
-          direction: 'descend',
         }
       });
       dispatch({
         type: 'market/fetchQyzzmxData',
         payload: {
-          time: '2018-01-01',
-          pageSize: 10,
-          currentPage: 0,
-          sort: 'gjTime',
-          direction: 'descend',
         }
       });
     });
@@ -163,20 +143,22 @@ class Market extends Component {
           x: r.nameZZ,
           y: r.numZZ,
         });
-      })
-    }
-    return (
-      <Pie
-        hasLegend
-        subTitle="企业总数"
-        total={() => `${orgZzAnalysisData.reduce((pre, now) => now.y + pre, 0)}家`}
-        data={orgZzAnalysisData}
-        valueFormat={value => `${value}家`}
-        height={248}
-        lineWidth={4}
-      />
-    );
+      });
 
+      return (
+        <Pie
+          hasLegend
+          subTitle="企业总数"
+          total={() => `${orgZzAnalysisData.reduce((pre, now) => now.y + pre, 0)}家`}
+          data={orgZzAnalysisData}
+          valueFormat={value => `${value}家`}
+          height={248}
+          lineWidth={4}
+        />
+      );
+    }
+
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
   // 企业诚信等级占比
@@ -230,6 +212,25 @@ class Market extends Component {
       );
     }
 
+    return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
+  };
+
+  // 建筑规模与活跃企业诚信等级分析
+  renderJzgmHyqycxfx = () => {
+    const {
+      market: {
+        jzgmHyqycxfx,
+      }
+    } = this.props;
+    if (jzgmHyqycxfx && jzgmHyqycxfx.length > 0) {
+      return (
+        <MatrixBar
+          height={390}
+          padding={[10, 10, 100, 90]}
+          data={jzgmHyqycxfx}
+        />
+      );
+    }
     return (<div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>);
   };
 
@@ -298,6 +299,8 @@ class Market extends Component {
       jzgmHyqycxfxLoading,
       qycxdjzbLoading,
       qyzzmxLoading,
+      bdqymxLoading,
+      ryzzfxLoading,
       market: {
         qyAndRyCount: {
           addQYRK = 0,
@@ -319,7 +322,6 @@ class Market extends Component {
         bdqymx,
         ryhydpm,
         qyhydpm,
-        jzgmHyqycxfx,
         ryzzfx, // 人员资质分析
         qycxdjzb, // 企业诚信占比
         qyzzmx, // 企业资质明细
@@ -598,11 +600,7 @@ class Market extends Component {
           title="建筑规模与活跃企业诚信等级分析"
           bodyStyle={{ minHeight: '400px', padding: '5px' }}
         >
-          <MatrixBar
-            height={390}
-            padding={[10, 10, 100, 90]}
-            data={jzgmHyqycxfx}
-          />
+          {this.renderJzgmHyqycxfx()}
         </Card>
         <Card
           style={{ marginBottom: '12px' }}
@@ -615,7 +613,7 @@ class Market extends Component {
         >
           <Table
             rowKey="bdCode"
-            loading={loading}
+            loading={bdqymxLoading}
             size="small"
             scroll={{ y: 300 }}
             dataSource={bdqymx.list}
@@ -689,7 +687,7 @@ class Market extends Component {
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="人员资质分析" bodyStyle={{ minHeight: '300px' }}>
+            <Card loading={ryzzfxLoading} title="人员资质分析" bodyStyle={{ minHeight: '300px' }}>
               {
                 ryzzfx && ryzzfx.length > 0 ?
                   (
