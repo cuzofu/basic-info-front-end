@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'dva';
 
 import numeral from 'numeral';
+import moment from 'moment';
 
 import { getTimeDistance } from '@/utils/utils';
 import {
@@ -29,7 +30,7 @@ import styles from './Bidding.less';
 import DimensionsScatterChart from './DimensionsScatterChart';
 import InvestmentScatterChart from './InvestmentScatterChart';
 
-const { RangePicker } = DatePicker;
+const { RangePicker, MonthPicker } = DatePicker;
 
 @connect(({bidding, loading}) => ({
   bidding,
@@ -39,11 +40,17 @@ const { RangePicker } = DatePicker;
   gmfbLoading: loading.effects['bidding/fetchGmfb'],
   tzefbLoading: loading.effects['bidding/fetchTzefb'],
   zbfstjLoading: loading.effects['bidding/fetchZbfstj'],
+  engZtbLoading: loading.effects['bidding/fetchEngQyzbtj'],
 }))
 class Bidding extends Component {
 
   state = {
     rangePickerValue: getTimeDistance('year'),
+    monthPickerValue: moment(new Date(), 'YYYY-MM'),
+    engZtbListPagination: {
+      current: 1,
+      pageSize: 10,
+    }
   };
 
   componentDidMount() {
@@ -52,6 +59,7 @@ class Bidding extends Component {
     } = this.props;
     const {
       rangePickerValue,
+      monthPickerValue,
     } = this.state;
 
     if (!rangePickerValue[0] || !rangePickerValue[1]) {
@@ -64,35 +72,46 @@ class Bidding extends Component {
     dispatch({
       type: 'bidding/fetchBasicInfo',
       payload: {
-        gjTime: '2018-10-29'
+        firstTime: startTime,
+        lastTime: endTime,
       }
     });
     dispatch({
       type: 'bidding/fetchEngType',
       payload: {
-        gjTime: '2018-10-29'
+        key: monthPickerValue.format('YYYY-MM'),
       }
     });
     dispatch({
       type: 'bidding/fetchRegionType',
       payload: {
-        gjTime: '2018-10-29'
+        firstTime: startTime,
+        lastTime: endTime,
       }
     });
     dispatch({
       type: 'bidding/fetchGmfb',
       payload: {
-        gjTime: '2018-10-29'
+        firstTime: startTime,
+        lastTime: endTime,
       }
     });
     dispatch({
       type: 'bidding/fetchTzefb',
       payload: {
-        gjTime: '2018-10-29'
+        firstTime: startTime,
+        lastTime: endTime,
       }
     });
     dispatch({
       type: 'bidding/fetchZbfstj',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchEngQyzbtj',
       payload: {
         firstTime: startTime,
         lastTime: endTime,
@@ -138,10 +157,129 @@ class Bidding extends Component {
     const endTime = rangePickerValue[1].format("YYYY-MM-DD");
 
     dispatch({
+      type: 'bidding/fetchBasicInfo',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchRegionType',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchGmfb',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchTzefb',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
       type: 'bidding/fetchZbfstj',
       payload: {
         firstTime: startTime,
         lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchEngQyzbtj',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+  };
+
+  handleMonthPickerChange = (date, dateString) => {
+    if (!date) {
+      return;
+    }
+    this.setState({
+      monthPickerValue: date,
+    });
+
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'bidding/fetchEngType',
+      payload: {
+        key: dateString
+      }
+    });
+  };
+
+  handleRangePickerChange = rangePickerValue => {
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    const { dispatch } = this.props;
+    this.setState({
+      rangePickerValue,
+    });
+
+    const startTime = rangePickerValue[0].format("YYYY-MM-DD");
+    const endTime = rangePickerValue[1].format("YYYY-MM-DD");
+
+    dispatch({
+      type: 'bidding/fetchBasicInfo',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchRegionType',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchGmfb',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchTzefb',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchZbfstj',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'bidding/fetchEngQyzbtj',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+  };
+
+  // 企业行为排名翻页
+  handleEngZtbTableChange = (pagination) => {
+    this.setState({
+      engZtbListPagination: {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
       }
     });
   };
@@ -150,6 +288,8 @@ class Bidding extends Component {
 
     const {
       rangePickerValue,
+      monthPickerValue,
+      engZtbListPagination,
     } = this.state;
 
     const {
@@ -161,22 +301,23 @@ class Bidding extends Component {
       zbfstjLoading,
       bidding: {
         basicInfo: {
-          sumZBS = 0,
-          zbytb = "0.00",
-          zbyhb= '0.00',
-          sumLBS = 0,
-          lbbl = '0.00',
-          sumCXKB = 0,
-          cxkbbl = '0.00',
-          sumZBCG = 0,
-          cgbl = '0.00',
           list = [],
+          byzbs = 0,
+          zbsTb = 0,
+          zbsHb = 0,
+          sumLBS = 0,
+          lbl = 0,
+          sumCXKB = 0,
+          cxkbl = 0,
+          sumZBCG = 0,
+          cgl = 0,
         },
         engType,
         regionType,
         tzefb,
         gmfb,
         zbfstj,
+        engZtbList,
       }
     } = this.props;
 
@@ -184,13 +325,6 @@ class Bidding extends Component {
 
     // 左右结构布局参数
     const doubleCardColsProps = { lg: 24, xl: 12, style: { marginBottom: 12 } };
-
-    const engTypeData = engType.map( r => ({
-      x: r.gcType,
-      y: r.gcNum,
-      tb: parseFloat(r.ytb).toFixed(2), // 月同比
-      hb: parseFloat(r.yhb).toFixed(2), // 月环比
-    }));
 
     const biddingColumns = [
       {
@@ -206,20 +340,20 @@ class Bidding extends Component {
       {
         title: '投资总额（万元）',
         dataIndex: 'zbje',
-        align: 'center',
-        render: (val) => (val - 0).toFixed(4)
+        align: 'right',
+        render: (val) => numeral((val - 0)).format('0,0.0000')
       },
       {
         title: '面积（㎡）',
         dataIndex: 'zbmj',
-        align: 'center',
-        render: (val) => (val - 0).toFixed(2)
+        align: 'right',
+        render: (val) => numeral((val - 0)).format('0,0.0000')
       },
       {
         title: '公里数（km）',
         dataIndex: 'gls',
-        align: 'center',
-        render: (val) => (val - 0).toFixed(2)
+        align: 'right',
+        render: (val) => numeral((val - 0)).format('0,0.0000')
       },
     ];
 
@@ -235,6 +369,7 @@ class Bidding extends Component {
           <RangePicker
             value={rangePickerValue}
             style={{ width: 256 }}
+            onChange={this.handleRangePickerChange}
           />
         </div>
         <Row gutter={12}>
@@ -242,7 +377,7 @@ class Bidding extends Component {
             <ChartCard
               bordered={false}
               loading={basicInfoLoading}
-              title="招标数"
+              title="本月招标数"
               action={
                 <Tooltip
                   title="说明"
@@ -250,16 +385,16 @@ class Bidding extends Component {
                   <Icon type="info-circle-o" />
                 </Tooltip>
               }
-              total={numeral({sumZBS}).format('0,0')}
+              total={numeral({byzbs}).format('0,0')}
               footer={
                 <div style={{ textAlign: 'center' }}>
-                  <Trend flag="up" reverseColor style={{ padding: '0 6px 0 0' }}>
+                  <Trend flag={zbsTb >= 0 ? 'up' : 'down'} reverseColor style={{ padding: '0 6px 0 0' }}>
                     <span>月同比</span>
-                    <span className={styles.trendText}>{`${(parseFloat(zbytb) * 100).toFixed(2)}%`}</span>
+                    <span className={styles.trendText}>{`${zbsTb}%`}</span>
                   </Trend>
-                  <Trend flag="down" reverseColor style={{ padding: '0 0 0 6px' }}>
+                  <Trend flag={zbsHb >= 0 ? 'up' : 'down'} reverseColor style={{ padding: '0 0 0 6px' }}>
                     <span>月环比</span>
-                    <span className={styles.trendText}>{`${(parseFloat(zbyhb) * 100).toFixed(2)}%`}</span>
+                    <span className={styles.trendText}>{`${zbsHb}%`}</span>
                   </Trend>
                 </div>
               }
@@ -281,13 +416,13 @@ class Bidding extends Component {
                 <div>
                   <span>
                     流标率
-                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>{`${(parseFloat(lbbl) * 100).toFixed(2)}%`}</Trend>
+                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>{`${lbl}%`}</Trend>
                   </span>
                 </div>
               }
               contentHeight={46}
             >
-              <MiniProgress percent={(parseFloat(lbbl) * 100).toFixed(2)} strokeWidth={8} />
+              <MiniProgress percent={lbl} strokeWidth={8} />
             </ChartCard>
           </Col>
           <Col {...topColResponsiveProps}>
@@ -299,13 +434,13 @@ class Bidding extends Component {
                 <div>
                   <span>
                     成功率
-                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>{`${(parseFloat(cxkbbl) * 100).toFixed(2)}%`}</Trend>
+                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>{`${cxkbl}%`}</Trend>
                   </span>
                 </div>
               }
               contentHeight={46}
             >
-              <Pie percent={(parseFloat(cgbl) * 100).toFixed(2)} total={`${(parseFloat(cxkbbl) * 100).toFixed(2)}%`} height={100} />
+              <Pie percent={cxkbl} total={`${cxkbl}%`} height={100} />
             </ChartCard>
           </Col>
           <Col {...topColResponsiveProps}>
@@ -317,13 +452,13 @@ class Bidding extends Component {
                 <div>
                   <span>
                     成功率
-                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>{`${(parseFloat(cgbl) * 100).toFixed(2)}%`}</Trend>
+                    <Trend style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>{`${cgl}%`}</Trend>
                   </span>
                 </div>
               }
               contentHeight={46}
             >
-              <MiniProgress percent={(parseFloat(cgbl) * 100).toFixed(2)} strokeWidth={8} target={90} color="green" />
+              <MiniProgress percent={cgl} strokeWidth={8} target={90} color="green" />
             </ChartCard>
           </Col>
         </Row>
@@ -343,17 +478,24 @@ class Bidding extends Component {
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card
+              className={styles.cardExtra}
               loading={engTypeLoading}
               title="工程类型"
               bodyStyle={{ minHeight: '300px', padding: '24px 5px' }}
+              extra={
+                <MonthPicker
+                  value={monthPickerValue}
+                  onChange={this.handleMonthPickerChange}
+                />
+              }
             >
               {
-                engTypeData && engTypeData.length > 0 ? (
+                engType && engType.length > 0 ? (
                   <TrendPie
                     hasLegend
                     subTitle="数量"
-                    total={() => `${engTypeData.reduce((pre, now) => now.y + pre, 0)}个`}
-                    data={engTypeData}
+                    total={() => `${engType.reduce((pre, now) => now.y + pre, 0)}个`}
+                    data={engType}
                     valueFormat={value => `${value}个`}
                     height={248}
                     lineWidth={4}
@@ -413,6 +555,60 @@ class Bidding extends Component {
             </Card>
           </Col>
         </Row>
+        <Card
+          title="企业招投标统计"
+          bodyStyle={{ height: '400px', padding: '5px' }}
+        >
+          <Table
+            size="large"
+            scroll={{ y: 260 }}
+            dataSource={engZtbList}
+            columns={[
+              {
+                title: '排名',
+                dataIndex: 'rank',
+                width: '10%',
+              },
+              {
+                title: '企业名称',
+                dataIndex: 'cioName',
+                width: '15%',
+              },
+              {
+                title: '投标数量',
+                dataIndex: 'tbCount',
+                width: '15%',
+              },
+              {
+                title: '中标数量',
+                dataIndex: 'zbCount',
+                width: '15%',
+              },
+              {
+                title: '未中标数量',
+                dataIndex: 'wzCount',
+                width: '15%',
+              },
+              {
+                title: '中标率',
+                dataIndex: 'zbl',
+                width: '15%',
+              },
+              {
+                title: '未中标率',
+                dataIndex: 'wzl',
+                width: '15%',
+              },
+            ]}
+            pagination={{
+              ...engZtbListPagination,
+              pageSizeOptions: ['10', '20', '50'],
+              showSizeChanger: true,
+              showTotal: total => `总计 ${total} 条记录.`,
+            }}
+            onChange={this.handleEngZtbTableChange}
+          />
+        </Card>
       </GridContent>
     );
   }

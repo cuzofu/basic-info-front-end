@@ -365,7 +365,7 @@ class CorpAnalysis extends Component {
                   break;
               }
               return (
-                <Timeline.Item color={color}>
+                <Timeline.Item color={color} key={r.id}>
                   <Row gutter={12}>
                     <Col {...cjfColsProps.alertType}>
                       <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
@@ -408,19 +408,6 @@ class CorpAnalysis extends Component {
         gcgmfxlb,
       }
     } = this.props;
-
-    // 参建方信息 栅格布局参数
-    const cjfColsProps = {
-      alertType: {
-        xs: 24, sm: 24, md: 6, lg: 6, xl: 6, xxl: 6
-      },
-      alertMessage: {
-        xs: 24, sm: 24, md: 14, lg: 14, xl: 14, xxl: 14
-      },
-      alertDate: {
-        xs: 24, sm: 24, md: 4, lg: 4, xl: 4, xxl: 4
-      },
-    };
 
     return (
       <PageHeaderWrapper

@@ -60,14 +60,20 @@ export default {
       try {
         const response = yield call(searchPerson, payload);
         if (response && !response.msg) {
-          personList = {
-            data: response.data.map(r => {
-              const {jcxxMx} = r;
-              return {
+          const data = [];
+          response.data.forEach(r => {
+            const {jcxxMx} = r;
+            try {
+              data.push({
                 ...r,
                 ...JSON.parse(jcxxMx),
-              }
-            }),
+              });
+            } catch (e) {
+              console.log(e);
+            }
+          });
+          personList = {
+            data,
             pagination: response.pagination,
           };
         }
@@ -88,19 +94,23 @@ export default {
       };
       try {
         const response = yield call(searchEng, payload);
-        console.log(response);
         if (response && !response.msg) {
-          engList = {
-            data: response.data.map(r => {
-              const {engMx} = r;
-              return {
+          const data = [];
+          response.data.forEach(r => {
+            const {engMx} = r;
+            try {
+              data.push({
                 ...r,
                 ...JSON.parse(engMx),
-              }
-            }),
+              })
+            } catch (e) {
+              console.log(e);
+            }
+          });
+          engList = {
+            data,
             pagination: response.pagination,
           };
-          console.log(engList);
         }
       } catch (e) {
         console.log('获取工程列表失败');

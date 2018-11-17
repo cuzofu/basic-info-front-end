@@ -25,6 +25,10 @@ class Analysis extends Component {
         tab: '建筑业分析',
       },
       {
+        key: 'credit',
+        tab: '企业诚信',
+      },
+      {
         key: 'badBehavior',
         tab: '不良行为',
       },

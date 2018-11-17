@@ -37,7 +37,7 @@ class PlusMinusBar extends Component {
         },
       },
       legend: {
-        data: ['差额', '合同额', '决算额']
+        data: ['差额', '预算额', '决算额']
       },
       grid: {
         left: '3%',

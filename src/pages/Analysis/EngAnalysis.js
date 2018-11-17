@@ -27,6 +27,7 @@ const { Description } = DescriptionList;
   wtlbLoading: loading.effects['engAnalysis/fetchWtlb'],
   wsfxLoading: loading.effects['engAnalysis/fetchWsfx'],
   wslbLoading: loading.effects['engAnalysis/fetchWslb'],
+  cjfLoading: loading.effects['engAnalysis/fetchCjf'],
 }))
 class EngAnalysis extends Component {
 
@@ -99,6 +100,12 @@ class EngAnalysis extends Component {
     });
     dispatch({
       type: 'engAnalysis/fetchWslb',
+      payload: {
+        key: id,
+      }
+    });
+    dispatch({
+      type: 'engAnalysis/fetchCjf',
       payload: {
         key: id,
       }
@@ -338,57 +345,8 @@ class EngAnalysis extends Component {
     );
   };
 
-  render() {
-
-    const {
-      basicInfoLoading,
-      zxxxLoading,
-      gcgkLoading,
-      wttjLoading,
-      cxtjLoading,
-      wsfxLoading,
-      wslbLoading,
-      engAnalysis: {
-        basicInfo: {
-          engName,
-          engMx = '{}',
-        },
-        wsfx,
-        wslb,
-      }
-    } = this.props;
-    const {
-      工程地址,
-      工程类型,
-      计划开工日期,
-      计划竣工日期,
-      投资类型,
-    } = JSON.parse(engMx);
-
-    const description = (
-      <Fragment>
-        <DescriptionList className={styles.headerList} size="small" col={3}>
-          <Description term="建设地点">{工程地址}</Description>
-          <Description term="工程类型">{工程类型}</Description>
-          <Description term="建筑面积">8888平方</Description>
-          <Description term="招标方式">公开招标</Description>
-          <Description term="中标价格">928.542126（万元）</Description>
-          <Description term="投资类型">{投资类型}</Description>
-          <Description term="开工日期">{计划开工日期}</Description>
-          <Description term="竣工日期">{计划竣工日期}</Description>
-          <Description term="合同价款">928.542126（万元）</Description>
-        </DescriptionList>
-        <DescriptionList className={styles.headerList} size="small" col="1">
-          <Description term="建设规模">
-            <Ellipsis tooltip lines={3}>总建设面积104695平方米，其中地上建筑面积86950平方米（住宅建筑面积81348平方米，配套公建面积5602平方米），地下建筑面积17745平方米。</Ellipsis>
-          </Description>
-        </DescriptionList>
-      </Fragment>
-    );
-
-    // 左右结构布局参数
-    const doubleCardColsProps = {sm: 24, md: 24, lg: 12, style: { marginTop: 12 }};
-    const cardColsLayoutProps = {sm: 24, md: 24, lg: 12};
+  // 参建方信息
+  renderCjf = () => {
 
     // 参建方信息 栅格布局参数
     const cjfColsProps = {
@@ -406,18 +364,133 @@ class EngAnalysis extends Component {
       },
     };
 
+    const {
+      engAnalysis: {
+        cjf = [],
+      }
+    } = this.props;
+
+    if (cjf && cjf.length > 0) {
+      return (
+        <Timeline style={{margin: '10px', width: '95%'}}>
+          {
+            cjf.map(c => {
+              const {
+                pp = '未知',
+                单位名称 = '未知',
+                诚信等级 = '未知',
+                诚信总分 = '未知',
+                加分分值 = 0,
+                加分次数,
+                减分分值 = 0,
+                减分次数,
+                项目负责人 = '未知',
+                项目负责人电话 = '电话未知'
+              } = c;
+              return (
+                <Timeline.Item color="green">
+                  <Row gutter={12}>
+                    <Col {...cjfColsProps.cjf}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span style={{ marginRight: '5px'}}>{pp}</span>
+                        <span style={{ marginLeft: '5px' }}>{单位名称}</span>
+                      </div>
+                    </Col>
+                    <Col {...cjfColsProps.creditLevel}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span style={{ marginRight: '5px'}}>{诚信等级}</span>
+                        <span style={{ marginLeft: '5px' }}>{诚信总分}分</span>
+                      </div>
+                    </Col>
+                    <Col {...cjfColsProps.creditRecord}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span style={{ backgroundColor: '#52c41a', padding: '0 5px', borderRadius: '10px', color: 'white' }}>加分</span>
+                        <span style={{ marginRight: '5px'}}>{加分分值}分</span>
+                        <span style={{ backgroundColor: '#ff0000', padding: '0 5px', borderRadius: '10px', color: 'white', marginLeft: '5px' }}>扣分</span>
+                        <span>{减分分值}分</span>
+                      </div>
+                    </Col>
+                    <Col {...cjfColsProps.fzr}>
+                      <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
+                        <span style={{ marginRight: '5px'}}>项目负责人：{项目负责人 === '' ? '未知' : 项目负责人}；电话：{项目负责人电话}</span>
+                      </div>
+                    </Col>
+                  </Row>
+                </Timeline.Item>
+              );
+            })
+          }
+        </Timeline>
+      )
+    }
+    return (
+      <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+    );
+  };
+
+  render() {
+
+    const {
+      basicInfoLoading,
+      zxxxLoading,
+      gcgkLoading,
+      wttjLoading,
+      cxtjLoading,
+      wtfxLoading,
+      wtlbLoading,
+      wsfxLoading,
+      wslbLoading,
+      engAnalysis: {
+        basicInfo: {
+          engName,
+          jsgm = '无',
+          engMx = '{}',
+        },
+        wtlb,
+        wtfx,
+        wsfx,
+        wslb,
+      }
+    } = this.props;
+    const {
+      建设单位名称 = '-',
+      工程地址,
+      工程类型,
+      开工日期,
+      竣工日期,
+      投资类型,
+    } = JSON.parse(engMx);
+
+    // 左右结构布局参数
+    const doubleCardColsProps = {sm: 24, md: 24, lg: 12, style: { marginTop: 12 }};
+
     return (
       <PageHeaderWrapper
         title={
           <div>
             <p className={styles.headerTitle}>{engName}</p>
             <div>
-              <Tag color="magenta">房建工程</Tag>
-              <Tag color="volcano" className={styles.headerTag}>公开招标</Tag>
+              <Tag color="magenta">{工程类型}</Tag>
             </div>
           </div>
         }
-        content={description}
+        content={
+          <Fragment>
+            <DescriptionList className={styles.headerList} size="small" col={2}>
+              <Description term="建设单位">{建设单位名称}</Description>
+              <Description term="建设地点">{工程地址}</Description>
+            </DescriptionList>
+            <DescriptionList className={styles.headerList} size="small" col={4}>
+              <Description term="工程类型">{工程类型}</Description>
+              <Description term="投资类型">{投资类型}</Description>
+              <Description term="计划开工日期">{开工日期}</Description>
+              <Description term="计划竣工日期">{竣工日期}</Description>
+            </DescriptionList>
+            <DescriptionList className={styles.headerList} size="small" col={1}>
+              <Description term="建设规模">{jsgm === '' ? '无' : jsgm}</Description>
+            </DescriptionList>
+          </Fragment>
+        }
       >
         <Card
           loading={zxxxLoading && gcgkLoading && wttjLoading && cxtjLoading}
@@ -445,191 +518,74 @@ class EngAnalysis extends Component {
           style={{marginTop: 12}}
           bodyStyle={{padding: '12px'}}
         >
-          <div>
-            <Timeline style={{margin: '10px', width: '95%'}}>
-              <Timeline.Item color="green">
-                <Row gutter={12}>
-                  <Col {...cjfColsProps.cjf}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ marginRight: '5px'}}>建设单位</span>
-                      <span style={{ marginLeft: '5px' }}>宜昌国闰房地产有限公司</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.creditLevel}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ marginRight: '5px'}}>A级</span>
-                      <span style={{ marginLeft: '5px' }}>388分</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.creditRecord}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ backgroundColor: '#52c41a', padding: '0 5px', borderRadius: '10px', color: 'white' }}>加分</span>
-                      <span style={{ marginRight: '5px'}}>20分</span>
-                      <span style={{ backgroundColor: '#52c41a', padding: '0 5px', borderRadius: '10px', color: 'white', marginLeft: '5px' }}>次数</span>
-                      <span>5次</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.fzr}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ marginRight: '5px'}}>项目负责人：张三</span>
-                      <span style={{ marginLeft: '5px' }}>131123456789</span>
-                    </div>
-                  </Col>
-                </Row>
-              </Timeline.Item>
-              <Timeline.Item color="red">
-                <Row gutter={12}>
-                  <Col {...cjfColsProps.cjf}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ marginRight: '5px'}}>施工单位</span>
-                      <span style={{ marginLeft: '5px' }}>宜昌国闰房地产有限公司</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.creditLevel}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ marginRight: '5px'}}>A级</span>
-                      <span style={{ marginLeft: '5px' }}>388分</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.creditRecord}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ backgroundColor: '#52c41a', padding: '0 5px', borderRadius: '10px', color: 'white' }}>加分</span>
-                      <span style={{ marginRight: '5px'}}>20分</span>
-                      <span style={{ backgroundColor: '#52c41a', padding: '0 5px', borderRadius: '10px', color: 'white', marginLeft: '5px' }}>次数</span>
-                      <span>5次</span>
-                    </div>
-                  </Col>
-                  <Col {...cjfColsProps.fzr}>
-                    <div style={{lineHeight: '24px', verticalAlign: 'middle'}}>
-                      <span style={{ marginRight: '5px'}}>项目负责人：张三</span>
-                      <span style={{ marginLeft: '5px' }}>131123456789</span>
-                    </div>
-                  </Col>
-                </Row>
-              </Timeline.Item>
-            </Timeline>
-          </div>
+          {this.renderCjf()}
         </Card>
         <Card
-          title="项目部人员"
+          title="相关人员"
           loading={basicInfoLoading}
           style={{marginTop: 12}}
           bodyStyle={{ padding: '12px', height: '326px'}}
         >
           {this.renderXmbry()}
         </Card>
-        <Card title="人员履职" loading={basicInfoLoading} style={{marginTop: 12}} bordered={false} bodyStyle={{padding: '12px'}}>
-          <Table
-            columns={[
-              {
-                title: '类型',
-                dataIndex: 'type',
-              },
-              {
-                title: '姓名',
-                dataIndex: 'name',
-              },
-              {
-                title: '职责分工',
-                dataIndex: 'job',
-              },
-              {
-                title: '资格证书编号',
-                dataIndex: 'zsbb',
-              },
-              {
-                title: '检查日期',
-                dataIndex: 'rq',
-              },
-              {
-                title: '文书编号',
-                dataIndex: 'gender',
-              },
-              {
-                title: '问题说明',
-                dataIndex: 'illustrate',
-              },
-            ]}
-            dataSource={[]}
-            pagination={false}
-          />
-        </Card>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={basicInfoLoading}
+              loading={wtfxLoading}
               bordered={false}
               title="问题分析"
               style={{marginTop: 12}}
               bodyStyle={{ height: '320px', padding: '12px'}}
             >
-              <SunburstPie
-                height={300}
-                data={[
-                  {
-                    value: 251,
-                    type: '质量',
-                    name: '子事例一',
-                  },
-                  {
-                    value: 1048,
-                    type: '质量',
-                    name: '子事例二',
-                  },
-                  {
-                    value: 610,
-                    type: '质量',
-                    name: '子事例三',
-                  },
-                  {
-                    value: 434,
-                    type: '安全',
-                    name: '子事例四',
-                  },
-                  {
-                    value: 335,
-                    type: '安全',
-                    name: '子事例五',
-                  },
-                  {
-                    value: 250,
-                    type: '安全',
-                    name: '子事例六',
-                  },
-                ]}
-              />
+              {
+                wtfx && wtfx.length > 0 ? (
+                  <SunburstPie
+                    height={300}
+                    data={wtfx}
+                  />
+                ) : (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                )
+              }
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={basicInfoLoading}
+              loading={wtlbLoading}
               bordered={false}
-              title="问题列表"
+              title="问题排名"
               style={{marginTop: 12}}
               bodyStyle={{ height: '320px', padding: '12px'}}
             >
               <Table
-                data={[]}
+                dataSource={wtlb}
+                pagination={false}
+                scroll={{ y: 220 }}
                 columns={[
                   {
                     title: '排名',
                     dataIndex: 'rank',
+                    width: '10%',
                   },
                   {
                     title: '问题',
-                    dataIndex: 'wt',
+                    dataIndex: 'issueDes',
+                    width: '45%',
                   },
                   {
                     title: '类型',
-                    dataIndex: 'type',
+                    dataIndex: 'issueType',
+                    width: '15%',
                   },
                   {
                     title: '分类',
-                    dataIndex: 'subType',
+                    dataIndex: 'issueSubType',
+                    width: '15%',
                   },
                   {
                     title: '次数',
                     dataIndex: 'count',
+                    width: '15%',
                   },
                 ]}
               />
@@ -646,20 +602,26 @@ class EngAnalysis extends Component {
               style={{marginTop: 12}}
               bodyStyle={{height: '300px', padding: '12px'}}
             >
-              <Pie
-                hasLegend
-                subTitle="文书数量"
-                total={() => `${wsfx.reduce((pre, now) => now.y + pre, 0)}件`}
-                data={wsfx}
-                valueFormat={value => `${value}件`}
-                height={248}
-                lineWidth={4}
-              />
+              {
+                wsfx && wsfx.length > 0 ? (
+                  <Pie
+                    hasLegend
+                    subTitle="文书数量"
+                    total={() => `${wsfx.reduce((pre, now) => now.y + pre, 0)}件`}
+                    data={wsfx}
+                    valueFormat={value => `${value}件`}
+                    height={248}
+                    lineWidth={4}
+                  />
+                ) : (
+                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+                )
+              }
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
             <Card
-              loading={basicInfoLoading}
+              loading={wslbLoading}
               bordered={false}
               title="文书列表"
               style={{marginTop: 12}}
@@ -667,7 +629,7 @@ class EngAnalysis extends Component {
             >
               <Table
                 dataSource={wslb}
-                rowKey="rank"
+                rowKey="ms"
                 columns={[
                   {
                     title: '排名',

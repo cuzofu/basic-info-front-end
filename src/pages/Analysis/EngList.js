@@ -31,20 +31,19 @@ class Search extends Component {
     dispatch({
       type: 'search/searchEng',
       payload: {
-        type: engType,
+        tag: engType,
       }
     });
   }
 
   renderEngList = () => {
     const {
-      engListLoading,
+      engLoading,
       search: {
         engList,
       }
     } = this.props;
 
-    console.log(engList);
     const {
       engType,
     } = this.state;
@@ -60,7 +59,7 @@ class Search extends Component {
       {
         title: '工程地址',
         dataIndex: '工程地址',
-        width: '20%',
+        width: '15%',
       },
       {
         title: '招标方式',
@@ -84,11 +83,54 @@ class Search extends Component {
         width: '15%',
       },
       {
-        title: '中标金额',
+        title: '中标金额（万元）',
         dataIndex: '中标金额',
-        width: '10%',
+        width: '15%',
       },
     ];
+    const columnsSGHTList = [
+      {
+        title: '工程名称',
+        dataIndex: 'engName',
+        width: 200,
+      },
+      {
+        title: '合同编号',
+        dataIndex: '合同编号',
+        width: 200,
+      },
+      {
+        title: '计价方式',
+        dataIndex: '计价方式',
+        width: 100,
+      },
+      {
+        title: '开工日期',
+        dataIndex: '开工日期',
+        width: 150,
+      },
+      {
+        title: '竣工日期',
+        dataIndex: '竣工日期',
+        width: 150,
+      },
+      {
+        title: '建设单位',
+        dataIndex: '发包单位名称',
+        width: 200,
+      },
+      {
+        title: '施工单位',
+        dataIndex: '承包单位名称',
+        width: 200,
+      },
+      {
+        title: '合同价',
+        dataIndex: '合同价',
+        width: 150,
+      },
+    ];
+
     const columnsSGXKList = [
       {
         title: '工程名称',
@@ -147,6 +189,9 @@ class Search extends Component {
         title: '工程名称',
         dataIndex: '工程名称',
         width: 200,
+        render: (val, record) => (
+          <div><a href={`/eng/analysis/${record.engId}`} target="_blank">{val}</a></div>
+        ),
       },
       {
         title: '工程地址',
@@ -204,6 +249,9 @@ class Search extends Component {
       case '招投标':
         columns = columnsZTBList;
         break;
+      case '施工合同':
+        columns = columnsSGHTList;
+        break;
       case '施工许可':
         columns = columnsSGXKList;
         break;
@@ -227,7 +275,7 @@ class Search extends Component {
 
     return (
       <Table
-        loading={engListLoading}
+        loading={engLoading}
         rowKey="id"
         dataSource={engList.data}
         pagination={pagination}
@@ -240,14 +288,14 @@ class Search extends Component {
 
   handleChangeEngType = e => {
     const { dispatch } = this.props;
+    this.setState({
+      engType: e.target.value,
+    });
     dispatch({
       type: 'search/searchEng',
       payload: {
-        type: e.target.value,
+        tag: e.target.value,
       },
-    });
-    this.setState({
-      engType: e.target.value,
     });
   };
 
@@ -259,7 +307,7 @@ class Search extends Component {
       payload: {
         currentPage: pagination.current - 1,
         pageSize: pagination.pageSize,
-        type: engType,
+        tag: engType,
       },
     });
   };

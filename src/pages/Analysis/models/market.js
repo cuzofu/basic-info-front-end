@@ -39,7 +39,33 @@ export default {
       try {
         const response = yield call(queryQyAndRyCount, payload);
         if (response && !response.msg) {
-          qyAndRyCount = response;
+          const {
+            addQYRK = 0,
+            sumQYRK = 0,
+            addRKRY = 0,
+            sumRKRY = 0,
+            countTBS = 0,
+            countZBS = 0,
+            userTBS = 0,
+            userZBS = 0,
+          } = response;
+
+          qyAndRyCount = {
+            sumQYRK,
+            addQYRK,
+            ratioQYRK: (sumQYRK - addQYRK) === 0 ? 0 : (addQYRK / (sumQYRK - addQYRK) * 100).toFixed(2),
+            sumRKRY,
+            addRKRY,
+            ratioRKRY: (sumRKRY - addRKRY) === 0 ? 0 : (addRKRY / (sumRKRY - addRKRY) * 100).toFixed(2),
+            countTBS,
+            ratioQYTB: sumQYRK === 0 ? 0 : (countTBS / sumQYRK * 100).toFixed(2),
+            countZBS,
+            ratioQYZB: sumQYRK === 0 ? 0 : (countZBS / sumQYRK * 100).toFixed(2),
+            userTBS,
+            ratioRYTB: sumRKRY === 0 ? 0 : (userTBS / sumRKRY * 100).toFixed(2),
+            userZBS,
+            ratioRYZB: sumRKRY === 0 ? 0 : (userZBS / sumRKRY * 100).toFixed(2),
+          };
         }
       } catch (e) {
         console.log('获取（企业及人员数量统计）数据失败')
@@ -97,8 +123,8 @@ export default {
       let qyhydpm = [];
       try {
         const response = yield call(queryQyhydpm, payload);
-        const total = response.reduce((pre, now) => (now.bidNum + pre), 0);
         if (response && !response.msg) {
+          const total = response.reduce((pre, now) => (now.bidNum + pre), 0);
           const sortFunc = (a, b) => {
             if (a.bidNum === b.bidNum) {
               if (a.sumTZE > b.sumTZE) {

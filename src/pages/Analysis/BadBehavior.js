@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 
-import { Row, Col, Card, Table } from 'antd';
+import { Row, Col, Card, Table, DatePicker } from 'antd';
 import { Pie } from '@/components/Charts';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import MatrixBar from './MatrixBar/MatrixBar';
 
 import styles from './BadBehavior.less';
+
+import { getTimeDistance } from '@/utils/utils';
+
+const { RangePicker } = DatePicker;
 
 @connect(({ badBehavior, loading }) => ({
   badBehavior,
@@ -20,6 +24,7 @@ import styles from './BadBehavior.less';
 class BadBehavior extends Component {
 
   state = {
+    rangePickerValue: getTimeDistance('year'),
     blxwQyxwpmPagination: {
       current: 1,
       pageSize: 10,
@@ -39,38 +44,16 @@ class BadBehavior extends Component {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      rangePickerValue,
+    } = this.state;
+
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
     this.reqRef = requestAnimationFrame(() => {
-      dispatch({
-        type: 'badBehavior/fetchBlxwJgbmzb',
-        payload: {
-        }
-      });
-      dispatch({
-        type: 'badBehavior/fetchBlxwJgbmlxzb',
-        payload: {
-        }
-      });
-      dispatch({
-        type: 'badBehavior/fetchBlxwQyxwpm',
-        payload: {
-        }
-      });
-      dispatch({
-        type: 'badBehavior/fetchBlxwGrxwpm',
-        payload: {
-        }
-      });
-      dispatch({
-        type: 'badBehavior/fetchBlxwXmpm',
-        payload: {
-        }
-      });
-      dispatch({
-        type: 'badBehavior/fetchBlxwXwlxpm',
-        payload: {
-        }
-      });
+      this.fetchData(rangePickerValue);
     });
   }
 
@@ -80,6 +63,121 @@ class BadBehavior extends Component {
       type: 'badBehavior/clear',
     });
   }
+
+  renderRangePicker = () => {
+    const {
+      rangePickerValue
+    } = this.state;
+
+    return (
+      <div className={styles.timeExtraWrap}>
+        <div className={styles.timeExtra}>
+          <a className={this.isActive('today')} onClick={() => this.selectDate('today')}>今日</a>
+          <a className={this.isActive('week')} onClick={() => this.selectDate('week')}>本周</a>
+          <a className={this.isActive('month')} onClick={() => this.selectDate('month')}>本月</a>
+          <a className={this.isActive('year')} onClick={() => this.selectDate('year')}>今年</a>
+        </div>
+        <RangePicker
+          value={rangePickerValue}
+          style={{ width: 256 }}
+          onChange={this.handleRangePickerChange}
+        />
+      </div>
+    );
+  };
+
+  isActive = type => {
+    const { rangePickerValue } = this.state;
+    const value = getTimeDistance(type);
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return '';
+    }
+    if (
+      rangePickerValue[0].isSame(value[0], 'day') &&
+      rangePickerValue[1].isSame(value[1], 'day')
+    ) {
+      return styles.currentDate;
+    }
+    return '';
+  };
+
+  selectDate = type => {
+
+    const rangePickerValue = getTimeDistance(type);
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    this.setState({
+      rangePickerValue,
+    });
+
+    this.fetchData(rangePickerValue);
+  };
+
+  handleRangePickerChange = rangePickerValue => {
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    this.setState({
+      rangePickerValue,
+    });
+
+    this.fetchData(rangePickerValue);
+  };
+
+  fetchData = (rangePickerValue) => {
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    const { dispatch } = this.props;
+    const startTime = rangePickerValue[0].format("YYYY-MM-DD");
+    const endTime = rangePickerValue[1].format("YYYY-MM-DD");
+    dispatch({
+      type: 'badBehavior/fetchBlxwJgbmzb',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'badBehavior/fetchBlxwJgbmlxzb',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'badBehavior/fetchBlxwQyxwpm',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'badBehavior/fetchBlxwGrxwpm',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'badBehavior/fetchBlxwXmpm',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+    dispatch({
+      type: 'badBehavior/fetchBlxwXwlxpm',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+  };
 
   // 不良行为项目排名翻页
   handleBlxwXmpmTableChange = (pagination) => {
@@ -119,6 +217,33 @@ class BadBehavior extends Component {
         pageSize: pagination.pageSize,
       }
     });
+  };
+
+  // 机构部门占比
+  renderBlxwJgbmzb = () => {
+
+    const {
+      badBehavior: {
+        blxwJgbmzb,
+      }
+    } = this.props;
+
+    if (blxwJgbmzb && blxwJgbmzb.length > 0) {
+      return (
+        <Pie
+          hasLegend
+          subTitle="总数"
+          total={() => blxwJgbmzb.reduce((pre, now) => now.y + pre, 0)}
+          data={blxwJgbmzb}
+          valueFormat={value => `${value}`}
+          height={248}
+          lineWidth={4}
+        />
+      )
+    }
+    return (
+      <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
+    )
   };
 
   render() {
@@ -176,7 +301,6 @@ class BadBehavior extends Component {
         title: '占比',
         dataIndex: 'rate',
         width: '20%',
-        render: value => `${value}%`,
       },
     ];
 
@@ -290,24 +414,11 @@ class BadBehavior extends Component {
 
     return (
       <GridContent>
+        {this.renderRangePicker()}
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
             <Card loading={blxwJgbmzbLoading} title="机构部门占比" bodyStyle={{ minHeight: '300px' }}>
-              {
-                blxwJgbmzb && blxwJgbmzb.length > 0 ? (
-                  <Pie
-                    hasLegend
-                    subTitle="总数"
-                    total={() => blxwJgbmzb.reduce((pre, now) => now.y + pre, 0)}
-                    data={blxwJgbmzb}
-                    valueFormat={value => `${value}`}
-                    height={248}
-                    lineWidth={4}
-                  />
-                ) : (
-                  <div style={{textAlign: 'center', height: '100%', lineHeight: '100%', verticalAlign: 'middle'}}>暂无数据</div>
-                )
-              }
+              {this.renderBlxwJgbmzb()}
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
@@ -346,7 +457,7 @@ class BadBehavior extends Component {
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
-            <Card loading={blxwXwlxpmLoading} title="行为类型排名占比" bodyStyle={{ maxHeight: '400px', padding: '5px' }}>
+            <Card loading={blxwXwlxpmLoading} title="行为类型排名占比" bodyStyle={{ height: '400px', padding: '5px' }}>
               <Table
                 size="small"
                 scroll={{ y: 305 }}

@@ -42,37 +42,37 @@ class Person extends Component {
     dispatch({
       type: 'person/fetchBasicInfo',
       payload: {
-        certNum: id,
+        key: id,
       }
     });
     dispatch({
       type: 'person/fetchCredit',
       payload: {
-        certNum: id,
+        key: id,
       }
     });
     dispatch({
       type: 'person/fetchEngList',
       payload: {
-        certNum: id,
+        key: id,
       }
     });
     dispatch({
       type: 'person/fetchWorkList',
       payload: {
-        certNum: id,
+        key: id,
       }
     });
     dispatch({
       type: 'person/fetchJobList',
       payload: {
-        certNum: id,
+        key: id,
       }
     });
     dispatch({
       type: 'person/fetchRyzjList',
       payload: {
-        certNum: id,
+        key: id,
       }
     });
   }

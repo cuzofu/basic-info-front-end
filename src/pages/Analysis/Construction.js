@@ -97,8 +97,8 @@ class Construction extends Component {
       },
       {
         title: '投资额',
-        dataIndex: 'tzje',
-        key: 'tzje',
+        dataIndex: 'tze',
+        key: 'tze',
         render: (investment) => (
           <div>
             <span style={{ backgroundColor: '#FFB90F', padding: '0 5px', borderRadius: '10px', color: 'white' }}>投资额</span>
@@ -108,8 +108,8 @@ class Construction extends Component {
       },
       {
         title: '规模',
-        dataIndex: 'gcmj',
-        key: 'gcmj',
+        dataIndex: 'zjmj',
+        key: 'zjmj',
         render: (dimensions) => (
           <div>
             <span style={{ backgroundColor: '#52c41a', padding: '0 5px', borderRadius: '10px', color: 'white' }}>工程规模</span>
@@ -172,7 +172,7 @@ class Construction extends Component {
         title: '详情',
         key: 'more',
         render: (_, record) => (
-          <div><a href={`/eng/analysis/${record.key}`} target="_blank">详情</a></div>
+          <div><a href={`/eng/analysis/${record.engId}`} target="_blank">详情</a></div>
         ),
       },
     ];

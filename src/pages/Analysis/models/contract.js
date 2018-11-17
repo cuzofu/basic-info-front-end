@@ -37,8 +37,10 @@ export default {
       let contractAmountDataByRegion = [];
       try {
         const response = yield call(queryContractAmountDataByRegion, payload);
-        if (response && response.msg) {
+        console.log(response);
+        if (response && !response.msg) {
           contractAmountDataByRegion = response;
+          console.log(contractAmountDataByRegion);
         }
       } catch (e) {
         console.log(e);
@@ -54,7 +56,7 @@ export default {
       let finalAccountsDataByRegion = [];
       try {
         const response = yield call(queryFinalAccountsDataByRegion, payload);
-        if (response && response.msg) {
+        if (response && !response.msg) {
           finalAccountsDataByRegion = response;
         }
       } catch (e) {

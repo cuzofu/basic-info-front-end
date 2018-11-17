@@ -154,7 +154,6 @@ export default {
       let gcgmfx = [];
       try {
         const response = yield call(queryGcgmfx, payload);
-        console.log(response);
         if (response && !response.msg) {
           gcgmfx = response.map(r => ({
             ...r,
@@ -179,7 +178,6 @@ export default {
       };
       try {
         const response = yield call(queryGcgmfxlb, payload);
-        console.log(response);
         if (response && !response.msg) {
           gcgmfxlb.list = response.list.map((r, index) => ({
             key: index + 1,

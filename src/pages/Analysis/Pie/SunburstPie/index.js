@@ -102,25 +102,6 @@ class SunburstPie extends Component {
               showTitle={false}
               itemTpl="<li><span style=&quot;background-color:{color};&quot; class=&quot;g2-tooltip-marker&quot;></span>{name}: {value}</li>"
             />
-            <Geom
-              type="intervalStack"
-              position="percent"
-              color="type"
-              tooltip={[
-                'type*value*percent',
-                (item, value, percent) => ({
-                  name: item,
-                  value: `${value}个 ${(percent * 100).toFixed(2)}%`,
-                }),
-              ]}
-              style={{
-                lineWidth: 1,
-                stroke: '#fff',
-              }}
-              select={false}
-            >
-              <Label content="type" offset={-20} />
-            </Geom>
             <View data={dv1} scale={cols}>
               <Coord type="theta" radius={0.75} innerRadius={0.5 / 0.75} />
               <Geom
@@ -153,6 +134,25 @@ class SunburstPie extends Component {
                 <Label content="name" />
               </Geom>
             </View>
+            <Geom
+              type="intervalStack"
+              position="percent"
+              color="type"
+              tooltip={[
+                'type*value*percent',
+                (item, value, percent) => ({
+                  name: item,
+                  value: `${value}个 ${(percent * 100).toFixed(2)}%`,
+                }),
+              ]}
+              style={{
+                lineWidth: 1,
+                stroke: '#fff',
+              }}
+              select={false}
+            >
+              <Label content="type" offset={-20} />
+            </Geom>
           </Chart>
         </div>
       </div>

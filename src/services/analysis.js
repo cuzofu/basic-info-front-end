@@ -177,6 +177,11 @@ export async function queryGcgmfxlb(params) {
   return request(`/elastic_sskj/api/search/cioGCGMYou?${stringify(params)}`)
 }
 
+// 工程参建方
+export async function engCjf(params) {
+  return request(`/elastic_sskj/api/search/eng/cjf?${stringify(params)}`);
+}
+
 // 人员履职
 export async function engRylz(params) {
   return request(`/elastic_sskj/api/search/eng/ryll?${stringify(params)}`);
@@ -221,5 +226,4 @@ export async function engWsfx(params) {
 export async function engWslb(params) {
   return request(`/elastic_sskj/api/search/eng/wslb?${stringify(params)}`);
 }
-
 

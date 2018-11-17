@@ -52,14 +52,13 @@ class MatrixBar extends React.Component {
     const label = {
       // 设置文本的显示样式，还可以是个回调函数，回调函数的参数为该坐标轴对应字段的数值
       textStyle: {
-        textAlign: 'center', // 文本对齐方向，可取值为： start center end
+        textAlign: 'end', // 文本对齐方向，可取值为： start center end
         fill: '#404040', // 文本的颜色
         fontSize: '12', // 文本大小
-        fontWeight: 'bold', // 文本粗细
-        rotate: 30,
+        // fontWeight: 'bold', // 文本粗细
         textBaseline: 'middle',
         whiteSpace: 'normal',
-        width: '80px',
+        width: '100px',
       }
     };
 

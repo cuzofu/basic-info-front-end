@@ -15,6 +15,7 @@ import {
   Card,
   Table,
   Divider,
+  DatePicker,
 } from 'antd';
 import {
   Pie,
@@ -25,7 +26,11 @@ import MatrixBar from './MatrixBar/MatrixBar';
 
 import styles from './Market.less';
 
+import { getTimeDistance } from '@/utils/utils';
+
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
+
+const { RangePicker } = DatePicker;
 
 @connect(({ market, loading }) => ({
   market,
@@ -42,6 +47,7 @@ const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 class Market extends Component {
 
   state = {
+    rangePickerValue: getTimeDistance('year'),
     subPersonZzAnalysisData: {},
     ryhydpmPagination: {
       current: 1,
@@ -59,10 +65,17 @@ class Market extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { rangePickerValue } = this.state;
+
+    const startTime = rangePickerValue[0].format("YYYY-MM-DD");
+    const endTime = rangePickerValue[1].format("YYYY-MM-DD");
+
     this.reqRef = requestAnimationFrame(() => {
       dispatch({
         type: 'market/fetchQyAndRyCount',
         payload: {
+          firstTime: startTime,
+          lastTime: endTime,
         }
       });
       dispatch({
@@ -120,6 +133,89 @@ class Market extends Component {
     cancelAnimationFrame(this.reqRef);
     clearTimeout(this.timeoutId);
   }
+
+  renderRangePicker = () => {
+    const {
+      rangePickerValue
+    } = this.state;
+
+    return (
+      <div className={styles.timeExtraWrap}>
+        <div className={styles.timeExtra}>
+          <a className={this.isActive('today')} onClick={() => this.selectDate('today')}>今日</a>
+          <a className={this.isActive('week')} onClick={() => this.selectDate('week')}>本周</a>
+          <a className={this.isActive('month')} onClick={() => this.selectDate('month')}>本月</a>
+          <a className={this.isActive('year')} onClick={() => this.selectDate('year')}>今年</a>
+        </div>
+        <RangePicker
+          value={rangePickerValue}
+          style={{ width: 256 }}
+          onChange={this.handleRangePickerChange}
+        />
+      </div>
+    );
+  };
+
+  isActive = type => {
+    const { rangePickerValue } = this.state;
+    const value = getTimeDistance(type);
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return '';
+    }
+    if (
+      rangePickerValue[0].isSame(value[0], 'day') &&
+      rangePickerValue[1].isSame(value[1], 'day')
+    ) {
+      return styles.currentDate;
+    }
+    return '';
+  };
+
+  selectDate = type => {
+
+    const rangePickerValue = getTimeDistance(type);
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    this.setState({
+      rangePickerValue,
+    });
+
+    const startTime = rangePickerValue[0].format("YYYY-MM-DD");
+    const endTime = rangePickerValue[1].format("YYYY-MM-DD");
+
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'market/fetchQyAndRyCount',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+  };
+
+  handleRangePickerChange = rangePickerValue => {
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    this.setState({
+      rangePickerValue,
+    });
+
+    const startTime = rangePickerValue[0].format("YYYY-MM-DD");
+    const endTime = rangePickerValue[1].format("YYYY-MM-DD");
+
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'market/fetchQyAndRyCount',
+      payload: {
+        firstTime: startTime,
+        lastTime: endTime,
+      }
+    });
+  };
 
   renderSubPersonZzAnalysisData = (data) => {
     this.setState({
@@ -179,7 +275,7 @@ class Market extends Component {
 
       data.forEach( d => {
         switch (d.groupY) {
-          case '企业入库数量':
+          case '企业数量':
             destData[0][d.groupX] = parseInt(d.value, 0);
             break;
           case '投标数量':
@@ -197,7 +293,7 @@ class Market extends Component {
       const dv = ds.createView().source(destData);
       dv.transform({
         type: 'fold',
-        fields: ['企业诚信A级','企业诚信B级','企业诚信C级','企业资质诚信A级','企业资质诚信B级','企业资质诚信C级'], // 展开字段集
+        fields: ['企业诚信A级','企业诚信B级','企业诚信C级'], // 展开字段集 ['企业资质诚信A级','企业资质诚信B级','企业资质诚信C级']
         key: '诚信等级', // key字段
         value: '数量', // value字段
       });
@@ -303,20 +399,20 @@ class Market extends Component {
       ryzzfxLoading,
       market: {
         qyAndRyCount: {
+          sumQYRK = 0,
           addQYRK = 0,
           addRKRY = 0,
+          sumRKRY = 0,
           countTBS = 0,
           countZBS = 0,
-          ratioQYRK = 0.00,
-          ratioTBS = 0.00,
-          ratioZBS = 0.00,
-          ratioUser = 0.00,
-          sumQYRK = 0,
-          sumRKRY = 0,
-          ratioRKRY = 0.00,
-          userBiLi = 0.00,
           userTBS = 0,
           userZBS = 0,
+          ratioQYRK = 0.00,
+          ratioRKRY = 0.00,
+          ratioQYTB = 0.00,
+          ratioQYZB = 0.00,
+          ratioRYTB = 0.00,
+          ratioRYZB = 0.00,
         },
         qyzzfx,
         bdqymx,
@@ -492,6 +588,7 @@ class Market extends Component {
 
     return (
       <GridContent>
+        {this.renderRangePicker()}
         <Row gutter={12}>
           <Col {...topColResponsiveProps}>
             <Card title="企业入库数量" bodyStyle={{ paddingBottom: '8px' }} loading={loading}>
@@ -511,7 +608,7 @@ class Market extends Component {
               <div style={{ textAlign: 'center' }}>
                 <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
                   <span>增加率</span>
-                  <span className={styles.trendText}>{`${(ratioQYRK * 100).toFixed(2)}%`}</span>
+                  <span className={styles.trendText}>{`${ratioQYRK}%`}</span>
                 </Trend>
               </div>
             </Card>
@@ -534,11 +631,11 @@ class Market extends Component {
               <div style={{ textAlign: 'center' }}>
                 <Trend flag="up" reverseColor style={{ padding: '0 6px 0 0' }}>
                   <span>占比</span>
-                  <span className={styles.trendText}>{`${(ratioTBS * 100).toFixed(2)}%`}</span>
+                  <span className={styles.trendText}>{`${ratioQYTB}%`}</span>
                 </Trend>
                 <Trend flag="up" reverseColor style={{ padding: '0 0 0 6px' }}>
                   <span>占比</span>
-                  <span className={styles.trendText}>{`${(ratioZBS * 100).toFixed(2)}%`}</span>
+                  <span className={styles.trendText}>{`${ratioQYZB}%`}</span>
                 </Trend>
               </div>
             </Card>
@@ -561,7 +658,7 @@ class Market extends Component {
               <div style={{ textAlign: 'center' }}>
                 <Trend flag="up" reverseColor style={{ padding: '0 12px' }}>
                   <span>增加率</span>
-                  <span className={styles.trendText}>{`${(ratioRKRY * 100).toFixed(2)}%`}</span>
+                  <span className={styles.trendText}>{`${ratioRKRY}%`}</span>
                 </Trend>
               </div>
             </Card>
@@ -584,11 +681,11 @@ class Market extends Component {
               <div style={{ textAlign: 'center' }}>
                 <Trend flag="up" reverseColor style={{ padding: '0 6px 0 0' }}>
                   <span>占比</span>
-                  <span className={styles.trendText}>{`${(ratioUser * 100).toFixed(2)}%`}</span>
+                  <span className={styles.trendText}>{`${ratioRYTB}%`}</span>
                 </Trend>
                 <Trend flag="up" reverseColor style={{ padding: '0 0 0 6px' }}>
                   <span>占比</span>
-                  <span className={styles.trendText}>{`${(userBiLi * 100).toFixed(2)}%`}</span>
+                  <span className={styles.trendText}>{`${ratioRYZB}%`}</span>
                 </Trend>
               </div>
             </Card>

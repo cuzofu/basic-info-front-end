@@ -432,7 +432,7 @@ class ConstructionEfficiency extends Component {
         render: (val) => `${val}天`,
       },
       {
-        title: '最段耗时',
+        title: '最短耗时',
         dataIndex: 'minTime',
         width: '15%',
         align: 'center',

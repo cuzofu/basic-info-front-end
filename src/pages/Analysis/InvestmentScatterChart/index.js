@@ -46,7 +46,7 @@ class InvestmentScatterChart extends Component {
         },
         symbolSize: (value) => Math.round(value[2] / 10),
         data: d.list.map( r => ([
-          new Date(2014, 9, 1, 0, Math.round(Math.random() * 10000)),
+          new Date(r.date),
           (r.tze - 0),
           100,
           r.engName,

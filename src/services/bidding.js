@@ -29,3 +29,8 @@ export async function queryTzefb(params) {
 export async function queryZbfstj(params) {
   return request(`/elastic_sskj/api/search/ztb/zbfs?${stringify(params)}`);
 }
+
+// 企业招投标统计列表
+export async function queryEngQyzbtj(params) {
+  return request(`/elastic_sskj/api/search/eng/qyzbtj?${stringify(params)}`);
+}

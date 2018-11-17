@@ -40,25 +40,25 @@ class Corporation extends Component {
     dispatch({
       type: 'corporation/fetchBasicInfo',
       payload: {
-        jcxxId: id,
+        key: id,
       }
     });
     dispatch({
       type: 'corporation/fetchHyjl',
       payload: {
-        jcxxId: id,
+        key: id,
       }
     });
     dispatch({
       type: 'corporation/fetchZjgc',
       payload: {
-        jcxxId: id,
+        key: id,
       }
     });
     dispatch({
       type: 'corporation/fetchCredit',
       payload: {
-        jcxxId: id,
+        key: id,
       }
     });
   }

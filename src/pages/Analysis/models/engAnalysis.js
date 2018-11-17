@@ -7,8 +7,10 @@ import {
   engCxtj,
   engWtfx,
   engWtlb,
+  queryZlwtpm,
   engWsfx,
   engWslb,
+  engCjf,
 } from '@/services/analysis';
 
 export default {
@@ -25,6 +27,7 @@ export default {
     wtlb: [],
     wsfx: [],
     wslb: [],
+    cjf: [],
   },
 
   effects: {
@@ -32,7 +35,6 @@ export default {
       let basicInfo = {};
       try {
         const response = yield call(jcxxEng, payload);
-        console.log(response);
         if (response && !response.msg) {
           basicInfo = response;
         }
@@ -140,7 +142,11 @@ export default {
       try {
         const response = yield call(engWtfx, payload);
         if (response && !response.msg) {
-          wtfx = response;
+          wtfx = response.sort((a, b) => a.x > b.x ? -1 : 1).map(r => ({
+            value: r.value,
+            type: r.x,
+            name: r.y,
+          }));
         }
       } catch (e) {
         console.log(e);
@@ -156,9 +162,17 @@ export default {
     *fetchWtlb({payload}, { call, put }) {
       let wtlb = [];
       try {
-        const response = yield call(engWtlb, payload);
+        const response = yield call(queryZlwtpm, payload);
         if (response && !response.msg) {
-          wtlb = response;
+          const sort = (a, b) => a.AQNum > b.AQNum ? -1 : 1;
+          wtlb = response.sort(sort).map((r, index) => ({
+            rank: index + 1,
+            key: index + 1,
+            issueDes: r.explain && r.explain === '' ? '未知问题' : r.explain,
+            issueType: r.typeWT,
+            issueSubType: r.typeWTZL,
+            count: r.AQNum,
+          }));
         }
       } catch (e) {
         console.log(e);
@@ -199,7 +213,6 @@ export default {
         if (response && !response.msg) {
           wslb = response.sort((a, b) => a.count > b.count ? -1 : 1);
         }
-        console.log(wslb);
       } catch (e) {
         console.log(e);
       }
@@ -207,6 +220,24 @@ export default {
         type: 'save',
         payload: {
           wslb,
+        },
+      });
+    },
+    // 参建方
+    *fetchCjf({payload}, { call, put }) {
+      let cjf = [];
+      try {
+        const response = yield call(engCjf, payload);
+        if (response && !response.msg) {
+          cjf = response;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          cjf,
         },
       });
     },
@@ -231,6 +262,7 @@ export default {
         wtlb: [],
         wsfx: [],
         wslb: [],
+        cjf: [],
       };
     },
   },

@@ -1,4 +1,5 @@
 @import '~antd/lib/style/themes/default.less';
+@import '~@/utils/utils.less';
 
 .trendText {
   margin-left: 8px;
@@ -25,14 +26,17 @@
   }
 }
 
-@media screen and (max-width: @screen-lg) {
+.cardExtra {
+  :global {
+    .ant-card-extra {
+      padding: 12px 0;
+    }
+  }
+}
+
+@media screen and (max-width: @screen-sm) {
   .timeExtra {
     display: none;
   }
 }
 
-@media screen and (max-width: @screen-sm) {
-  .timeExtraWrap {
-    display: none;
-  }
-}

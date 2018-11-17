@@ -153,6 +153,26 @@
   color: @heading-color;
 }
 
+.timeExtraWrap {
+  margin-bottom: 12px;
+  text-align: right;
+}
+
+.timeExtra {
+  display: inline-block;
+  margin-right: 24px;
+  a {
+    color: @text-color;
+    margin-left: 24px;
+    &:hover {
+      color: @primary-color;
+    }
+    &.currentDate {
+      color: @primary-color;
+    }
+  }
+}
+
 @media screen and (max-width: @screen-lg) {
   .salesExtra {
     display: none;
@@ -179,6 +199,10 @@
 
 @media screen and (max-width: @screen-sm) {
   .salesExtraWrap {
+    display: none;
+  }
+
+  .timeExtra {
     display: none;
   }
 

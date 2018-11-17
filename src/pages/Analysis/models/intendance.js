@@ -1,4 +1,5 @@
 import {
+  engWtfx,
   queryZfwsks,
   queryZfwstj,
   queryZlwtpm,
@@ -11,15 +12,39 @@ export default {
   namespace: 'intendance',
 
   state: {
+    wttj: [],
     zfwsks: [],
     zfwstj: [],
     zlwtpm: [],
     zfwsGcpm: [],
     zfwsQypm: [],
-    gczlwtpm: [],
+    gczlwtpm: []
   },
 
   effects: {
+    // 工程常见问题统计
+    *fetchWttj({payload}, { call, put }) {
+      let wttj = [];
+      try {
+        const response = yield call(engWtfx, payload);
+        if (response && !response.msg) {
+          wttj = response.sort((a, b) => a.x > b.x ? -1 : 1).map(r => ({
+            ...r,
+            type: r.x,
+            name: r.y,
+          }));
+          console.log(wttj);
+        }
+      } catch (e) {
+        console.log('获取（fetchWttj）数据失败')
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          wttj,
+        },
+      });
+    },
     // 执法文书明细按科室分
     *fetchZfwsks({payload}, { call, put }) {
       let zfwsks = [];
@@ -132,14 +157,13 @@ export default {
       try {
         const response = yield call(queryZfwsQypm, payload);
         if (response && !response.msg) {
-          const total = response.reduce((pre, now) => now.ZLNum + pre, 0);
-          const sort = (a, b) => a.ZLNum > b.ZLNum ? -1 : 1;
+          const total = response.reduce((pre, now) => now.sum + pre, 0);
+          const sort = (a, b) => a.sum > b.sum ? -1 : 1;
           zfwsQypm = response.sort(sort).map((r, index) => ({
             rank: index + 1,
             key: index + 1,
-            orgName: r.GCName,
-            count: r.ZLNum,
-            rate: total > 0 ? (r.ZLNum / total * 100).toFixed(2) : 0,
+            ...r,
+            rate: total > 0 ? (r.sum / total * 100).toFixed(2) : 0,
           }));
         }
       } catch (e) {
@@ -178,8 +202,6 @@ export default {
         },
       });
     },
-    // 工程常见问题统计
-
   },
 
   reducers: {
@@ -191,6 +213,7 @@ export default {
     },
     clear() {
       return {
+        wttj: [],
         zfwsks: [],
         zfwstj: [],
         zlwtpm: [],
