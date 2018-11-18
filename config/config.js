@@ -94,9 +94,13 @@ export default {
     mergeRules: false,
   },
   proxy: {
+    "/elastic_sskj/api/credit/org/search": {
+      target: 'http://www.ycjsjg.net/',
+      changeOrigin: true,
+    },
     "/elastic_sskj/api": {
       target: 'http://192.168.0.208:4310/',
       changeOrigin: true,
-    }
+    },
   }
 };

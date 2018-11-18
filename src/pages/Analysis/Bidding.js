@@ -561,6 +561,7 @@ class Bidding extends Component {
         >
           <Table
             size="large"
+            rowKey="rank"
             scroll={{ y: 260 }}
             dataSource={engZtbList}
             columns={[

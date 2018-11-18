@@ -33,7 +33,6 @@ export default {
             type: r.x,
             name: r.y,
           }));
-          console.log(wttj);
         }
       } catch (e) {
         console.log('获取（fetchWttj）数据失败')

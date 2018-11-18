@@ -172,7 +172,7 @@ class BasicLayout extends React.PureComponent {
       id: currRouterData.locale || currRouterData.name,
       defaultMessage: currRouterData.name,
     });
-    return `${message} - Ant Design Pro`;
+    return `${message} - 智慧城建数据统计分析`;
   };
 
   getLayoutStyle = () => {

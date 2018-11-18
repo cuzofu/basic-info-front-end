@@ -227,3 +227,15 @@ export async function engWslb(params) {
   return request(`/elastic_sskj/api/search/eng/wslb?${stringify(params)}`);
 }
 
+// 按诚信等级统计企业本地外地
+export async function queryCioRegionCount(params) {
+  return request(`/elastic_sskj/api/search/ciocredit/orgtype?${stringify(params)}`);
+}
+
+// 企业诚信数据统计列表
+export async function queryCioCreditList(params) {
+  return request('/elastic_sskj/api/credit/org/search', {
+    method: 'POST',
+    body: params,
+  })
+}

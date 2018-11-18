@@ -127,7 +127,7 @@ export default {
           const total = response.reduce((pre, now) => (now.bidNum + pre), 0);
           const sortFunc = (a, b) => {
             if (a.bidNum === b.bidNum) {
-              if (a.sumTZE > b.sumTZE) {
+              if ((a.sumTZE - 0) > (b.sumTZE - 0)) {
                 return -1;
               }
               return 1;
@@ -177,10 +177,9 @@ export default {
       try {
         const response = yield call(queryRyhydpm, payload);
         if (response && !response.msg) {
-
           const sortFunc = (a, b) => {
             if (a.jobNum === b.jobNum) {
-              if (a.tze > b.tze) {
+              if ((a.tze - 0) > (b.tze - 0)) {
                 return -1;
               }
               return 1;
