@@ -5,6 +5,7 @@ import webpackplugin from './plugin.config';
 import defaultSettings from '../src/defaultSettings';
 
 export default {
+  history: 'hash',
   // add for transfer to umi
   plugins: [
     [
@@ -75,9 +76,9 @@ export default {
     },
   },
   manifest: {
-    name: 'ant-design-pro',
+    name: '智慧城建数据统计分析',
     background_color: '#FFF',
-    description: 'An out-of-box UI solution for enterprise applications as a React boilerplate.',
+    description: '宜昌市智慧城建综合监管系统数据统计分析系统',
     display: 'standalone',
     start_url: '/index.html',
     icons: [
@@ -98,7 +99,7 @@ export default {
       target: 'http://www.ycjsjg.net/',
       changeOrigin: true,
     },
-    "/elastic_sskj/api": {
+    "/elastic_sskj/api/search": {
       target: 'http://192.168.0.208:4310/',
       changeOrigin: true,
     },

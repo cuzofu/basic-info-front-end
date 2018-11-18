@@ -17,14 +17,6 @@ export async function jcxxEng(params) {
   return request(`/elastic_sskj/api/search/eng?${stringify(params)}`);
 }
 
-export async function queryData(params) {
-  return request(`/api/analysis?${stringify(params)}`);
-}
-
-export async function queryData1(params) {
-  return request(`/api/analysis?${stringify(params)}`);
-}
-
 export async function queryEngList(params) {
   return request(`/elastic_sskj/api/search/engAnalysis`);
 }
