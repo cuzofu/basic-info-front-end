@@ -73,7 +73,7 @@ class Search extends Component {
         width: '10%',
         align: 'center',
         render: (_, record) => (
-          <div><a href={`/corporation/${record.id}`} target="_blank">查看</a></div>
+          <div><a href={`/#/corporation/${record.id}`} target="_blank">查看</a></div>
         ),
       },
     ];
@@ -140,7 +140,7 @@ class Search extends Component {
         key: 'more',
         width: '10%',
         render: (_, record) => (
-          <div><a href={`/person/${record.身份证号}`} target="_blank">查看</a></div>
+          <div><a href={`/#/person/${record.身份证号}`} target="_blank">查看</a></div>
         ),
       },
     ];

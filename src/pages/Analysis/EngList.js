@@ -190,7 +190,7 @@ class Search extends Component {
         dataIndex: '工程名称',
         width: 200,
         render: (val, record) => (
-          <div><a href={`/eng/analysis/${record.engId}`} target="_blank">{val}</a></div>
+          <div><a href={`/#/eng/analysis/${record.engId}`} target="_blank">{val}</a></div>
         ),
       },
       {
