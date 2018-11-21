@@ -3,6 +3,7 @@ import {connect} from 'dva';
 
 import numeral from 'numeral';
 import moment from 'moment';
+import 'moment/locale/zh-cn';
 
 import { getTimeDistance } from '@/utils/utils';
 import {
@@ -32,6 +33,7 @@ import InvestmentScatterChart from './InvestmentScatterChart';
 
 const { RangePicker, MonthPicker } = DatePicker;
 
+moment.locale('zh-cn');
 @connect(({bidding, loading}) => ({
   bidding,
   basicInfoLoading: loading.effects['bidding/fetchBasicInfo'],

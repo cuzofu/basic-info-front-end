@@ -474,8 +474,6 @@ class Corporation extends Component {
       登记证编号 = '-',
       开户银行 = '-',
       银行账号 = '-',
-      诚信等级 = '-',
-      诚信分值 = '-',
     } = JSON.parse(jcxxMx);
     const {
       企业负责人 = [],
@@ -505,11 +503,11 @@ class Corporation extends Component {
       <Row>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信等级</div>
-          <div className={styles.heading}>{诚信等级}</div>
+          <div className={styles.heading}>{this.renderCreditLevel(credit)}</div>
         </Col>
         <Col xs={24} sm={12}>
           <div className={styles.textSecondary}>诚信分值</div>
-          <div className={styles.heading}>{诚信分值}</div>
+          <div className={styles.heading}>{this.renderCreditScore(credit)}</div>
         </Col>
       </Row>
     );

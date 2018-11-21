@@ -365,7 +365,7 @@ class Intendance extends Component {
           loading={zfwsQypmLoading}
           size="small"
           scroll={{ y: 260 }}
-          dataSource={qypmType === '全部' ? zfwsQypm : zfwsQypm.filter(r => r.type === qypmType)}
+          dataSource={zfwsQypm}
           columns={columns}
           pagination={{
             ...zfwsQypmPagination,
