@@ -35,9 +35,9 @@ class DimensionsScatterChart extends Component {
         formatter: (params) => {
           if (params.value.length > 1) {
             if (params.seriesName === '投资额/面积') {
-              return `${params.seriesName}<br/>投资额：${params.value[0]}万元<br/>面积：${params.value[1]}㎡ `;
+              return `${params.seriesName}<br/>投资额：${params.value[1]}万元<br/>面积：${params.value[0]}㎡ `;
             }
-            return `${params.seriesName}<br/>投资额：${params.value[0]}万元<br/>公里数：${params.value[1]}m `
+            return `${params.seriesName}<br/>投资额：${params.value[1]}万元<br/>公里数：${params.value[0]}m `
           }
           return `投资额/${params.data.seriesName}<br/>${params.name} : ${params.value}万元`;
         },
