@@ -231,3 +231,13 @@ export async function queryCioCreditList(params) {
     body: params,
   })
 }
+
+// 企业诚信行为分析
+export async function queryQycxxwfx(params) {
+  return request(`/elastic_sskj/api/search/scjc/qycxxwfx?${stringify(params)}`);
+}
+
+// 企业诚信行为分析
+export async function querySxqymd(params) {
+  return request(`/elastic_sskj/api/search/scjc/sxqymd?${stringify(params)}`);
+}

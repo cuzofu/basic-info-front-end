@@ -18,11 +18,33 @@ import styles from './MarketMonitor.less';
 
 @connect(({ mm, loading }) => ({
   mm,
-  loading: loading.effects['mm/fetchData'],
+  qycxxwfxLoading: loading.effects['mm/fetchQycxxwfx'],
+  sxqymdLoading: loading.effects['mm/fetchSxqymd'],
 }))
 class MarketMonitor extends Component {
 
+  componentDidMount() {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'mm/fetchQycxxwfx',
+      payload: {}
+    });
+    dispatch({
+      type: 'mm/fetchSxqymd',
+      payload: {}
+    });
+  }
+
   render() {
+
+    const {
+      qycxxwfxLoading,
+      sxqymdLoading,
+      mm: {
+        qycxxwfx,
+        sxqymd,
+      }
+    } = this.props;
 
     // 左右结构布局参数
     const doubleCardColsProps = { lg: 24, xl: 12, style: { marginBottom: 12 } };
@@ -41,28 +63,8 @@ class MarketMonitor extends Component {
                     name: 'A级企业',
                   },
                   {
-                    value: 50,
-                    type: '不良行为扣分',
-                    name: 'A级企业',
-                  },
-                  {
-                    value: 23,
-                    type: '未变化企业',
-                    name: 'A级企业',
-                  },
-                  {
                     value: 1986,
                     type: '良好行为加分',
-                    name: 'B级企业',
-                  },
-                  {
-                    value: 862,
-                    type: '不良行为扣分',
-                    name: 'B级企业',
-                  },
-                  {
-                    value: 102,
-                    type: '未变化企业',
                     name: 'B级企业',
                   },
                   {
@@ -71,9 +73,29 @@ class MarketMonitor extends Component {
                     name: 'C级企业',
                   },
                   {
+                    value: 50,
+                    type: '不良行为扣分',
+                    name: 'A级企业',
+                  },
+                  {
+                    value: 862,
+                    type: '不良行为扣分',
+                    name: 'B级企业',
+                  },
+                  {
                     value: 3,
                     type: '不良行为扣分',
                     name: 'C级企业',
+                  },
+                  {
+                    value: 23,
+                    type: '未变化企业',
+                    name: 'A级企业',
+                  },
+                  {
+                    value: 102,
+                    type: '未变化企业',
+                    name: 'B级企业',
                   },
                   {
                     value: 0,
@@ -174,31 +196,8 @@ class MarketMonitor extends Component {
         </Row>
         <Row gutter={12}>
           <Col {...doubleCardColsProps}>
-            <Card title="企业诚信行为分析" bodyStyle={{ height: '400px', padding: 0 }}>
-              <Bar
-                data={[
-                  {
-                    x: '企业入库总数',
-                    y: 30250
-                  },
-                  {
-                    x: '企业诚信记分',
-                    y: 20134
-                  },
-                  {
-                    x: '良好行为加分',
-                    y: 13005
-                  },
-                  {
-                    x: '不良行为扣分',
-                    y: 1375
-                  },
-                  {
-                    x: '失信企业',
-                    y: 3
-                  },
-                ]}
-              />
+            <Card loading={qycxxwfxLoading} title="企业诚信行为分析" bodyStyle={{ height: '400px', padding: 0 }}>
+              <Bar data={qycxxwfx} />
             </Card>
           </Col>
           <Col {...doubleCardColsProps}>
@@ -207,32 +206,11 @@ class MarketMonitor extends Component {
               bodyStyle={{ height: '400px', padding: '5px' }}
             >
               <Table
+                loading={sxqymdLoading}
                 size="large"
+                rowKey="rank"
                 scroll={{ y: 260 }}
-                dataSource={[
-                  {
-                    key: '1',
-                    rank: 1,
-                    orgName: '福建省景观园林建筑发展有限公司',
-                    creditScore: 58,
-                    creditLevel: 'C级',
-                  },
-                  {
-                    key: '2',
-                    rank: 2,
-                    orgName: '湖北枝江宏宇建设有限责任公司',
-                    creditScore: 49,
-                    creditLevel: 'C级',
-                  },
-                  {
-                    key: '3',
-                    rank: 3,
-                    orgName: '湖北弘扬园林工程有限公司',
-                    score: 30,
-                    creditScore: 40,
-                    creditLevel: 'C级',
-                  },
-                ]}
+                dataSource={sxqymd}
                 columns={[
                   {
                     title: '排名',
