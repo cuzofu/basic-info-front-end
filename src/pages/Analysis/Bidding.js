@@ -387,7 +387,7 @@ class Bidding extends Component {
                   <Icon type="info-circle-o" />
                 </Tooltip>
               }
-              total={numeral({byzbs}).format('0,0')}
+              total={numeral(byzbs).format('0,0')}
               footer={
                 <div style={{ textAlign: 'center' }}>
                   <Trend flag={zbsTb >= 0 ? 'up' : 'down'} reverseColor style={{ padding: '0 6px 0 0' }}>
