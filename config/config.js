@@ -100,7 +100,7 @@ export default {
       changeOrigin: true,
     },
     "/elastic_sskj/api/search": {
-      target: 'http://192.168.0.208:4310/',
+      target: 'http://111.47.65.236:7778/',
       changeOrigin: true,
     },
   }
