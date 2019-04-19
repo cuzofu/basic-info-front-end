@@ -104,7 +104,7 @@ class Market extends Component {
           pageSize: 10,
           currentPage: 0,
           sort: 'gjTime',
-          direction: 'descend',
+          // direction: 'descend',
         }
       });
       dispatch({
@@ -339,10 +339,10 @@ class Market extends Component {
     };
     if (sorter.field) {
       params.sort = sorter.field;
-      params.direction = sorter.order;
+      // params.direction = sorter.order;
     } else {
       params.sort = 'gjTime';
-      params.direction = 'descend';
+      // params.direction = 'descend';
     }
     dispatch({
       type: 'market/fetchBdqymxData',

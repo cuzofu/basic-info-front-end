@@ -11,7 +11,9 @@ import {
   Input,
   Button,
   Icon,
+  Table,
   InputNumber,
+  DatePicker,
 } from 'antd';
 
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
@@ -19,10 +21,14 @@ import StandardTable from '@/components/StandardTable';
 import StandardFormRow from '@/components/StandardFormRow';
 import { Pie } from '@/components/Charts';
 
+import { getTimeDistance } from '@/utils/utils';
+
 import styles from './Credit.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
+
+const { RangePicker } = DatePicker;
 
 const creditLevelList = [
   {
@@ -41,31 +47,171 @@ const creditLevelList = [
 
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 
-@connect(({ credit, loading }) => ({
+@connect(({ credit, badBehavior, mm, loading }) => ({
   credit,
+  badBehavior,
+  mm,
   cioRegionCountLoading: loading.effects['credit/fetchCioRegionCount'],
   cioCreditListLoading: loading.effects['credit/fetchCioCreditList'],
+  blxwXmpmLoading: loading.effects['badBehavior/fetchBlxwXmpm'],
+  blxwQyxwpmLoading: loading.effects['badBehavior/fetchBlxwQyxwpm'],
+  bqqycxpmLoading: loading.effects['mm/fetchBqqycxpm'],
 }))
 @Form.create()
 class Credit extends Component {
 
   state = {
+    rangePickerValue: getTimeDistance('year'),
     expandForm: false,
     formValues: {},
     selectedRows: [],
+    blxwXmpmPagination: {
+      current: 0,
+      pageSize: 10,
+    },
+    blxwQyxwpmPagination: {
+      current: 0,
+      pageSize: 10,
+    },
   };
 
   componentDidMount() {
     const {dispatch} = this.props;
+
+    dispatch({
+      type: 'mm/fetchBqqycxpm',
+      payload: {
+        currentPage: 0,
+        pageSize: 10,
+      }
+    });
     dispatch({
       type: 'credit/fetchCioRegionCount',
       payload: {}
     });
+    /*
     dispatch({
       type: 'credit/fetchCioCreditList',
       payload: {}
     });
+    */
+
+    const {
+      rangePickerValue,
+    } = this.state;
+
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    this.reqRef = requestAnimationFrame(() => {
+      this.fetchData(rangePickerValue);
+    });
   }
+
+  renderRangePicker = () => {
+    const {
+      rangePickerValue
+    } = this.state;
+
+    return (
+      <div className={styles.timeExtraWrap}>
+        <div className={styles.timeExtra}>
+          <a className={this.isActive('today')} onClick={() => this.selectDate('today')}>今日</a>
+          <a className={this.isActive('week')} onClick={() => this.selectDate('week')}>本周</a>
+          <a className={this.isActive('month')} onClick={() => this.selectDate('month')}>本月</a>
+          <a className={this.isActive('year')} onClick={() => this.selectDate('year')}>今年</a>
+        </div>
+        <RangePicker
+          value={rangePickerValue}
+          style={{ width: 256 }}
+          onChange={this.handleRangePickerChange}
+        />
+      </div>
+    );
+  };
+
+  isActive = type => {
+    const { rangePickerValue } = this.state;
+    const value = getTimeDistance(type);
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return '';
+    }
+    if (
+      rangePickerValue[0].isSame(value[0], 'day') &&
+      rangePickerValue[1].isSame(value[1], 'day')
+    ) {
+      return styles.currentDate;
+    }
+    return '';
+  };
+
+  selectDate = type => {
+
+    const rangePickerValue = getTimeDistance(type);
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    this.setState({
+      rangePickerValue,
+    });
+
+    this.fetchData(rangePickerValue);
+  };
+
+  handleRangePickerChange = rangePickerValue => {
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+
+    this.setState({
+      rangePickerValue,
+    });
+
+    this.fetchData(rangePickerValue);
+  };
+
+  fetchData = (rangePickerValue) => {
+    this.fetchBlxwXmpm(rangePickerValue);
+    this.fetchBlxwQyxwpm(rangePickerValue);
+  };
+
+  fetchBlxwQyxwpm = (rangePickerValue) => {
+
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+    const startTime = rangePickerValue[0].format("YYYY-MM-DD");
+    const endTime = rangePickerValue[1].format("YYYY-MM-DD");
+
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'badBehavior/fetchBlxwQyxwpm',
+      payload: {
+        // firstTime: startTime,
+        // lastTime: endTime,
+      }
+    });
+  };
+
+  fetchBlxwXmpm = (rangePickerValue) => {
+
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return;
+    }
+    const startTime = rangePickerValue[0].format("YYYY-MM-DD");
+    const endTime = rangePickerValue[1].format("YYYY-MM-DD");
+
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'badBehavior/fetchBlxwXmpm',
+      payload: {
+        // firstTime: startTime,
+        // lastTime: endTime,
+      }
+    });
+  };
 
   renderCioBehaviorTable = () => {
     const {selectedRows} = this.state;
@@ -361,7 +507,7 @@ class Credit extends Component {
     }, {});
 
     const params = {
-      currentPage: pagination.current,
+      currentPage: pagination.current - 1,
       pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
@@ -377,6 +523,38 @@ class Credit extends Component {
     });
   };
 
+  // 企业行为排名翻页
+  handleBlxwQyxwpmTableChange = (pagination) => {
+    this.setState({
+      blxwQyxwpmPagination: {
+        current: pagination.current - 1,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
+
+  // 不良行为项目排名翻页
+  handleBlxwXmpmTableChange = (pagination) => {
+    this.setState({
+      blxwXmpmPagination: {
+        current: pagination.current - 1,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
+
+  // 本期企业诚信排名翻页
+  handleBqqycxpmTableChange = (pagination) => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'mm/fetchBqqycxpm',
+      payload: {
+        currentPage: pagination.current - 1,
+        pageSize: pagination.pageSize,
+      }
+    });
+  };
+
   handleSelectRows = rows => {
     this.setState({
       selectedRows: rows,
@@ -385,7 +563,18 @@ class Credit extends Component {
 
   render() {
 
+    const {blxwXmpmPagination, blxwQyxwpmPagination} = this.state;
     const {
+      bqqycxpmLoading,
+      blxwXmpmLoading,
+      blxwQyxwpmLoading,
+      mm: {
+        bqqycxpm,
+      },
+      badBehavior: {
+        blxwXmpm,
+        blxwQyxwpm,
+      },
       credit: {
         cioRegionCount: {
           qyzs = 0,
@@ -408,8 +597,81 @@ class Credit extends Component {
       xl: 6,
     };
 
+    // 项目排名占比
+    const projectRankingColumns = [
+      {
+        title: '排名',
+        dataIndex: 'rank',
+        width: '10%',
+      },
+      {
+        title: '项目名称',
+        dataIndex: 'engName',
+        width: '30%',
+      },
+      {
+        title: '企业',
+        dataIndex: 'countEng',
+        width: '15%',
+      },
+      {
+        title: '人员',
+        dataIndex: 'countPerson',
+        width: '15%',
+      },
+      {
+        title: '总记录',
+        dataIndex: 'count',
+        width: '15%',
+      },
+      {
+        title: '占比',
+        dataIndex: 'rate',
+        width: '15%',
+      },
+    ];
+
+    // 企业行为排名占比
+    const orgBehaviorRankingList = [
+      {
+        title: '排名',
+        dataIndex: 'ranking',
+        width: '10%',
+      },
+      {
+        title: '企业名称',
+        dataIndex: 'orgName',
+        width: '30%',
+      },
+      {
+        title: '信用等级',
+        dataIndex: 'creditLevel',
+        width: '15%',
+      },
+      {
+        title: '信用分',
+        dataIndex: 'creditScore',
+        width: '15%',
+      },
+      {
+        title: '不良行为',
+        dataIndex: 'amountOfBehavior',
+        width: '15%',
+      },
+      {
+        title: '占比',
+        dataIndex: 'rate',
+        width: '15%',
+        render: (val) => `${(val * 100).toFixed(2)}%`
+      },
+    ];
+
+    // 左右结构布局参数
+    const doubleCardColsProps = { lg: 24, xl: 12, style: { marginBottom: 12 } };
+
     return (
       <GridContent>
+
         <Card title="诚信企业数量" bodyStyle={{ padding: 0 }} style={{marginTop: 12}}>
           <Row gutter={6}>
             <Col {...topColResponsiveProps}>
@@ -458,9 +720,99 @@ class Credit extends Component {
             </Col>
           </Row>
         </Card>
+
+        <Card style={{marginTop: 20}} loading={bqqycxpmLoading} title="企业诚信排名" bodyStyle={{ height: '400px', padding: '5px' }} >
+          <Table
+            size="large"
+            scroll={{ y: 260 }}
+            dataSource={bqqycxpm.data}
+            columns={[
+              {
+                title: '排名',
+                dataIndex: 'rank',
+                width: '10%',
+              },
+              {
+                title: '企业名称',
+                dataIndex: 'orgName',
+                width: '45%',
+              },
+              {
+                title: '本期分数',
+                dataIndex: 'score',
+                width: '15%',
+              },
+              {
+                title: '诚信分数',
+                dataIndex: 'creditScore',
+                width: '15%',
+              },
+              {
+                title: '等级',
+                dataIndex: 'creditLevel',
+                width: '15%',
+              },
+            ]}
+            pagination={{
+              ...bqqycxpm.pagination,
+              pageSizeOptions: ['10', '20', '50'],
+              showSizeChanger: true,
+              size: 'small',
+              showTotal: total => `总计 ${total} 条记录.`,
+            }}
+            onChange={this.handleBqqycxpmTableChange}
+          />
+        </Card>
+
+        {/*
+        {this.renderRangePicker()}
+        */}
+
+        <Row gutter={12}>
+          <Col {...doubleCardColsProps}>
+
+            <Card style={{marginTop: 20}} loading={blxwQyxwpmLoading} title="企业不良行为排名占比" bodyStyle={{ height: '400px', padding: '5px' }}>
+              <Table
+                size="small"
+                scroll={{ y: 300 }}
+                dataSource={blxwQyxwpm}
+                columns={orgBehaviorRankingList}
+                pagination={{
+                  pageSize: blxwQyxwpmPagination.pageSize,
+                  current: blxwQyxwpmPagination.current,
+                  pageSizeOptions: ['10', '20', '50'],
+                  showSizeChanger: true,
+                  showTotal: total => `总计 ${total} 家企业.`,
+                }}
+                onChange={this.handleBlxwQyxwpmTableChange}
+              />
+            </Card>
+          </Col>
+          <Col {...doubleCardColsProps}>
+            <Card style={{marginTop: 20}} title="项目不良行为排名占比" bodyStyle={{ height: '400px', padding: '5px' }}>
+              <Table
+                loading={blxwXmpmLoading}
+                size="small"
+                scroll={{ y: 300 }}
+                dataSource={blxwXmpm}
+                columns={projectRankingColumns}
+                pagination={{
+                  ...blxwXmpmPagination,
+                  pageSizeOptions: ['10', '20', '50'],
+                  showSizeChanger: true,
+                  showTotal: total => `总计 ${total} 个项目.`,
+                }}
+                onChange={this.handleBlxwXmpmTableChange}
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        {/*
         <Card bordered={false} title="企业诚信" bodyStyle={{ padding: '12 0 0 0' }} style={{marginTop: 12}}>
           {this.renderCioBehaviorTable()}
         </Card>
+        */}
       </GridContent>
     );
   }

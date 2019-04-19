@@ -28,10 +28,12 @@ class Analysis extends Component {
         key: 'credit',
         tab: '企业诚信',
       },
+      /*
       {
         key: 'badBehavior',
         tab: '不良行为',
       },
+      */
       {
         key: 'intendance',
         tab: '质量安全监督',

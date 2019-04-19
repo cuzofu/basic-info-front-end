@@ -41,7 +41,7 @@ export async function queryBdqymx(params) {
 
 // 企业活跃度排名
 export async function queryQyhydpm(params) {
-  return request(`/elastic_sskj/api/search/schy/estahy`)
+  return request(`/elastic_sskj/api/search/schy/estahy?${stringify(params)}`)
 }
 
 // 人员资质分析
@@ -51,7 +51,7 @@ export async function queryRyzzfx(params) {
 
 // 人员活跃度排名
 export async function queryRyhydpm(params) {
-  return request(`/elastic_sskj/api/search/schy/ryhydpm`)
+  return request(`/elastic_sskj/api/search/schy/ryhydpm?${stringify(params)}`)
 }
 
 // 建筑规模与活跃企业诚信等级分析
@@ -71,22 +71,22 @@ export async function queryQycxdjzbData(params) {
 
 // 不良行为机构部门占比
 export async function queryBlxwJgbmzb(params) {
-  return request(`/elastic_sskj/api/search/organ/jgbmzb`)
+  return request(`/elastic_sskj/api/search/organ/jgbmzb?${stringify(params)}`)
 }
 
 // 不良行为机构部门类型占比
 export async function queryBlxwJgbmlxzb(params) {
-  return request(`/elastic_sskj/api/search/organ/jgbmlxzb`)
+  return request(`/elastic_sskj/api/search/organ/jgbmlxzb?${stringify(params)}`)
 }
 
 // 企业行为排名占比
 export async function queryBlxwQyxwpm(params) {
-  return request(`/elastic_sskj/api/search/organ/qyxwpmzb`)
+  return request(`/elastic_sskj/api/search/organ/qyxwpmzb?${stringify(params)}`)
 }
 
 // 个人行为排名占比
 export async function queryBlxwGrxwpm(params) {
-  return request(`/elastic_sskj/api/search/organ/grxwpmzb`)
+  return request(`/elastic_sskj/api/search/organ/grxwpmzb?${stringify(params)}`)
 }
 
 // 项目排名占比
@@ -96,17 +96,17 @@ export async function queryBlxwXmpm(params) {
 
 // 行为类型排名占比
 export async function queryBlxwXwlxpm(params) {
-  return request(`/elastic_sskj/api/search/organ/xwlxpmzb`)
+  return request(`/elastic_sskj/api/search/organ/xwlxpmzb?${stringify(params)}`)
 }
 
 // 执法文书明细按科室
 export async function queryZfwsks(params) {
-  return request(`/elastic_sskj/api/search/organ/zfwsmxaks`)
+  return request(`/elastic_sskj/api/search/organ/zfwsmxaks?${stringify(params)}`)
 }
 
 // 执法文书统计
 export async function queryZfwstj(params) {
-  return request(`/elastic_sskj/api/search/organ/zfwstj`)
+  return request(`/elastic_sskj/api/search/organ/zfwstj?${stringify(params)}`)
 }
 
 // 项目排名占比
@@ -126,7 +126,7 @@ export async function queryZfwsQypm(params) {
 
 // 工程排名（按问题）
 export async function queryGczlwtpm(params) {
-  return request(`/elastic_sskj/api/search/organ/gcpmawt`)
+  return request(`/elastic_sskj/api/search/organ/gcpmawt?${stringify(params)}`)
 }
 
 // 企业最新消息
@@ -237,7 +237,17 @@ export async function queryQycxxwfx(params) {
   return request(`/elastic_sskj/api/search/scjc/qycxxwfx?${stringify(params)}`);
 }
 
-// 企业诚信行为分析
+// 失信企业名单
 export async function querySxqymd(params) {
   return request(`/elastic_sskj/api/search/scjc/sxqymd?${stringify(params)}`);
+}
+
+// 企业诚信等级统计
+export async function queryQycxdjtj(params) {
+  return request(`/elastic_sskj/api/search/scjc/qycxdjtj?${stringify(params)}`);
+}
+
+// 本期企业诚信排名
+export async function queryBqqycxpm(params) {
+  return request(`/elastic_sskj/api/search/scjc/bqqycxpm?${stringify(params)}`);
 }

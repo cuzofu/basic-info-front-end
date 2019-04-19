@@ -27,9 +27,12 @@ const { Description } = DescriptionList;
 
 const getWindowWidth = () => window.innerWidth || document.documentElement.clientWidth;
 
-@connect(({ analysis, loading }) => ({
-  analysis,
-  loading: loading.effects['analysis/fetch'],
+@connect(({ ce, loading }) => ({
+  ce,
+  blkszzbloading: loading.effects['ce/fetchBlkszzb'],
+  blksfxloading: loading.effects['ce/fetchBlksfx'],
+  bjmxloading: loading.effects['ce/fetchBjmx'],
+  bjrymxloading: loading.effects['ce/fetchBjrymx'],
 }))
 class ConstructionEfficiency extends Component {
 
@@ -38,8 +41,33 @@ class ConstructionEfficiency extends Component {
     selectedKsAndYw: {
       ks: '1',
       yw: '1',
-    }
+    },
   };
+
+  componentDidMount() {
+    const {
+      dispatch
+    } = this.props;
+    dispatch({
+      type: 'ce/fetchBlkszzb',
+      payload: {}
+    });
+    dispatch({
+      type: 'ce/fetchBlksfx',
+      payload: {}
+    });
+    dispatch({
+      type: 'ce/fetchBjmx',
+      payload: {
+        currentPage: 1,
+        pageSize: 10,
+      }
+    });
+    dispatch({
+      type: 'ce/fetchBjrymx',
+      payload: {}
+    });
+  }
 
   handlePieClick = (ev) => {
     if (!ev || !ev.data || ev.data === undefined || !ev.data._origin) {
@@ -55,143 +83,36 @@ class ConstructionEfficiency extends Component {
     });
   };
 
+  // 办理科室总占比
   renderBlkszb = () => {
 
     const {
       subData,
     } =  this.state;
-    const data = [
-      {
-        x: '建管科',
-        y: 3005,
-        sub: [
-          {
-            x: '按期',
-            y: 2338,
-          },
-          {
-            x: '超期',
-            y: 667,
-          }
-        ],
-      },
-      {
-        x: '窗口',
-        y: 190,
-        sub: [
-          {
-            x: '按期',
-            y: 190,
-          },
-          {
-            x: '超期',
-            y: 0,
-          }
-        ],
-      },
-      {
-        x: '定额站',
-        y: 447,
-        sub: [
-          {
-            x: '按期',
-            y: 400,
-          },
-          {
-            x: '超期',
-            y: 47,
-          }
-        ],
-      },
-      {
-        x: '市政监督室',
-        y: 321,
-        sub: [
-          {
-            x: '按期',
-            y: 321,
-          },
-          {
-            x: '超期',
-            y: 0,
-          }
-        ],
-      },
-      {
-        x: '质监一室',
-        y: 430,
-        sub: [
-          {
-            x: '按期',
-            y: 400,
-          },
-          {
-            x: '超期',
-            y: 30,
-          }
-        ],
-      },
-      {
-        x: '质监二室',
-        y: 289,
-        sub: [
-          {
-            x: '按期',
-            y: 277,
-          },
-          {
-            x: '超期',
-            y: 12,
-          }
-        ],
-      },
-      {
-        x: '安监一室',
-        y: 256,
-        sub: [
-          {
-            x: '按期',
-            y: 250,
-          },
-          {
-            x: '超期',
-            y: 6,
-          }
-        ],
-      },
-      {
-        x: '安监二室',
-        y: 180,
-        sub: [
-          {
-            x: '按期',
-            y: 179,
-          },
-          {
-            x: '超期',
-            y: 1,
-          }
-        ],
-      },
-    ];
+    const {
+      ce: {
+        blkszzbloading,
+        blkszzb
+      }
+    } = this.props;
 
-    if (data && data.length > 0) {
+    if (blkszzb && blkszzb.length > 0) {
       if (!(subData && subData.x)) {
-        subData.x = data[0].x;
-        subData.y = data[0].y;
-        subData.sub = data[0].sub;
+        subData.x = blkszzb[0].x;
+        subData.y = blkszzb[0].y;
+        subData.sub = blkszzb[0].sub;
       }
     }
 
-    if (data && data.length > 0) {
+    if (blkszzb && blkszzb.length > 0) {
       return (
         <Row>
           <Col {...doubleCardColsProps}>
             <Pie
               hasLegend
               subTitle="总件数"
-              total={() => data.reduce((pre, now) => now.y + pre, 0)}
-              data={data}
+              total={() => blkszzb.reduce((pre, now) => now.y + pre, 0)}
+              data={blkszzb}
               valueFormat={value => `${value}件`}
               height={300}
               lineWidth={4}
@@ -243,80 +164,19 @@ class ConstructionEfficiency extends Component {
     const {
       selectedKsAndYw,
     } = this.state;
-
-    const ksData = [
-      {
-        id: '1',
-        ksName: '监督一室',
-        yws: [
-          {
-            id: '1',
-            name: '现场踏勘',
-            data: [
-              {
-                x: '按期',
-                y: 280,
-              },
-              {
-                x: '超期',
-                y: 20,
-              }
-            ]
-          },
-          {
-            id: '2',
-            name: '竣工备案',
-            data: [
-              {
-                x: '按期',
-                y: 180,
-              },
-              {
-                x: '超期',
-                y: 1,
-              }
-            ]
-          }
-        ],
-      },
-      {
-        id: 'zh',
-        ksName: '综合室',
-        yws: [
-          {
-            id: '1',
-            name: '监督登记',
-            data: [
-              {
-                x: '按期',
-                y: 1180,
-              },
-              {
-                x: '超期',
-                y: 131,
-              }
-            ]
-          },
-          {
-            id: '2',
-            name: '施工许可',
-            data: [
-              {
-                x: '按期',
-                y: 999,
-              },
-              {
-                x: '超期',
-                y: 12,
-              }
-            ]
-          }
-        ],
+    const {
+      ce: {
+        blksfxloading,
+        blksfx
       }
-    ];
+    } = this.props;
 
+    if (blksfx.length === 0) {
+      return null;
+    }
     // 已选择的科室
-    const selectedKs = ksData.find(k => k.id === selectedKsAndYw.ks);
+    const selectedKs = blksfx.find(k => k.id === selectedKsAndYw.ks);
+
     // 已选择的业务
     let selectedYw = [];
     let ywData = [];
@@ -334,7 +194,7 @@ class ConstructionEfficiency extends Component {
             value={selectedKsAndYw.ks}
             onChange={this.handleKsChange}
           >
-            {ksData.map(k => <Select.Option key={k.id}>{k.ksName}</Select.Option>)}
+            {blksfx.map(k => <Select.Option key={k.id}>{k.ksName}</Select.Option>)}
           </Select>
           <Select
             placeholder="选择事项"
@@ -359,46 +219,16 @@ class ConstructionEfficiency extends Component {
 
   };
 
+  // 办件人员明细
   renderStaffList = () => {
 
-    const staffList = [
-      {
-        index: 1,
-        name: '吴登峰',
-        ks: '监督一室',
-        count: 110,
-        time: 400,
-        minTime: 1,
-        maxTime: 2,
-      },
-      {
-        index: 2,
-        name: '汪家毅',
-        ks: '监督一室',
-        count: 140,
-        time: 28,
-        minTime: 1,
-        maxTime: 1,
-      },
-      {
-        index: 3,
-        name: '谭建华',
-        ks: '监督一室',
-        count: 140,
-        time: 28,
-        minTime: 1,
-        maxTime: 1,
-      },
-      {
-        index: 4,
-        name: '左亚',
-        ks: '监督一室',
-        count: 140,
-        time: 28,
-        minTime: 1,
-        maxTime: 3,
-      },
-    ];
+    const {
+      ce: {
+        bjrymxloading,
+        bjrymx
+      }
+    } = this.props;
+
     const staffListColumns = [
       {
         title: '序号',
@@ -429,32 +259,33 @@ class ConstructionEfficiency extends Component {
         dataIndex: 'time',
         width: '15%',
         align: 'center',
-        render: (val) => `${val}天`,
+        render: (val) => `${val}`,
       },
       {
         title: '最短耗时',
         dataIndex: 'minTime',
         width: '15%',
         align: 'center',
-        render: (val) => `${val}小时`,
+        render: (val) => `${val}`,
       },
       {
         title: '最长耗时',
         dataIndex: 'maxTime',
         width: '15%',
         align: 'center',
-        render: (val) => `${val}天`,
+        render: (val) => `${val}`,
       },
     ];
     return (
       <Table
+        loading={bjrymxloading}
         size="small"
         rowKey="index"
         scroll={{ y: 200 }}
-        dataSource={staffList}
+        dataSource={bjrymx}
         columns={staffListColumns}
         pagination={{
-          current: 1,
+          currentPage: 1,
           pageSize: 10,
           pageSizeOptions: ['10', '50', '100'],
           showSizeChanger: true,
@@ -465,7 +296,34 @@ class ConstructionEfficiency extends Component {
     );
   };
 
+  renderTime = (data) => {
+    const {
+      dispatch
+    } = this.props;
+    dispatch({
+      type: 'ce/saveTimeLine',
+      payload: {
+          bllx: data.bllx,
+          clTime: data.clTime,
+          isOnTime: data.isOnTime,
+          sjTime: data.sjTime,
+          sjz: data.list,
+      }
+    })
+  };
+
+  //  办件明细
   renderBlmx = () => {
+
+    const {
+      ce: {
+        bjmxloading,
+        bjmx: {
+          data,
+          pagination,
+        }
+      }
+    } = this.props;
 
     const columns = [
       {
@@ -503,101 +361,89 @@ class ConstructionEfficiency extends Component {
         key: 'more',
         width: '15%',
         align: 'center',
-        render: (_, record) => (
-          <span>查看</span>
+        render: (text, record) => (
+          <span>
+            <a onClick={() => this.renderTime(record)}>查看</a>
+          </span>
         ),
       }
-    ];
-
-    const data = [
-      {
-        key: '1',
-        ksName: '监督一室',
-        ywlx: '现场踏勘',
-        sqdw: '宜昌国闰房地产有限公司',
-        time: 2,
-        asbj: '按时',
-      },
-      {
-        key: '2',
-        ksName: '定额站',
-        ywlx: '招投标',
-        sqdw: '湖北兴焱工程咨询有限公司',
-        time: 2,
-        asbj: '超时',
-      },
-      {
-        key: '3',
-        ksName: '建管科',
-        ywlx: '良好行为申请',
-        sqdw: '湖北枝江宏宇建设有限责任公司',
-        time: 1,
-        asbj: '按时',
-      },
     ];
 
     return (
       <div className={styles.tableList}>
         <Table
+          loading={bjmxloading}
           size="small"
-          rowKey="key"
-          scroll={{ y: 315 }}
+          rowKey="index"
+          scroll={{ y: 280 }}
           dataSource={data}
           columns={columns}
           pagination={{
-            current: 1,
-            pageSize: 10,
+            ...pagination,
+            size: 'small',
             pageSizeOptions: ['10', '50', '100'],
             showSizeChanger: true,
             showTotal: total => `总计 ${total} 件.`,
           }}
+          onChange={this.handleBjmxTableChange}
         />
       </div>
     );
   };
 
+  // 时间轴
   renderTimeLine = () => {
-    return (
-      <div>
-        <div style={{height: '32px'}}>
-          <span>现场踏勘</span>
+
+    const {
+      ce: {
+        timeLine
+      }
+    } = this.props;
+    if (timeLine.sjz !== undefined) {
+      return (
+        <div>
+          <div style={{height: '32px'}}>
+            <span>{timeLine.bllx}</span>
+          </div>
+          <div style={{height: '48px'}}>
+            <DescriptionList size="small" col={3}>
+              <Description term="承诺时长(天)">{timeLine.clTime}</Description>
+              <Description term="实际用时（天）">{timeLine.sjTime}</Description>
+              <Description term="是否按时办结">{timeLine.isOnTime}</Description>
+            </DescriptionList>
+          </div>
+          <div style={{height: 300, overflowY: 'auto'}}>
+            <Timeline>
+              {timeLine.sjz.map(r  => (
+                <Timeline.Item key={r.index}>
+                  <div>
+                    <p>{r.time}</p>
+                    <p>{r.type}&nbsp;{r.name}</p>
+                  </div>
+                </Timeline.Item>
+              ))}
+            </Timeline>
+          </div>
         </div>
-        <div style={{height: '48px'}}>
-          <DescriptionList size="small" col={3}>
-            <Description term="承诺时长(天)：">2</Description>
-            <Description term="实际用时（天）">2</Description>
-            <Description term="是否按时办结">按时</Description>
-          </DescriptionList>
-        </div>
-        <div style={{height: 300, overflowY: 'auto'}}>
-          <Timeline>
-            <Timeline.Item>
-              <div>
-                <p>2018-09-14 14:56</p>
-                <p>提交申请 宜昌国闰房地产有限公司</p>
-              </div>
-            </Timeline.Item>
-            <Timeline.Item>
-              <div>
-                <p>2018-09-14 15:31</p>
-                <p>受理人 李晨青（监督一室）</p>
-              </div>
-            </Timeline.Item>
-            <Timeline.Item>
-              <div>
-                <p>2018-09-15 11:05</p>
-                <p>办结人 陈宫厚（监督一室）</p>
-              </div>
-            </Timeline.Item>
-          </Timeline>
-        </div>
-      </div>
-    );
+      );
+    }
   };
 
   // 办件人员明细翻页
   handleStaffTableChange = () => {
 
+  };
+
+  // 办件明细翻页
+  handleBjmxTableChange = (pagination) => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'ce/fetchBjmx',
+      payload: {
+        currentPage: pagination.current,
+        pageSize: pagination.pageSize,
+      }
+    });
   };
 
   @Bind()
@@ -617,6 +463,10 @@ class ConstructionEfficiency extends Component {
   }
 
   render() {
+
+    const {
+      bjmxloading,
+    } = this.props;
 
     return (
       <GridContent>
@@ -656,6 +506,7 @@ class ConstructionEfficiency extends Component {
           </Col>
           <Col {...doubleCardColsProps}>
             <Card
+              loading={bjmxloading}
               title="时间轴"
               bodyStyle={{ height: '400px', padding: '20px' }}
             >
