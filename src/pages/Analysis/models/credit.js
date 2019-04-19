@@ -37,9 +37,17 @@ export default {
           } = response;
           cioRegionCount = {
             qyzs: all.本地 + all.外地,
+            qybd: all.本地,
+            qywd: all.外地,
             ajizs: A级.本地 + A级.外地,
+            ajbd: A级.本地,
+            ajwd: A级.外地,
             bjizs: B级.本地 + B级.外地,
+            bjbd: B级.本地,
+            bjwd: B级.外地,
             cjizs: C级.本地 + C级.外地,
+            cjbd: C级.本地,
+            cjwd: C级.外地,
             qybdbl: (all.本地 + all.外地) === 0 ? 0 : (all.本地 / (all.本地 + all.外地) * 100).toFixed(2),
             ajibdbl: (A级.本地 + A级.外地) === 0 ? 0 : (A级.本地 / (A级.本地 + A级.外地) * 100).toFixed(2),
             bjibdbl: (B级.本地 + B级.外地) === 0 ? 0 : (B级.本地 / (B级.本地 + B级.外地) * 100).toFixed(2),

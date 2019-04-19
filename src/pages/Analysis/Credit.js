@@ -578,9 +578,17 @@ class Credit extends Component {
       credit: {
         cioRegionCount: {
           qyzs = 0,
+          qybd = 0,
+          qywd = 0,
           ajizs = 0,
+          ajbd = 0,
+          ajwd = 0,
           bjizs = 0,
+          bjbd = 0,
+          bjwd = 0,
           cjizs = 0,
+          cjbd = 0,
+          cjwd = 0,
           qybdbl = 0,
           ajibdbl = 0,
           bjibdbl = 0,
@@ -675,47 +683,87 @@ class Credit extends Component {
         <Card title="诚信企业数量" bodyStyle={{ padding: 0 }} style={{marginTop: 12}}>
           <Row gutter={6}>
             <Col {...topColResponsiveProps}>
-              <Card bodyStyle={{ paddingBottom: '8px' }}>
+              <Card bodyStyle={{ padding: '12px' }}>
                 <div className={styles.topNumber}>
                   <span className={styles.text}>总数：</span>
                   <span className={styles.number}>{qyzs}</span>
                   <span className={styles.text}>家</span>
                 </div>
                 <Divider />
-                <Pie percent={qybdbl} subTitle="本地企业" total={`${qybdbl}%`} height={140} />
+                <div style={{margin: '0 0 10px'}}>
+                  <div style={{float: 'left',width: '100%'}}>
+                    <div style={{marginRight: 140}}>
+                      <div>本地：{qybd}家</div>
+                      <div>外地：{qywd}家</div>
+                    </div>
+                  </div>
+                  <div style={{position: 'relative',float: 'right',width: 140, marginLeft: -140}}>
+                    <Pie percent={qybdbl} subTitle="本地企业" total={`${qybdbl}%`} height={140} />
+                  </div>
+                </div>
               </Card>
             </Col>
             <Col {...topColResponsiveProps}>
-              <Card bodyStyle={{ paddingBottom: '8px' }}>
+              <Card bodyStyle={{ padding: '12px' }}>
                 <div className={styles.topNumber}>
                   <span className={styles.text}>A级：</span>
                   <span className={styles.number}>{ajizs}</span>
                   <span className={styles.text}>家</span>
                 </div>
                 <Divider />
-                <Pie percent={ajibdbl} subTitle="本地企业" total={`${ajibdbl}%`} height={140} />
+                <div style={{margin: '0 0 10px'}}>
+                  <div style={{float: 'left',width: '100%'}}>
+                    <div style={{marginRight: 140}}>
+                      <div>本地：{ajbd}家</div>
+                      <div>外地：{ajwd}家</div>
+                    </div>
+                  </div>
+                  <div style={{position: 'relative',float: 'right',width: 140, marginLeft: -140}}>
+                    <Pie percent={ajibdbl} subTitle="本地企业" total={`${ajibdbl}%`} height={140} />
+                  </div>
+                </div>
               </Card>
             </Col>
             <Col {...topColResponsiveProps}>
-              <Card bodyStyle={{ paddingBottom: '8px' }}>
+              <Card bodyStyle={{ padding: '12px' }}>
                 <div className={styles.topNumber}>
                   <span className={styles.text}>B级：</span>
                   <span className={styles.number}>{bjizs}</span>
                   <span className={styles.text}>家</span>
                 </div>
                 <Divider />
-                <Pie percent={bjibdbl} subTitle="本地企业" total={`${bjibdbl}%`} height={140} />
+                <div style={{margin: '0 0 10px'}}>
+                  <div style={{float: 'left',width: '100%'}}>
+                    <div style={{marginRight: 140}}>
+                      <div>本地：{bjbd}家</div>
+                      <div>外地：{bjwd}家</div>
+                    </div>
+                  </div>
+                  <div style={{position: 'relative',float: 'right',width: 140, marginLeft: -140}}>
+                    <Pie percent={bjibdbl} subTitle="本地企业" total={`${bjibdbl}%`} height={140} />
+                  </div>
+                </div>
               </Card>
             </Col>
             <Col {...topColResponsiveProps}>
-              <Card bodyStyle={{ paddingBottom: '8px' }}>
+              <Card bodyStyle={{ padding: '12px' }}>
                 <div className={styles.topNumber}>
                   <span className={styles.text}>C级：</span>
                   <span className={styles.number}>{cjizs}</span>
                   <span className={styles.text}>家</span>
                 </div>
                 <Divider />
-                <Pie percent={cjibdbl} subTitle="本地企业" total={`${cjibdbl}%`} height={140} />
+                <div style={{margin: '0 0 10px'}}>
+                  <div style={{float: 'left',width: '100%'}}>
+                    <div style={{marginRight: 140}}>
+                      <div>本地：{cjbd}家</div>
+                      <div>外地：{cjwd}家</div>
+                    </div>
+                  </div>
+                  <div style={{position: 'relative',float: 'right',width: 140, marginLeft: -140}}>
+                    <Pie percent={cjibdbl} subTitle="本地企业" total={`${cjibdbl}%`} height={140} />
+                  </div>
+                </div>
               </Card>
             </Col>
           </Row>
